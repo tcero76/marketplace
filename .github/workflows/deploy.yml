@@ -9,7 +9,6 @@ on:
 jobs:
   terraform:
     name: Terraform Apply
-    if: false
     runs-on: ubuntu-latest
     outputs:
       manager_ip: ${{ steps.get_ip.outputs.manager_ip }}
