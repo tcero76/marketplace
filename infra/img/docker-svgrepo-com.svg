@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Uploaded to: SVG Repo, www.svgrepo.com, Generator: SVG Repo Mixer Tools -->
+
+<svg
+   aria-label="Docker"
+   role="img"
+   viewBox="0 0 512 512"
+   version="1.1"
+   id="svg8"
+   sodipodi:docname="docker-svgrepo-com.svg"
+   width="512"
+   height="512"
+   inkscape:version="1.2 (1:1.2.1+202207142221+cd75a1ee6d)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <defs
+     id="defs12" />
+  <sodipodi:namedview
+     id="namedview10"
+     pagecolor="#ffffff"
+     bordercolor="#000000"
+     borderopacity="0.25"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     showgrid="false"
+     inkscape:zoom="1.1739077"
+     inkscape:cx="49.407631"
+     inkscape:cy="250.8715"
+     inkscape:window-width="2510"
+     inkscape:window-height="1016"
+     inkscape:window-x="50"
+     inkscape:window-y="27"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="svg8" />
+  <path
+     stroke="#066da5"
+     stroke-width="38"
+     d="m 296,226 h 42 m -92,0 h 42 m -91,0 h 42 m -91,0 h 41 m -91,0 h 42 m 8,-46 h 41 m 8,0 h 42 m 7,0 h 42 m -42,-46 h 42"
+     id="path4"
+     style="display:inline" />
+  <path
+     fill="#066da5"
+     d="m 472,228 c 0,0 -18,-17 -55,-11 -4,-29 -35,-46 -35,-46 0,0 -29,35 -8,74 -6,3 -16,7 -31,7 H 68 c -5,19 -5,145 133,145 99,0 173,-46 208,-130 52,4 63,-39 63,-39"
+     id="path6"
+     style="display:inline" />
+</svg>

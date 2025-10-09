@@ -1,0 +1,8 @@
+ CREATE TABLE IF NOT EXISTS recomendations (
+    id SERIAL PRIMARY KEY,
+    user_id INTEGER,
+    post_id INTEGER,
+    rating INTEGER,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);

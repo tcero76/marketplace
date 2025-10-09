@@ -1,0 +1,25 @@
+#!/usr/bin/env python3
+
+import fontforge
+font = fontforge.font()
+
+glyphs = [
+    (0xE001, "perrito", "/home/leonardo/marketplace/infra/img/fonts/pngs/755.svg"),
+    (0xE002, "frente", "/home/leonardo/marketplace/infra/img/fonts/pngs/756.svg"),
+    (0xE003, "anal", "/home/leonardo/marketplace/infra/img/fonts/pngs/757.svg")
+]
+
+for code, name, svg_file in glyphs:
+    glyph = font.createChar(code, name)
+    glyph.importOutlines(svg_file)
+    # Opcional: ajustar ancho del glifo
+    glyph.width = 1000
+
+
+
+# glyph = font.createChar(0xE001, "perrito")
+# glyph.importOutlines("755.svg")
+# font.generate("MyFont.ttf")
+font.generate("MyEmojiFont.woff")
+# font.generate("MyEmojiFont.woff2")
+

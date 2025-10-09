@@ -1,0 +1,24 @@
+services:
+  hydra:
+    image: oryd/hydra:${HYDRA_VERSION}
+    container_name: hydra
+    tty: true
+    stdin_open: true
+    profiles:
+      - hydra
+    ports:
+      - "4444:4444"
+      - "4445:4445"
+    command: serve all --dev
+    environment:
+      - DSN=postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:5432/${POSTGRES_DB}?sslmode=disable&options=-c%20search_path%3Dhydra
+      - URLS_SELF_ISSUER=http://${HOST_EXTERNAL}:${PORT_EXTERNAL}/hydra
+      - URLS_LOGIN=http://${HOST_EXTERNAL}:${PORT_EXTERNAL}/login 
+      - URLS_CONSENT=http://${HOST_EXTERNAL}:${PORT_EXTERNAL}/bff/consent
+      - SECRETS_SYSTEM=some_secret_key_system
+      - TTL_ACCESS_TOKEN=1h
+      - TTL_REFRESH_TOKEN=720h
+    depends_on:
+     - db
+    networks:
+      - ${NETWORK_APPLICATION}

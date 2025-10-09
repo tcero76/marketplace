@@ -1,0 +1,44 @@
+services:
+  grafana:
+    image: grafana/grafana:12.0.1
+    hostname: grafana
+    container_name: grafana
+    profiles:
+      - monitoring
+    tty: true
+    stdin_open: true
+    ports:
+      - 3030:3000
+    volumes:
+      - ./monitoring/grafana:/var/lib/grafana
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    networks:
+      - ${NETWORK_APPLICATION}
+  prometheus:
+    image: prom/prometheus:v3.4.0
+    hostname: prometheus
+    container_name: prometheus
+    profiles:
+      - monitoring
+    tty: true
+    stdin_open: true
+    ports:
+      - 9090:9090
+    volumes:
+      - ./monitoring/config/prometheus.yml:/etc/prometheus/prometheus.yml
+      - ./monitoring/prometheus:/prometheus
+    networks:
+      - ${NETWORK_APPLICATION}
+  node_exporter:
+    image: prom/node-exporter:v1.9.1
+    container_name: node_exporter
+    profiles:
+      - monitoring
+    tty: true
+    stdin_open: true
+    ports:
+      - "9100:9100"
+    networks:
+      - ${NETWORK_APPLICATION}
