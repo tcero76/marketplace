@@ -105,6 +105,9 @@ jobs:
       SMTP_PORT: ${{ secrets.SMTP_PORT }} 
       SMTP_USER: ${{ secrets.SMTP_USER }} 
       SMTP_PASS: ${{ secrets.SMTP_PASS }} 
+      # docker
+      DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }} 
+      DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }} 
     steps:
       - name: Checkout repo
         uses: actions/checkout@v3
