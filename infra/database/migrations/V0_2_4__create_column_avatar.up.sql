@@ -1,0 +1,1 @@
+alter table marketplace.users add column avatar text;

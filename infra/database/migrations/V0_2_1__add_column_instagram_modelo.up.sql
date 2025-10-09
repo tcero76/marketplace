@@ -1,0 +1,1 @@
+ALTER TABLE scrap.modelos_instagram ADD COLUMN id_job BIGINT;
