@@ -38,7 +38,6 @@ jobs:
   docker:
     name: Build and Push Docker Images
     runs-on: ubuntu-latest
-    needs: terraform
     env:
       # prod, dev, test
       PROFILE: ${{ secrets.PROFILE }}
