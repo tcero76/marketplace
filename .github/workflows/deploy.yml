@@ -38,6 +38,9 @@ jobs:
   docker:
     name: Build and Push Docker Images
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: infra
     env:
       # prod, dev, test
       PROFILE: ${{ secrets.PROFILE }}
