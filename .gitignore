@@ -22,3 +22,4 @@ beat/celerybeat-schedule
 scrap-service/arsmate_cookies.json
 
 beat/celerybeat-schedule
+**/.terraform/**
