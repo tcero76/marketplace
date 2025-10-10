@@ -5,24 +5,14 @@ terraform {
       version = "~> 2.0"
     }
   }
-  
-  backend "s3" {
-    endpoint                    = "nyc3.digitaloceanspaces.com"
-    bucket                      = "mi-terraform-state"
-    key                         = "project/terraform.tfstate"
-    region                      = var.region
-    access_key                  = var.DO_SPACES_KEY
-    secret_key                  = var.DO_SPACES_SECRET
-    skip_region_validation      = true
-    skip_credentials_validation = true
-  }
 }
 
 # -----------------------------
 # 1️⃣  Crear VPC privada
 # -----------------------------
-data "digitalocean_vpc" "swarm_vpc" {
-  name   = "swarm-vpc"
+
+data "digitalocean_vpc" "default" {
+  region = var.region
 }
 
 # -----------------------------
@@ -32,10 +22,16 @@ data "digitalocean_ssh_key" "default" {
   name = var.ssh_key_name
 }
 
+# Generar un par SSH temporal
+resource "tls_private_key" "swarm_internal" {
+  algorithm = "RSA"
+  rsa_bits  = 4096
+}
+
 # Manager
 resource "digitalocean_droplet" "swarm_manager" {
   name      = "swarm-manager"
-  vpc_uuid  = data.digitalocean_vpc.swarm_vpc.id
+  vpc_uuid  = data.digitalocean_vpc.default.id
   region    = var.region
   size      = var.size
   image     = var.image
@@ -43,6 +39,8 @@ resource "digitalocean_droplet" "swarm_manager" {
   user_data = templatefile("${path.module}/install_docker.sh.tmpl", {
     manager_ip = ""
     is_manager = true
+    internal_pubkey = tls_private_key.swarm_internal.public_key_openssh
+    internal_privkey = ""
   })
 }
 
@@ -50,15 +48,18 @@ resource "digitalocean_droplet" "swarm_manager" {
 resource "digitalocean_droplet" "swarm_worker" {
   count     = var.worker_count
   name      = "swarm-worker-${count.index}"
-  vpc_uuid  = data.digitalocean_vpc.swarm_vpc.id
+  vpc_uuid  = data.digitalocean_vpc.default.id
   region    = var.region
   size      = var.size
   image     = var.image
   ssh_keys  = [data.digitalocean_ssh_key.default.id]
 
+  depends_on = [digitalocean_droplet.swarm_manager]  # 👈 fuerza el orden
   user_data = templatefile("${path.module}/install_docker.sh.tmpl", {
     manager_ip = digitalocean_droplet.swarm_manager.ipv4_address
     is_manager = false
+    internal_privkey = tls_private_key.swarm_internal.private_key_pem
+    internal_pubkey = ""
   })
 }
 
