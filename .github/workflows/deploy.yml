@@ -9,6 +9,7 @@ on:
 jobs:
   terraform:
     name: Terraform Apply
+    if:  false
     runs-on: ubuntu-latest
     env:
       DIGITALOCEAN_TOKEN: ${{ secrets.DIGITALOCEAN_TOKEN }}
@@ -36,11 +37,9 @@ jobs:
         id: get_ip
         run: echo "manager_ip=$(terraform -chdir=terraform output -raw manager_public_ip)" >> $GITHUB_OUTPUT
 
-
   docker:
     name: Build and Push Docker Images
     runs-on: ubuntu-latest
-    needs: terraform
     defaults:
       run:
         working-directory: infra
@@ -143,7 +142,7 @@ jobs:
   swarm:
     name: Update Docker Swarm Services
     runs-on: ubuntu-latest
-    needs: [terraform, docker]
+    needs: docker
     steps:
       - name: Checkout repo
         uses: actions/checkout@v3
