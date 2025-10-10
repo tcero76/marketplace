@@ -10,7 +10,7 @@ terraform {
 # -----------------------------
 # 1️⃣  Crear VPC privada
 # -----------------------------
-resource "digitalocean_vpc" "swarm_vpc" {
+data "digitalocean_vpc" "swarm_vpc" {
   name   = "swarm-vpc"
   region = var.region
   ip_range = "10.50.0.0/16"
