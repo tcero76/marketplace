@@ -10,7 +10,7 @@ export POSTGRES_HOST=db
 CDC_PASSWORD=${POSTGRES_CDC_PASSWORD}1
 
 
-.PHONY: sendmsg queue up kill down watch build exec migra scrap delay clean recomender ps
+.PHONY: sendmsg queue up kill down watch build exec migra scrap delay clean recomender ps buildAll
 
 watch:
 	@watch docker ps -a
@@ -40,9 +40,6 @@ brokerMigra:
 
 kill:
 	@docker rm -f $(filter-out $@,$(MAKECMDGOALS))
-
-build:
-	@docker compose --env-file ${ENVIRONMENTS} build $(filter-out $@,$(MAKECMDGOALS)) --no-cache
 
 exec:
 	@docker exec -it $(filter-out $@,$(MAKECMDGOALS)) /bin/bash
@@ -77,3 +74,9 @@ sendmsg:
   		exchange=$(RABBITMQ_USER_DB_UPDATER_EXCHANGE) \
 		routing_key=$(RABBITMQ_USER_DB_UPDATER_QUEUE) \
 		payload='$(msgCreateUser)'
+
+build:
+	@docker compose --env-file ${ENVIRONMENTS} build $(filter-out $@,$(MAKECMDGOALS)) --no-cache
+
+buildAll:
+	@docker compose --env-file ${ENVIRONMENTS} build --no-cache
