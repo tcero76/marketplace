@@ -7,11 +7,24 @@ systemctl enable docker
 systemctl start docker
 
 %{ if is_manager }
+echo "${internal_pubkey}" >> /root/.ssh/authorized_keys
 docker swarm init --advertise-addr $(hostname -I | awk '{print $1}')
 docker network create --driver overlay --attachable app_overlay
 docker swarm join-token -q worker > /root/worker_token.txt
 %{ else }
-sleep 20
+mkdir -p /root/.ssh
+chmod 700 /root/.ssh
+echo "${internal_privkey}" > /root/.ssh/id_rsa
+chmod 600 /root/.ssh/id_rsa
+ssh-keyscan -H ${manager_ip} >> /root/.ssh/known_hosts
+# Esperar hasta que el token esté disponible en el manager
+for i in {1..30}; do
+  if ssh -o StrictHostKeyChecking=no root@${manager_ip} "[ -f /root/worker_token.txt ]"; then
+    break
+  fi
+  echo "Esperando que el token esté disponible en el manager..."
+  sleep 5
+done
 token=$(ssh -o StrictHostKeyChecking=no root@${manager_ip} "cat /root/worker_token.txt")
 docker swarm join --token $token ${manager_ip}:2377
 %{ endif }
