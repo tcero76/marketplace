@@ -29,7 +29,8 @@ jobs:
       - name: Terraform Apply
         run: terraform -chdir=terraform apply -auto-approve
         env:
-          GOOGLE_CREDENTIALS: ${{ secrets.GCP_CREDENTIALS }}
+          DO_SPACES_KEY: ${{ secrets.DO_SPACES_KEY }}
+          DO_SPACES_SECRET: ${{ secrets.DO_SPACES_SECRET }}
 
       - name: Get Swarm Manager IP
         id: get_ip
