@@ -24,3 +24,4 @@ scrap-service/arsmate_cookies.json
 beat/celerybeat-schedule
 **/.terraform/**
 **/terraform.tfstate**
+terraform/.terraform.lock.hcl
