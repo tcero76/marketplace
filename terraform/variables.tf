@@ -14,3 +14,9 @@ variable "image" {
 variable "size" {
   default = "s-1vcpu-1gb"
 }
+
+variable "worker_count" {
+  description = "Número de nodos worker en el clúster Docker Swarm"
+  type        = number
+  default     = 2
+}
