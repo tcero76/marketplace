@@ -160,9 +160,9 @@ jobs:
       - name: Copy docker-compose.yml to manager
         run: |
           scp -o StrictHostKeyChecking=no infra/docker-compose.final.yml \
-            user@${{ needs.terraform.outputs.manager_ip }}:/home/user/docker-compose.yml
+            user@${{ secrets.MANAGER_IP }}:/home/user/docker-compose.yml
 
       - name: Deploy stack on Swarm manager
         run: |
-          ssh -o StrictHostKeyChecking=no user@${{ needs.terraform.outputs.manager_ip }} \
+          ssh -o StrictHostKeyChecking=no user@${{ secrets.MANAGER_IP }} \
             "docker stack deploy -c /home/user/docker-compose.yml mystack --with-registry-auth"
