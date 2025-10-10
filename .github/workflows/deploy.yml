@@ -143,6 +143,75 @@ jobs:
     name: Update Docker Swarm Services
     runs-on: ubuntu-latest
     needs: docker
+    env:
+      # prod, dev, test
+      PROFILE: ${{ secrets.PROFILE }}
+      # Application
+      PORT_EXTERNAL: ${{ secrets.PORT_EXTERNAL }} 
+      HOST_EXTERNAL: ${{ secrets.HOST_EXTERNAL }} 
+      HOST_URL: ${{ secrets.HOST_URL }} 
+      HOST_WS: ${{ secrets.HOST_WS }} 
+      NETWORK_APPLICATION: ${{ secrets.NETWORK_APPLICATION }} 
+      TAG: ${{ secrets.TAG }} 
+      DIGITALOCEAN_TOKEN: ${{ secrets.DIGITALOCEAN_TOKEN }} 
+      COMPOSE_PROFILES: ${{ secrets.COMPOSE_PROFILES }} 
+      COMPOSE_FILE: ${{ secrets.COMPOSE_FILE }} 
+      PROGRAMID: ${{ secrets.PROGRAMID }} 
+      TOTAL_POSTS: ${{ secrets.TOTAL_POSTS }} 
+      CRON_HOUR: ${{ secrets.CRON_HOUR }} 
+      CRON_MINUTE: ${{ secrets.CRON_MINUTE }} 
+      USERNAME_INSTA: ${{ secrets.USERNAME_INSTA }} 
+      PASSWORD_INSTA: ${{ secrets.PASSWORD_INSTA }} 
+      #OAuth versions
+      POSTGRES_VERSION: ${{ secrets.POSTGRES_VERSION }} 
+      HYDRA_VERSION: ${{ secrets.HYDRA_VERSION }} 
+      OATHKEEPER_VERSION: ${{ secrets.OATHKEEPER_VERSION }} 
+      NODE_VERSION: ${{ secrets.NODE_VERSION }} 
+      RABBITMQ_VERSION: ${{ secrets.RABBITMQ_VERSION }} 
+      MEDIAMTX_VERSION: ${{ secrets.MEDIAMTX_VERSION }} 
+      REDIS_VERSION: ${{ secrets.REDIS_VERSION }} 
+      ELASTICSEARCH_VERSION: ${{ secrets.ELASTICSEARCH_VERSION }} 
+      KIBANA_VERSION: ${{ secrets.KIBANA_VERSION }} 
+      LOGSTASH_VERSION: ${{ secrets.LOGSTASH_VERSION }} 
+      CLICKHOUSE_VERSION: ${{ secrets.CLICKHOUSE_VERSION }}
+      #OAuth broker
+      BROKER: ${{ secrets.BROKER }} 
+      #OAuth queueu
+      RECOMENDER_QUEUE: ${{ secrets.RECOMENDER_QUEUE }} 
+      SCRAPY_QUEUE: ${{ secrets.SCRAPY_QUEUE }} 
+      RABBITMQ_QUEUE: ${{ secrets.RABBITMQ_QUEUE }} 
+      RABBITMQ_CHAT_CACHE_UPDATER_QUEUE: ${{ secrets.RABBITMQ_CHAT_CACHE_UPDATER_QUEUE }} 
+      RABBITMQ_CHAT_DB_UPDATER_QUEUE: ${{ secrets.RABBITMQ_CHAT_DB_UPDATER_QUEUE }} 
+      RABBITMQ_USER_DB_UPDATER_QUEUE: ${{ secrets.RABBITMQ_USER_DB_UPDATER_QUEUE }} 
+      RABBITMQ_USER_DB_UPDATER_EXCHANGE: ${{ secrets.RABBITMQ_USER_DB_UPDATER_EXCHANGE }} 
+      #OAuth redis
+      REDIS_HOST: ${{ secrets.REDIS_HOST }} 
+      #OAuth clickhouse
+      CLICKHOUSE_USER: ${{ secrets.CLICKHOUSE_USER }} 
+      CLICKHOUSE_PASSWORD: ${{ secrets.CLICKHOUSE_PASSWORD }} 
+      CLICKHOUSE_VOLUME: ${{ secrets.CLICKHOUSE_VOLUME }} 
+      #OAuth postgres
+      POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }} 
+      POSTGRES_USER: ${{ secrets.POSTGRES_USER }} 
+      POSTGRES_DB: ${{ secrets.POSTGRES_DB }} 
+      POSTGRES_PORT: ${{ secrets.POSTGRES_PORT }} 
+      POSTGRES_HOST: ${{ secrets.POSTGRES_HOST }} 
+      POSTGRES_VOLUME: ${{ secrets.POSTGRES_VOLUME }} 
+      #OAuth google
+      GOOGLE_OAUTH2_CLIENT_ID: ${{ secrets.GOOGLE_OAUTH2_CLIENT_ID }} 
+      GOOGLE_OAUTH2_CLIENT_SECRET: ${{ secrets.GOOGLE_OAUTH2_CLIENT_SECRET }} 
+      GOOGLE_OAUTH2_REDIRECT_URI: ${{ secrets.GOOGLE_OAUTH2_REDIRECT_URI }} 
+      #OAuth Hydra
+      CLIENT_ID: ${{ secrets.CLIENT_ID }} 
+      CLIENT_SECRET: ${{ secrets.CLIENT_SECRET }} 
+      # email
+      SMTP_HOST: ${{ secrets.SMTP_HOST }} 
+      SMTP_PORT: ${{ secrets.SMTP_PORT }} 
+      SMTP_USER: ${{ secrets.SMTP_USER }} 
+      SMTP_PASS: ${{ secrets.SMTP_PASS }} 
+      # docker
+      DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }} 
+      DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }} 
     steps:
       - name: Checkout repo
         uses: actions/checkout@v3
