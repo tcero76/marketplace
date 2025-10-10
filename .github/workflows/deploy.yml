@@ -141,7 +141,6 @@ jobs:
   swarm:
     name: Update Docker Swarm Services
     runs-on: ubuntu-latest
-    needs: docker
     steps:
       - name: Checkout repo
         uses: actions/checkout@v3
