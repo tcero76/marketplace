@@ -141,7 +141,6 @@ jobs:
 
   swarm:
     name: Update Docker Swarm Services
-    if: false
     runs-on: ubuntu-latest
     needs: [terraform, docker]
     steps:
@@ -153,7 +152,17 @@ jobs:
         with:
           ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
-      - name: Update services on Swarm
+      - name: Generate final docker-compose.yml
+        working-directory: infra
+        run: |
+          docker compose --profile ${{ secrets.COMPOSE_PROFILES }} config > docker-compose.final.yml
+
+      - name: Copy docker-compose.yml to manager
+        run: |
+          scp -o StrictHostKeyChecking=no infra/docker-compose.final.yml \
+            user@${{ needs.terraform.outputs.manager_ip }}:/home/user/docker-compose.yml
+
+      - name: Deploy stack on Swarm manager
         run: |
           ssh -o StrictHostKeyChecking=no user@${{ needs.terraform.outputs.manager_ip }} \
             "docker stack deploy -c /home/user/docker-compose.yml mystack --with-registry-auth"
