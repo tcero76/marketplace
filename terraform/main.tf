@@ -25,7 +25,7 @@ data "digitalocean_ssh_key" "default" {
 # Manager
 resource "digitalocean_droplet" "swarm_manager" {
   name      = "swarm-manager"
-  vpc_uuid  = digitalocean_vpc.swarm_vpc.id
+  vpc_uuid  = data.digitalocean_vpc.swarm_vpc.id
   region    = var.region
   size      = var.size
   image     = var.image
@@ -40,7 +40,7 @@ resource "digitalocean_droplet" "swarm_manager" {
 resource "digitalocean_droplet" "swarm_worker" {
   count     = var.worker_count
   name      = "swarm-worker-${count.index}"
-  vpc_uuid  = digitalocean_vpc.swarm_vpc.id
+  vpc_uuid  = data.digitalocean_vpc.swarm_vpc.id
   region    = var.region
   size      = var.size
   image     = var.image
