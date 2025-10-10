@@ -12,7 +12,6 @@ terraform {
 # -----------------------------
 data "digitalocean_vpc" "swarm_vpc" {
   name   = "swarm-vpc"
-  region = var.region
 }
 
 # -----------------------------
