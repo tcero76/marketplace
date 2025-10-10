@@ -5,6 +5,17 @@ terraform {
       version = "~> 2.0"
     }
   }
+  
+  backend "s3" {
+    endpoint                    = "nyc3.digitaloceanspaces.com"
+    bucket                      = "mi-terraform-state"
+    key                         = "project/terraform.tfstate"
+    region                      = var.region
+    access_key                  = var.DO_SPACES_KEY
+    secret_key                  = var.DO_SPACES_SECRET
+    skip_region_validation      = true
+    skip_credentials_validation = true
+  }
 }
 
 # -----------------------------
