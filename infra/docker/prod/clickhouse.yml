@@ -1,0 +1,17 @@
+services:
+  clickhouse:
+    image: bitnamilegacy/clickhouse:${CLICKHOUSE_VERSION}
+    container_name: clickhouse
+    profiles: ["clickhouse"]
+    volumes:
+      - ${CLICKHOUSE_VOLUME}/data:/bitnami/clickhouse/data
+      - ${CLICKHOUSE_VOLUME}/migrations:/docker-entrypoint-initdb.d
+    ports:
+      - 8123:8123
+      - 9000:9000
+    environment:
+      - CLICKHOUSE_ADMIN_USER=${CLICKHOUSE_USER}
+      - CLICKHOUSE_ADMIN_PASSWORD=${CLICKHOUSE_PASSWORD}
+      - CLICKHOUSE_INITSCRIPTS_DIR=/docker-entrypoint-initdb.d
+    networks:
+      - ${NETWORK_APPLICATION}

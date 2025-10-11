@@ -1,0 +1,36 @@
+services:  
+  broker:
+    image: rabbitmq:${RABBITMQ_VERSION}
+    container_name: broker
+    profiles:
+      - broker
+    tty: true
+    stdin_open: true
+    ports:
+      - 5672:5672
+      - 15672:15672
+    networks:
+      - ${NETWORK_APPLICATION}
+    healthcheck:
+      test: ["CMD", "rabbitmqctl", "status"]
+      interval: 5s
+      retries: 5
+      timeout: 2s
+  broker-job:
+    image: rabbitmq:${RABBITMQ_VERSION}
+    restart: "no"
+    container_name: brokerJob
+    entrypoint: [ "sh", "/app/init_rabbitmq.sh" ]
+    environment:
+      HOST: broker
+      PORT: 15672
+      USERNAME: guest
+      PASSWORD: guest
+    volumes:
+      - ./rabbitmq/init_rabbitmq.sh:/app/init_rabbitmq.sh:ro
+    profiles:
+      - job
+    networks:
+      - ${NETWORK_APPLICATION}
+    depends_on:
+      - broker

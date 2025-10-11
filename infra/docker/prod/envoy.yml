@@ -1,0 +1,19 @@
+services:
+  envoy:
+    build:
+      dockerfile: Dockerfile
+      context: ../../envoy
+    container_name: envoy
+    profiles:
+      - front
+    tty: true
+    stdin_open: true
+    environment:
+     - ENVOY_HOST=0.0.0.0
+     - ENVOY_PORT=$PORT_EXTERNAL
+    ports:
+      - $PORT_EXTERNAL:$PORT_EXTERNAL
+    volumes:
+      - ../../envoy/envoy.yaml:/tmpl/envoy.yaml
+    networks:
+      - ${NETWORK_APPLICATION}
