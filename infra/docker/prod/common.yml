@@ -3,3 +3,4 @@ networks:
     name: ${TF_VAR_overlay_network:-application}
     driver: overlay
     attachable: true
+    external: true
