@@ -1,0 +1,43 @@
+services:
+  logstash:
+    image: bitnami/logstash:${LOGSTASH_VERSION}
+    container_name: logstash
+    profiles:
+      - elastic
+    ports:
+      - "5044:5044"
+    volumes:
+      - ./logstash:/bitnami/logstash/pipeline
+    networks:
+      - ${NETWORK_APPLICATION}
+    depends_on:
+      - elasticsearch
+
+  elasticsearch:
+    image: bitnami/elasticsearch:${ELASTICSEARCH_VERSION}
+    container_name: elasticsearch
+    profiles:
+      - elastic
+    environment:
+      - discovery.type=single-node
+      - ELASTICSEARCH_USERNAME=elastic
+      - ELASTICSEARCH_PASSWORD=changeme
+      - xpack.security.enabled=false
+    ports:
+      - "9200:9200"
+    networks:
+      - ${NETWORK_APPLICATION}
+
+  kibana:
+    image: docker.elastic.co/kibana/kibana:${KIBANA_VERSION}
+    container_name: kibana
+    profiles:
+      - elastic
+    ports:
+      - "5601:5601"
+    environment:
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+    networks:
+      - ${NETWORK_APPLICATION}
+    depends_on:
+      - elasticsearch

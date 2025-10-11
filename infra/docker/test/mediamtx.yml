@@ -1,0 +1,17 @@
+services:
+  mediamtx:
+    image: bluenviron/mediamtx:${MEDIAMTX_VERSION}
+    container_name: mediamtx
+    entrypoint: /mediamtx /etc/mediamtx/mediamtx.yml
+    profiles:
+      - media
+    ports:
+      - "1935:1935"
+    volumes:
+      - ../mediamtx/config/mediamtx.yml:/etc/mediamtx/mediamtx.yml
+      - ../mediamtx/data:/data
+    environment:
+      - MEDIAMTX_CONFIG_PATH=/etc/mediamtx/mediamtx.yml
+    restart: unless-stopped
+    networks:
+      - ${NETWORK_APPLICATION}

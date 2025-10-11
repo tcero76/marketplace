@@ -1,0 +1,80 @@
+version: '3.8'
+services:
+  flyway:
+    image: flyway/flyway
+    container_name: flyway
+    profiles:
+      - migrate
+    command: -url=jdbc:postgresql://${POSTGRES_HOST}:5432/${POSTGRES_DB} -user=${POSTGRES_USER} -password=${POSTGRES_PASSWORD} -schemas=marketplace,scrap -locations=filesystem:/flyway/sql migrate
+    volumes:
+      - ./database/migrations:/flyway/sql
+    networks:
+      - ${NETWORK_APPLICATION}
+    depends_on:
+      - pg-0
+  pg-0:
+    image: bitnami/postgresql-repmgr:14
+    container_name: pg-0
+    profiles:
+      - base
+    ports:
+      - 5432
+    volumes:
+      - ./database/pg_0_data:/bitnami/postgresql
+    environment:
+      - POSTGRESQL_POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRESQL_USERNAME=${POSTGRES_USER}
+      - POSTGRESQL_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRESQL_DATABASE=${POSTGRES_DB}
+      - REPMGR_PASSWORD=repmgrpassword
+      - REPMGR_PRIMARY_HOST=pg-0
+      - REPMGR_PARTNER_NODES=pg-0,pg-1
+      - REPMGR_NODE_NAME=pg-0
+      - REPMGR_NODE_NETWORK_NAME=pg-0
+    networks:
+      - ${NETWORK_APPLICATION}
+  pg-1:
+    image: bitnami/postgresql-repmgr:14
+    container_name: pg-1
+    profiles:
+      - base
+    ports:
+      - 5432
+    volumes:
+      - ./database/pg_1_data:/bitnami/postgresql
+    environment:
+      - POSTGRESQL_POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRESQL_USERNAME=${POSTGRES_USER}
+      - POSTGRESQL_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRESQL_DATABASE=${POSTGRES_DB}
+      - REPMGR_PASSWORD=repmgrpassword
+      - REPMGR_PRIMARY_HOST=pg-0
+      - REPMGR_PARTNER_NODES=pg-0,pg-1
+      - REPMGR_NODE_NAME=pg-1
+      - REPMGR_NODE_NETWORK_NAME=pg-1
+    networks:
+      - ${NETWORK_APPLICATION}
+  pgpool:
+    image: bitnami/pgpool:4
+    container_name: pgpool
+    hostname: db
+    profiles:
+      - base
+    ports:
+      - 5432:5432
+    environment:
+      - PGPOOL_BACKEND_NODES=0:pg-0:5432,1:pg-1:5432
+      - PGPOOL_SR_CHECK_USER=${POSTGRES_USER}
+      - PGPOOL_SR_CHECK_PASSWORD=${POSTGRES_PASSWORD}
+      - PGPOOL_ENABLE_LDAP=no
+      - PGPOOL_POSTGRES_USERNAME=postgres
+      - PGPOOL_POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - PGPOOL_ADMIN_USERNAME=admin
+      - PGPOOL_ADMIN_PASSWORD=adminpassword
+    healthcheck:
+      test: ["CMD", "/opt/bitnami/scripts/pgpool/healthcheck.sh"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - ${NETWORK_APPLICATION}
