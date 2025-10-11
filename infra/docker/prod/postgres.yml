@@ -1,8 +1,6 @@
 services:
   db:
     image: timescale/timescaledb:${TIMESCALEDB_VERSION}
-    container_name: db
-    profiles: ["postgres"]
     # command: >
     #   postgres -c wal_level=logical
     #            -c max_wal_senders=10
