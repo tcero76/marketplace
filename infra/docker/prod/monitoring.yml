@@ -10,7 +10,7 @@ services:
     ports:
       - 3030:3000
     volumes:
-      - ./monitoring/grafana:/var/lib/grafana
+      - ../../volumes/grafana:/var/lib/grafana
     environment:
       - GF_SECURITY_ADMIN_USER=admin
       - GF_SECURITY_ADMIN_PASSWORD=admin
@@ -27,8 +27,8 @@ services:
     ports:
       - 9090:9090
     volumes:
-      - ./monitoring/config/prometheus.yml:/etc/prometheus/prometheus.yml
-      - ./monitoring/prometheus:/prometheus
+      - ./config/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      - ../../volumes/prometheus:/prometheus
     networks:
       - ${NETWORK_APPLICATION}
   node_exporter:

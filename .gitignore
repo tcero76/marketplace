@@ -7,13 +7,11 @@
 **/tmp/**
 __pycache__/
 
-infra/database/data/                                                                                                 
+
+infra/database/**
+infra/volumes/**                                                                      
 infra/monitoring/grafana/                                                                                            
 infra/monitoring/prometheus  
-infra/database/clickhouse/data/
-infra/database/data/
-infra/database/pg_0_data/
-infra/database/pg_1_data/
 infra/.env
 
 beat/celerybeat-schedule

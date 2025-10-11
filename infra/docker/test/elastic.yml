@@ -1,20 +1,20 @@
 services:
   logstash:
-    image: bitnami/logstash:${LOGSTASH_VERSION}
+    image: bitnamilegacy/logstash:${LOGSTASH_VERSION}
     container_name: logstash
     profiles:
       - elastic
     ports:
       - "5044:5044"
     volumes:
-      - ./logstash:/bitnami/logstash/pipeline
+      - ./config/logstash:/bitnami/logstash/pipeline
     networks:
       - ${NETWORK_APPLICATION}
     depends_on:
       - elasticsearch
 
   elasticsearch:
-    image: bitnami/elasticsearch:${ELASTICSEARCH_VERSION}
+    image: bitnamilegacy/elasticsearch:${ELASTICSEARCH_VERSION}
     container_name: elasticsearch
     profiles:
       - elastic

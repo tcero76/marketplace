@@ -1,5 +1,0 @@
-CREATE TABLE scrap.modelos_instagram (
-    id SERIAL PRIMARY KEY,
-    modelo VARCHAR(255) NOT NULL,
-    fecha_creacion TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
-);
