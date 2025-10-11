@@ -8,8 +8,8 @@ services:
     ports:
       - "1935:1935"
     volumes:
-      - ../mediamtx/config/mediamtx.yml:/etc/mediamtx/mediamtx.yml
-      - ../mediamtx/data:/data
+      - ./config/mediamtx/mediamtx.yml:/etc/mediamtx/mediamtx.yml
+      - ../../volumes/mediamtx/data:/data
     environment:
       - MEDIAMTX_CONFIG_PATH=/etc/mediamtx/mediamtx.yml
     restart: unless-stopped
