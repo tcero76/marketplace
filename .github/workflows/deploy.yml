@@ -36,6 +36,7 @@ env:
   KIBANA_VERSION: ${{ secrets.KIBANA_VERSION }} 
   LOGSTASH_VERSION: ${{ secrets.LOGSTASH_VERSION }} 
   CLICKHOUSE_VERSION: ${{ secrets.CLICKHOUSE_VERSION }}
+  TIMESCALEDB_VERSION: ${{ secrets.TIMESCALEDB_VERSION }}
   #OAuth broker
   BROKER: ${{ secrets.BROKER }} 
   #OAuth queueu
