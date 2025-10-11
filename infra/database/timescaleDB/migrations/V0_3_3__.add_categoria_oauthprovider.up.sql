@@ -1,1 +1,0 @@
-ALTER TYPE marketplace.oauthprovider ADD VALUE 'internal';

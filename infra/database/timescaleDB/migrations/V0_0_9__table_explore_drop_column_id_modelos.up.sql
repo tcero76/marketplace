@@ -1,1 +1,0 @@
-alter table scrap.explore drop column id_modelos;

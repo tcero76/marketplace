@@ -5,9 +5,7 @@ include ${ENVIRONMENTS}
 msgCreateUser={"to": "arodnazs@gmail.com","subject": "test","body": "Hola mundo!"}
 
 export TOTAL_POSTS=5
-export VOLUME_DATABASE=./database2/data
-export POSTGRES_HOST=db
-CDC_PASSWORD=${POSTGRES_CDC_PASSWORD}1
+CDC_PASSWORD=${POSTGRES_CDC_PASSWORD}
 
 
 .PHONY: sendmsg queue up kill down watch build exec migra scrap delay clean recomender ps buildAll
@@ -46,10 +44,6 @@ exec:
 
 queue:
 	@docker exec broker-job rabbitmqadmin declare queue name=$(QUEUE_NAME) durable=true
-
-mitgrate:
-	@docker run -v $PWD/database/migrations:/migrations --network host migrate/migrate
-    -path=/migrations/ -database postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}?sslmode=disable&options=-c%20search_path%3Dhydra up 2
 
 psql:
 	@psql -h localhost -U ${POSTGRES_USER} -d ${POSTGRES_DB} -p 5432
