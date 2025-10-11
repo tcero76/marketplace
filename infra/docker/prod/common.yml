@@ -1,0 +1,5 @@
+networks:
+  application:
+    name: ${TF_VAR_overlay_network:-application}
+    driver: overlay
+    attachable: true

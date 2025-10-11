@@ -299,6 +299,3 @@ services:
       - PORT=3001
     networks:
       - ${NETWORK_APPLICATION}
-networks:
-  application:
-    driver: bridge
