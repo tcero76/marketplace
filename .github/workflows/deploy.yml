@@ -153,7 +153,12 @@ jobs:
 
       - name: Generate final docker-compose.yml
         run: |
-          docker compose config > docker-compose.final.yml
+          docker compose config \
+          | sed '1d' \
+          | sed -E '
+            s/^([[:space:]]*cpus:[[:space:]]*)([0-9]+)$/\1"\2"/;
+            s/^([[:space:]]*published:[[:space:]]*)"([0-9]+)"/\1\2/
+          ' >> docker-compose.final.yml
 
       - name: Copy docker-compose.yml to manager
         run: |
