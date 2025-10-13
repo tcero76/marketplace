@@ -5,14 +5,14 @@ import { Provider } from 'react-redux';
 import { store } from './store/store.tsx'
 import './assets/_variables.scss'
 import router from './router/Router.tsx';
-import { ToastProvider } from './context/UIContext.tsx';
+import { UIProvider } from './context/UIContext.tsx';
 
 createRoot(document.getElementById('root')!).render(
     <StrictMode>
         <Provider store={store}>
-          <ToastProvider>
+          <UIProvider>
             <RouterProvider router={router}/>
-          </ToastProvider>
+          </UIProvider>
         </Provider>
     </StrictMode>
 )

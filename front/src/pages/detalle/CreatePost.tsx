@@ -6,11 +6,11 @@ import { AxiosResponse } from 'axios';
 import { useParams } from 'react-router';
 import Button from '../../components/buttons/Button';
 import ModalHtml, { ModalHtmlHandle } from '../../components/modal/ModalHtml';
-import { useToast } from '../../context/UIContext';
+import { useUIContext } from '../../context/UIContext';
 
 const CreatePost = () => {
     const { modelo } = useParams(); 
-    const toast = useToast();
+    const uiContext = useUIContext();
     const refPosteo = useRef<Posteo>({menciones:[], texto:''});
     const refModal = useRef<ModalHtmlHandle>(null);
     const [ posteos, setPosteos ] = useState<Posteo[]>([]);
@@ -20,11 +20,15 @@ const CreatePost = () => {
             setPosteos(res.data)
         })
     },[])
-    const onClickPosteo = () => () => {
+    const onClickPosteo = () => {
+        uiContext.showSpinner()
         getUserApi().sendPost(refPosteo.current)
         .then(() => {
-            toast.showToast({msg:"Enviado", type:TOAST_TYPES.SUCCESS})
+            uiContext.showToast({msg:"Enviado", type:TOAST_TYPES.SUCCESS})
             refModal.current?.close()
+        })
+        .finally(() => {
+            uiContext.hideSpinner()
         })
     }
     const onClickAbrirPost = () => {
@@ -32,7 +36,7 @@ const CreatePost = () => {
     }
     return (
         <>
-            <ModalHtml onClickModal={onClickPosteo()} ref={refModal}>
+            <ModalHtml onClickModal={onClickPosteo} ref={refModal}>
                 <TextEditor onChangePosteo={(p) => refPosteo.current = p}/>
             </ModalHtml>
             <div>

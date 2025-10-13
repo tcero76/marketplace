@@ -6,12 +6,14 @@ import { useAuthSelector } from '../../store/hooks';
 import Item from './Item';
 import { Virtuoso } from 'react-virtuoso';
 import { useLocation } from 'react-router';
+import { useUIContext } from '../../context/UIContext';
 
 export default function App() {
   const location = useLocation();
   const search = location.state as { mention: string; text: string } | null;
   const state = useAuthSelector((state) => state.auth);
   const [recomendations, setRecomendations] = useState<Recomendations[][]>([]);
+  const uiContext = useUIContext()
   useEffect(() => {
     if(state.isAuthenticated) {
       getUserApi().getRecomendations(state.userId)
@@ -28,7 +30,7 @@ export default function App() {
     }
   }, [state.isAuthenticated])
   useEffect(() => {
-    console.log("🚀 ~ App ~ search:", search)
+    uiContext.showSpinner()
     getUserApi().searchPosts(search)
     .then((res) => {
       const recomendationsSearch = res.data.map(s => ({
@@ -42,9 +44,11 @@ export default function App() {
         result.push(recomendationsSearch.slice(i, i + chunk));
       }
       setRecomendations(result)
+      uiContext.hideSpinner()
     }
     ).catch((error) => {
         console.error("Error searching posts:", error);
+        uiContext.hideSpinner()
       }
     );
   },[search])
