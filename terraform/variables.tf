@@ -20,3 +20,9 @@ variable "worker_count" {
   type        = number
   default     = 2
 }
+
+variable "overlay_network" {
+  description = "Nombre de la red Overlay"
+  type = string
+  default = "application"
+}

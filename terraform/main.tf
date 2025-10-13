@@ -28,6 +28,12 @@ resource "tls_private_key" "swarm_internal" {
   rsa_bits  = 4096
 }
 
+resource "digitalocean_volume" "postgres_data" {
+  name   = "swarm-postgres-data"
+  region = var.region
+  size   = 10
+}
+
 # Manager
 resource "digitalocean_droplet" "swarm_manager" {
   name      = "swarm-manager"
@@ -41,27 +47,34 @@ resource "digitalocean_droplet" "swarm_manager" {
     is_manager = true
     internal_pubkey = tls_private_key.swarm_internal.public_key_openssh
     internal_privkey = ""
+    network = var.overlay_network
   })
 }
 
-# Workers
-resource "digitalocean_droplet" "swarm_worker" {
-  count     = var.worker_count
-  name      = "swarm-worker-${count.index}"
-  vpc_uuid  = data.digitalocean_vpc.default.id
-  region    = var.region
-  size      = var.size
-  image     = var.image
-  ssh_keys  = [data.digitalocean_ssh_key.default.id]
-
-  depends_on = [digitalocean_droplet.swarm_manager]  # 👈 fuerza el orden
-  user_data = templatefile("${path.module}/install_docker.sh.tmpl", {
-    manager_ip = digitalocean_droplet.swarm_manager.ipv4_address
-    is_manager = false
-    internal_privkey = tls_private_key.swarm_internal.private_key_pem
-    internal_pubkey = ""
-  })
+resource "digitalocean_volume_attachment" "postgres_data_attachment" {
+  droplet_id = digitalocean_droplet.swarm_manager.id
+  volume_id  = digitalocean_volume.postgres_data.id
 }
+
+# # Workers
+# resource "digitalocean_droplet" "swarm_worker" {
+#   count     = var.worker_count
+#   name      = "swarm-worker-${count.index}"
+#   vpc_uuid  = data.digitalocean_vpc.default.id
+#   region    = var.region
+#   size      = var.size
+#   image     = var.image
+#   ssh_keys  = [data.digitalocean_ssh_key.default.id]
+
+#   depends_on = [digitalocean_droplet.swarm_manager]  # 👈 fuerza el orden
+#   user_data = templatefile("${path.module}/install_docker.sh.tmpl", {
+#     manager_ip = digitalocean_droplet.swarm_manager.ipv4_address
+#     is_manager = false
+#     internal_privkey = tls_private_key.swarm_internal.private_key_pem
+#     internal_pubkey = ""
+#     network = ""
+#   })
+# }
 
 # # -----------------------------
 # # 3️⃣  Crear Cloud Firewall
