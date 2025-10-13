@@ -8,7 +8,7 @@ export TOTAL_POSTS=5
 CDC_PASSWORD=${POSTGRES_CDC_PASSWORD}
 
 
-.PHONY: sendmsg queue up kill down watch build exec migra scrap delay clean recomender ps buildAll
+.PHONY: sendmsg queue up kill down watch build exec migra scrap delay clean recomender ps buildAll tfapply tfdestroy tfssh
 
 watch:
 	@watch docker ps -a
@@ -74,3 +74,12 @@ build:
 
 buildAll:
 	@docker compose --env-file ${ENVIRONMENTS} build --no-cache
+
+tfapply:
+	terraform -chdir=./terraform/ apply -auto-approve
+
+tfdestroy:
+	terraform -chdir=./terraform/ destroy -auto-approve
+
+tfssh:
+	ssh root@$(terraform -chdir=./terraform/ output -raw manager_public_ip) 
