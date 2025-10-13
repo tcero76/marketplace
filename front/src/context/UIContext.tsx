@@ -1,27 +1,39 @@
 import { createContext, useContext, useRef } from "react";
 import ToastHtml from "../components/toast/ToastHtml";
-import { ToastContextType, ToastHtmlRef, type ToastState } from "../types";
+import {
+  SpinnerRef,
+  type UIContextType,
+  type ToastHtmlRef,
+  type ToastState } from "../types";
+import Spinner from "../components/spinner/Spinner";
 
-const ToastContext = createContext<ToastContextType | null>(null);
+const UIContext = createContext<UIContextType | null>(null);
 
-export const useToast = () => {
-  const ctx = useContext(ToastContext);
+export const useUIContext = () => {
+  const ctx = useContext(UIContext);
   if (!ctx) {
-    throw new Error("useToast must be used within ToastProvider");
+    throw new Error("useUIContext must be used within ToastProvider");
   }
   return ctx;
 };
 
-export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+export const UIProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const toastRef = useRef<ToastHtmlRef>(null);
+  const spinnerRef = useRef<SpinnerRef>(null);
   const showToast = (toastState:ToastState) => {
     toastRef.current?.show(toastState);
   };
-
+  const showSpinner = () => {
+    spinnerRef.current?.show();
+  } 
+  const hideSpinner = () => {
+    spinnerRef.current?.hide();
+  } 
   return (
-    <ToastContext.Provider value={{ showToast }}>
+    <UIContext.Provider value={{ showToast, showSpinner, hideSpinner }}>
+      <Spinner ref={spinnerRef}/>
       {children}
         <ToastHtml ref={toastRef} />
-    </ToastContext.Provider>
+    </UIContext.Provider>
   );
 };

@@ -24,7 +24,13 @@ export type ToastHtmlRef = {
     show: (toastState:ToastState) => void
 }
 
+export type SpinnerRef = {
+  show: () => void;
+  hide: () => void;   
+} 
 
-export type ToastContextType = {
+export type UIContextType = {
   showToast: (toastState: ToastState) => void;
+  showSpinner: () => void;
+  hideSpinner: () => void;
 };
