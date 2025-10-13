@@ -31,7 +31,7 @@ func (h *AuthCacheService) StoreTokenInRedis(sessionID string, key string, value
 	}
 	err = h.Rdb.Expire(ctx,
 		"session:"+sessionID,
-		5*time.Minute).Err()
+		720*time.Hour).Err()
 	if err != nil {
 		return err
 	}
