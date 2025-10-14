@@ -156,9 +156,9 @@ export default class Http implements IHttpApi {
       );
     })
 
-  refresh = createAsyncThunk<AxiosResponse<any>, void>(
+  refresh = createAsyncThunk<AxiosResponse<AuthorizationType>, void>(
     '/refresh',
-    async ():Promise<AxiosResponse<any>> => {
+    async ():Promise<AxiosResponse<AuthorizationType>> => {
       return await axios.post(`${import.meta.env.VITE_HOST}/bff/refresh`, {});
   });
 
