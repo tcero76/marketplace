@@ -55,10 +55,5 @@ func (s *ModeloService) GetSearch(text []string) (*[]dto.Modelo, error) {
 func (s *ModeloService) GetModelos() []dto.Modelo {
 	var modelos []model.Modelo
 	s.DB.Select("modelo").Find(&modelos)
-	result := make([]dto.Modelo, 0, len(modelos))
-	for _, m := range modelos {
-		modeloDTO := dto.ToModeloDTO(&m)
-		result = append(result, *modeloDTO)
-	}
-	return result
+	return dto.ToModelosDTO(modelos)
 }

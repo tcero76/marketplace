@@ -19,3 +19,11 @@ func ToModeloDTO(modelo *model.Modelo) *Modelo {
 		Modelo:      modelo.Modelo,
 	}
 }
+
+func ToModelosDTO(modelos []model.Modelo) []Modelo {
+	modeloDTOs := make([]Modelo, len(modelos))
+	for i, modelo := range modelos {
+		modeloDTOs[i] = *ToModeloDTO(&modelo)
+	}
+	return modeloDTOs
+}
