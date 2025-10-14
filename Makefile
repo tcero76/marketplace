@@ -8,7 +8,7 @@ export TOTAL_POSTS=5
 CDC_PASSWORD=${POSTGRES_CDC_PASSWORD}
 
 
-.PHONY: sendmsg queue up kill down watch build exec migra scrap delay clean recomender ps buildAll tfapply tfdestroy tfssh
+.PHONY: sendmsg queue up kill down watch build exec migra scrap delay clean recomender ps buildAll tfapply tfdestroy tfssh redis
 
 watch:
 	@watch docker ps -a
@@ -48,9 +48,6 @@ queue:
 psql:
 	@psql -h localhost -U ${POSTGRES_USER} -d ${POSTGRES_DB} -p 5432
 
-redis:
-	@docker compose --env-file ${ENVIRONMENTS} exec -it cache redis-cli
-
 delay:
 	@docker compose --env-file ${ENVIRONMENTS} exec scrap-worker python -c "from main import run_modelo_spider; run_modelo_spider.delay()"
 
@@ -82,4 +79,7 @@ tfdestroy:
 	terraform -chdir=./terraform/ destroy -auto-approve
 
 tfssh:
-	ssh root@$(terraform -chdir=./terraform/ output -raw manager_public_ip) 
+	ssh root@$(terraform -chdir=./terraform/ output -raw manager_public_ip)
+
+redis:
+	@docker compose --env-file ${ENVIRONMENTS} exec -it cache redis-cli
