@@ -28,7 +28,7 @@ export const authSlice = createSlice({
         redirectLogin: () => {
             const loginChallenge = sessionStorage.getItem("login_challenge")
             const stateVerification = sessionStorage.getItem("state")
-            window.location.href = `http://localhost:8080/login?login_challenge=${loginChallenge}&state=${stateVerification}`
+            window.location.href = `${import.meta.env.VITE_HOST}/login?login_challenge=${loginChallenge}&state=${stateVerification}`
         }
     },
     extraReducers: (builder) => {
