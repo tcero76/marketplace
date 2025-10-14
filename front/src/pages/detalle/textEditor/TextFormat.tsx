@@ -1,5 +1,4 @@
 import { useRef, useState, useEffect, useImperativeHandle, ForwardedRef, forwardRef } from 'react'
-import * as bootstrap from 'bootstrap'
 import getUserApi from '../../../http/HttpFactory';
 import { AxiosResponse } from 'axios';
 import {
@@ -69,9 +68,6 @@ const TextFormat = forwardRef<TextFormatType,TextFormatProps>(({ highlight, ...p
     options.forEach((opt) => {
       const li = document.createElement("li");
       li.classList.add("list-group-item", "list-group-item-action");
-
-
-
       li.textContent = opt;
       li.addEventListener("click", () => {
         insertSuggestion(opt, range);
