@@ -1,11 +1,15 @@
 package dto
 
-import "github.com/tcero76/marketplace/postgres/model"
+import (
+	"github.com/google/uuid"
+	"github.com/tcero76/marketplace/postgres/model"
+)
 
 type Posteo struct {
-	ID        string   `json:"id"`
-	Texto     string   `json:"texto"`
-	Menciones []string `json:"menciones"`
+	ID        string    `json:"id"`
+	Texto     string    `json:"texto"`
+	Menciones []string  `json:"menciones"`
+	UserId    uuid.UUID `json:"userId"`
 }
 
 func ToPosteoDTO(posteo *model.Posteo) *Posteo {
@@ -16,6 +20,7 @@ func ToPosteoDTO(posteo *model.Posteo) *Posteo {
 		ID:        posteo.ID,
 		Texto:     posteo.Texto,
 		Menciones: posteo.Menciones,
+		UserId:    posteo.UserId,
 	}
 }
 func ToPosteosDTO(posteos []model.Posteo) []Posteo {
@@ -33,6 +38,7 @@ func ToPosteoModel(posteo *Posteo) *model.Posteo {
 		ID:        posteo.ID,
 		Texto:     posteo.Texto,
 		Menciones: posteo.Menciones,
+		UserId:    posteo.UserId,
 	}
 }
 func ToPosteosModel(posteos []Posteo) []model.Posteo {
