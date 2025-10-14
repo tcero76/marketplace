@@ -4,6 +4,8 @@ import (
 	"net/http"
 	"strconv"
 
+	"github.com/golang-jwt/jwt/v4"
+	"github.com/google/uuid"
 	"github.com/tcero76/marketplace/bff/dto"
 	"github.com/tcero76/marketplace/bff/payload"
 	"github.com/tcero76/marketplace/bff/services"
@@ -37,6 +39,14 @@ func CreatePosteo(postService services.IPostsService) echo.HandlerFunc {
 				"error": "no se pudo parsear el body",
 			})
 		}
+		claims := c.Get("user").(jwt.MapClaims)
+		sub := claims["sub"].(string)
+		log.Info("Usuario: ", sub)
+		userId, err := uuid.Parse(sub)
+		if err != nil {
+			log.Error("Error al parsear el userId: ", err)
+		}
+		posteo.UserId = userId
 		log.Info("Posteo recibido: ", posteo)
 		return postService.CreatePosteo(&posteo)
 	}
@@ -44,6 +54,7 @@ func CreatePosteo(postService services.IPostsService) echo.HandlerFunc {
 
 func GetPosteos(postService services.IPostsService) echo.HandlerFunc {
 	return func(c echo.Context) error {
+		log.Info("Obteniendo posteos")
 		modelo := c.QueryParams().Get("modelo")
 		log.Info("Modelo recibido: ", modelo)
 		modelos := postService.GetPosteos(modelo)

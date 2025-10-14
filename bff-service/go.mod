@@ -7,7 +7,6 @@ require (
 	github.com/bshuster-repo/logrus-logstash-hook v1.1.0
 	github.com/go-redis/redis/v8 v8.11.5
 	github.com/golang-jwt/jwt/v4 v4.5.2
-	github.com/golang-jwt/jwt/v5 v5.3.0
 	github.com/google/uuid v1.6.0
 	github.com/gorilla/securecookie v1.1.2
 	github.com/joho/godotenv v1.5.1

@@ -15,7 +15,7 @@ import (
 	"github.com/lestrrat-go/jwx/v2/jwk"
 	log "github.com/sirupsen/logrus"
 
-	"github.com/golang-jwt/jwt/v5"
+	"github.com/golang-jwt/jwt/v4"
 
 	"github.com/tcero76/marketplace/bff/dto"
 	"github.com/tcero76/marketplace/bff/oauth2/cor"

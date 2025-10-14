@@ -32,27 +32,7 @@ func JWTMiddleware() echo.MiddlewareFunc {
 				return echo.NewHTTPError(http.StatusUnauthorized, "Invalid token claims")
 			}
 			c.Set("user", claims)
-
 			return next(c)
-		}
-	}
-}
-
-func RequireScope(requiredScope string) echo.MiddlewareFunc {
-	return func(next echo.HandlerFunc) echo.HandlerFunc {
-		return func(c echo.Context) error {
-			claims, ok := c.Get("user").(jwt.MapClaims)
-			if !ok {
-				return echo.NewHTTPError(http.StatusForbidden, "Missing token claims")
-			}
-			if scopes, ok := claims["scope"].(string); ok {
-				for _, s := range strings.Split(scopes, " ") {
-					if s == requiredScope {
-						return next(c)
-					}
-				}
-			}
-			return echo.NewHTTPError(http.StatusForbidden, "Insufficient scope")
 		}
 	}
 }
