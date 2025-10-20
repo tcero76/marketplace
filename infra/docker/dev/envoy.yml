@@ -2,7 +2,7 @@ services:
   envoy:
     build:
       dockerfile: Dockerfile
-      context: envoy
+      context: ./config/envoy
     container_name: envoy
     profiles:
       - front
@@ -14,6 +14,6 @@ services:
     ports:
       - $PORT_EXTERNAL:$PORT_EXTERNAL
     volumes:
-      - ./envoy/envoy.yaml:/tmpl/envoy.yaml
+      - ./config/envoy/envoy.yaml:/tmpl/envoy.yaml
     networks:
       - ${NETWORK_APPLICATION}

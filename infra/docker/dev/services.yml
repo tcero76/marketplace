@@ -1,16 +1,16 @@
 services:
-  bff:
-    image: tcero76/bff:${TAG}
+  bff-service:
+    image: tcero76/bff-service:${TAG}
     build:
       dockerfile: Dockerfile
-      context: ../bff
-    working_dir: /bff
+      context: ../../../bff-service
+    working_dir: /bff-service
     volumes:
-      - ../bff:/bff
-      - ../postgres:/postgres
-      - ../clickhouse:/clickhouse
-      - ../rabbitmq:/rabbitmq
-      - ../redis:/redis
+      - ../../../bff-service:/bff-service
+      - ../../../postgres:/postgres
+      - ../../../clickhouse:/clickhouse
+      - ../../../rabbitmq:/rabbitmq
+      - ../../../redis:/redis
     profiles:
       - bff
     container_name: bff
@@ -47,7 +47,7 @@ services:
     image: tcero76/cache-updater-service:${TAG}
     build:
       dockerfile: Dockerfile
-      context: ../cache-updater
+      context: ../../../cache-updater
     working_dir: /app
     profiles:
       - back
@@ -61,16 +61,16 @@ services:
     networks:
       - ${NETWORK_APPLICATION}
     volumes:
-      - ../cache-updater:/app
+      - ../../../cache-updater:/app
     depends_on:
       - cache
       - broker
-  broker-email:
-    image: tcero76/broker-email:${TAG}
+  broker-email-service:
+    image: tcero76/broker-email-service:${TAG}
     build:
       dockerfile: Dockerfile
-      context: ../broker-email
-    working_dir: /broker-email
+      context: ../../../broker-email-service
+    working_dir: /broker-email-service
     profiles:
       - back
     container_name: brokerEmail
@@ -86,8 +86,8 @@ services:
     networks:
       - ${NETWORK_APPLICATION}
     volumes:
-      - ../broker-email:/broker-email
-      - ../rabbitmq:/rabbitmq
+      - ../../../broker-email-service:/broker-email-service
+      - ../../../rabbitmq:/rabbitmq
     depends_on:
       broker:
         condition: service_healthy
@@ -95,7 +95,7 @@ services:
     image: tcero76/db-updater-service:${TAG}
     build:
       dockerfile: Dockerfile
-      context: ../db-updater
+      context: ../../../db-updater
     working_dir: /app  
     profiles:
       - back
@@ -109,19 +109,19 @@ services:
     networks:
       - ${NETWORK_APPLICATION}
     volumes:
-      - ../db-updater:/app
+      - ../../../db-updater:/app
     depends_on:
       - db
       - broker
-  user-db-broker:
-    image: tcero76/user-db-broker:${TAG}
+  db-broker-service:
+    image: tcero76/db-broker-service:${TAG}
     build:
       dockerfile: Dockerfile
-      context: ../db-broker
+      context: ../../../db-broker-service
     working_dir: /app  
     profiles:
       - back
-    container_name: UserDbBroker
+    container_name: DbBroker
     stdin_open: true
     tty: true
     environment:
@@ -132,16 +132,16 @@ services:
     networks:
       - ${NETWORK_APPLICATION}
     volumes:
-      - ../db-broker:/app
-      - ../postgres:/postgres
+      - ../../../db-broker-service:/app
+      - ../../../postgres:/postgres
     depends_on:
       - db
       - broker
-  ws:
-    image: tcero76/ws:${TAG}
+  ws-service:
+    image: tcero76/ws-service:${TAG}
     build:
       dockerfile: Dockerfile
-      context: ../ws
+      context: ../../../ws-service
     container_name: ws
     profiles:
       - ws
@@ -154,7 +154,7 @@ services:
     ports:
       - 4000:4000
     volumes:
-      - ../ws:/app
+      - ../../../ws-service:/ws-service
     depends_on:
       - broker
     networks:
@@ -176,7 +176,7 @@ services:
     ports:
      - 5173:5173
     volumes:
-      - ../front:/app
+      - ../../../front:/app
     networks:
       - ${NETWORK_APPLICATION}
     depends_on:
@@ -185,7 +185,7 @@ services:
     image: tcero76/solana-service:${TAG}
     build:
       dockerfile: Dockerfile
-      context: ../solana-service
+      context: ../../solana-service
     profiles:
       - solana
     working_dir: /app/
@@ -198,14 +198,14 @@ services:
       - PROGRAMID=${PROGRAMID}
       - BROKER=${BROKER}
     volumes:
-      - ../solana-service:/app
+      - ../../solana-service:/app
     networks:
       - ${NETWORK_APPLICATION}
-  scrap-worker:
-    image: tcero76/scrap-worker:${TAG}
+  scrap-service:
+    image: tcero76/scrap-service:${TAG}
     build:
       dockerfile: Dockerfile
-      context: ../scrap-service
+      context: ../../../scrap-service
     working_dir: /app/
     profiles:
       - scrap
@@ -222,17 +222,17 @@ services:
       - PASSWORD_INSTA=${PASSWORD_INSTA}
       - SCRAPY_QUEUE=${SCRAPY_QUEUE}
     volumes:
-      - ../scrap-service:/app
+      - ../../../scrap-service:/app
     depends_on:
       - broker
     networks:
       - ${NETWORK_APPLICATION}
-  beat:
-    image: tcero76/beat:${TAG}
+  beat-service:
+    image: tcero76/beat-service:${TAG}
     build:
       dockerfile: Dockerfile
-      context: ../beat
-    working_dir: /app/
+      context: ../../../beat-service
+    working_dir: /beat-service/
     profiles:
       - scrap
     container_name: beat
@@ -246,18 +246,18 @@ services:
       - RECOMENDER_QUEUE=${RECOMENDER_QUEUE}
       - SCRAPY_QUEUE=${SCRAPY_QUEUE}
     volumes:
-      - ../beat:/app
+      - ../../../beat-service:/beat-service
     depends_on:
       - broker
-      - scrap-worker
+      - scrap-service
     networks:
       - ${NETWORK_APPLICATION}
-  recomender:
-    image: tcero76/recomender:${TAG}
+  recomender-service:
+    image: tcero76/recomender-service:${TAG}
     build:
       dockerfile: Dockerfile
-      context: ../recomender
-    working_dir: /app/
+      context: ../../../recomender-service
+    working_dir: /recomender-service/
     profiles:
       - scrap
     command: [ "celery", "-A", "main", "worker","--loglevel=debug", "-Q", "${RECOMENDER_QUEUE}" ]
@@ -274,7 +274,7 @@ services:
       - CLICKHOUSE_USER=${CLICKHOUSE_USER}
       - CLICKHOUSE_PASSWORD=${CLICKHOUSE_PASSWORD}
     volumes:
-      - ../recomender:/app
+      - ../../../recomender-service:/recomender-service
     depends_on:
       - broker
       - db
@@ -285,20 +285,18 @@ services:
     image: tcero76/mediamtx-service:${TAG}
     build:
       dockerfile: Dockerfile
-      context: ../mediamtx-service
+      context: ../../../mediamtx-service
     container_name: mediamtx-service
     profiles:
       - media
     ports:
       - 3001:3001
     volumes:
-      - ../mediamtx-service:/app
+      - ../../../mediamtx-service:/app
     environment:
       - HYDRA_PUBLIC_URL=http://hydra:4444
       - TIME_SEC_WAIT_RTMP_CONECTION=60
       - PORT=3001
     networks:
       - ${NETWORK_APPLICATION}
-networks:
-  application:
-    driver: bridge
+

@@ -1,6 +1,6 @@
 services:
   clickhouse:
-    image: bitnami/clickhouse:${CLICKHOUSE_VERSION}
+    image: bitnamilegacy/clickhouse:${CLICKHOUSE_VERSION}
     container_name: clickhouse
     profiles: ["clickhouse"]
     volumes:
