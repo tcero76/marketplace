@@ -3,12 +3,12 @@ package services
 import (
 	"strings"
 
-	"github.com/tcero76/marketplace/bff/dto"
-	"github.com/tcero76/marketplace/bff/services"
+	"github.com/tcero76/marketplace/bff-service/dto"
+	"github.com/tcero76/marketplace/bff-service/services"
 	"github.com/tcero76/marketplace/postgres/config"
 	"github.com/tcero76/marketplace/postgres/model"
 
-	"github.com/labstack/gommon/log"
+	log "github.com/sirupsen/logrus"
 	"gorm.io/gorm"
 )
 

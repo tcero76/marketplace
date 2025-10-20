@@ -5,14 +5,14 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/tcero76/marketplace/bff/dto"
-	"github.com/tcero76/marketplace/bff/services"
+	"github.com/tcero76/marketplace/bff-service/dto"
+	"github.com/tcero76/marketplace/bff-service/services"
 
 	"github.com/tcero76/marketplace/postgres/config"
 	"github.com/tcero76/marketplace/postgres/model"
 	"github.com/tcero76/marketplace/rabbitmq/events"
 
-	"github.com/labstack/gommon/log"
+	log "github.com/sirupsen/logrus"
 	"gorm.io/datatypes"
 	"gorm.io/gorm"
 )
