@@ -4,35 +4,31 @@ import { Buffer } from "buffer";
 import  { type Idl, Program, setProvider, AnchorProvider, web3, Wallet } from "@coral-xyz/anchor";
 import BN from 'bn.js';
 import idl from './../../assets/idl/transfer_event.json'
-import { useAuthDispatch } from '../../store/hooks.tsx';
-import getUserApi from '../../http/HttpFactory.ts';
 import Button from '../../components/buttons/Button.tsx';
 
 declare global {
 
-  interface Window {
-    solana: {
-      Buffer: typeof Buffer;
-      publicKey: PublicKey;
-      keyPair:Keypair;
-      isPhantom: boolean;
-      connect: () => Promise<Wallet>;
-      disconnect: () => Promise<void>;
-      signTransaction: <T extends Transaction | VersionedTransaction>(tx: T) => Promise<T>;
-      signAllTransactions: <T extends Transaction | VersionedTransaction>(txs: T[]) => Promise<T[]>;
-    
-    };
-  }
+interface Window {
+  solana: {
+    Buffer: typeof Buffer;
+    publicKey: PublicKey;
+    keyPair:Keypair;
+    isPhantom: boolean;
+    connect: () => Promise<Wallet>;
+    disconnect: () => Promise<void>;
+    signTransaction: <T extends Transaction | VersionedTransaction>(tx: T) => Promise<T>;
+    signAllTransactions: <T extends Transaction | VersionedTransaction>(txs: T[]) => Promise<T[]>;
+  
+  };
+}
 }
 let wallet:Wallet;
 let program:Program;
 const Pago = () => {
-  const dispatch = useAuthDispatch();
   window.Buffer = Buffer;
   const [rec ] = useState<string>("AjBsn7Ks3sfZA58LHHYG5ChxkSkC6eCSythhT7NkgMEQ")
   const [sol, setSol ] = useState<number>(0.01)
   useEffect(() => {
-    dispatch(getUserApi().getAuthenticated())
     const connectWallet = async () => {
       if (!window.solana) {
         throw new Error("No Solana wallet found");

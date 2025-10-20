@@ -1,15 +1,10 @@
-import { useEffect } from 'react'
+import {} from 'react'
 import { VideoPlayer } from '../VideoPlayer.tsx';
 import SimpleChat from './SimpleChat.tsx';
-import { useAuthDispatch, useAuthSelector } from '../../../store/hooks.tsx';
-import getUserApi  from "../../../http/HttpFactory.ts"
+import { useAuthSelector } from '../../../store/hooks.tsx';
 
 const Chat = () => {
   const { userId, nombre } = useAuthSelector((state) => state.auth)
-  const dispatch = useAuthDispatch()
-  useEffect(() => {
-    dispatch(getUserApi().getAuthenticated())
-  },[])
     return (
       <div className="container text-center">
         <div className="row"><h1>Chat</h1></div>

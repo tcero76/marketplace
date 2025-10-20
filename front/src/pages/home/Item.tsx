@@ -3,10 +3,11 @@ import { Modelo, Recomendations } from '../../types';
 import getUserApi  from "../../http/HttpFactory"
 
 type ItemProps = {
-    item: Recomendations[]
+  key: number,
+  item: Recomendations[]
 }
 
-const Item:FC<ItemProps> = ({item}:ItemProps) => {
+const Item:FC<ItemProps> = ({key, item}:ItemProps) => {
     const [modelos, setModelos] = useState<(Modelo | null)[]>([null, null, null]);
     useEffect(() => {
         const fetchModelos = async () => {
@@ -30,9 +31,9 @@ const Item:FC<ItemProps> = ({item}:ItemProps) => {
           fetchModelos();
     }, [item]);
     return (
-        <div className="row mb-3 text-center">
-            {modelos.map((modelo) => (
-                <div className="col-sm-4 themed-grid-col">
+        <div key={key} className="row mb-3 text-center">
+            {modelos.map((modelo, idx) => (
+                <div key={idx} className="col-sm-4 themed-grid-col">
                         <div className="card" style={{width: '18rem'}}>
                             <div className="card-body">
                                 <h5 className="card-title">{modelo?.modelo}</h5>

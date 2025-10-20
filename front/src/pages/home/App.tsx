@@ -1,14 +1,15 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Recomendations } from '../../types';
 import getUserApi  from "../../http/HttpFactory"
 import { AxiosResponse } from 'axios';
 import { useAuthSelector } from '../../store/hooks';
 import Item from './Item';
-import { Virtuoso } from 'react-virtuoso';
+import { Virtuoso, VirtuosoHandle } from 'react-virtuoso';
 import { useLocation } from 'react-router';
 import { useUIContext } from '../../context/UIContext';
 
 export default function App() {
+  const container = useRef<VirtuosoHandle>(null);
   const location = useLocation();
   const search = location.state as { mention: string; text: string } | null;
   const state = useAuthSelector((state) => state.auth);
@@ -54,7 +55,7 @@ export default function App() {
   },[search])
   if(recomendations.length===0) return
   return (
-    <Virtuoso
+    <Virtuoso ref={container}
       style={{ overflowX: 'hidden' }}
       data={recomendations}
       itemContent={(index, item) => {

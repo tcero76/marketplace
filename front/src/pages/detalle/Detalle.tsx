@@ -1,16 +1,10 @@
-import { useEffect } from 'react'
-import getUserApi from '../../http/HttpFactory'
-import { useAuthDispatch } from '../../store/hooks'
+import { } from 'react'
 import SimpleChat from './chat/SimpleChat'
 import Pago from './Pago'
 import { VideoPlayer } from './VideoPlayer'
 import CreatePost from './CreatePost'
 
 const Detalle = () => {
-    const dispatch = useAuthDispatch()
-  useEffect(() => {
-    dispatch(getUserApi().getAuthenticated())
-  },[])
     return (
     <div className="py-4">
     <div className="row mb-3">
