@@ -16,7 +16,7 @@ services:
       - URLS_LOGIN=http://${HOST_EXTERNAL}:${PORT_EXTERNAL}/login 
       - URLS_CONSENT=http://${HOST_EXTERNAL}:${PORT_EXTERNAL}/bff/consent
       - SECRETS_SYSTEM=some_secret_key_system
-      - TTL_ACCESS_TOKEN=1h
+      - TTL_ACCESS_TOKEN=1m
       - TTL_REFRESH_TOKEN=720h
     depends_on:
      - db

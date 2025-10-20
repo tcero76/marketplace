@@ -1,0 +1,35 @@
+{
+    "client_id": "657d0bb0-2314-4c8b-b649-1525af797d72",
+    "client_name": "client1",
+    "client_secret": "Wfnum75JFGpSEUTLqLiMbw1gad",
+    "client_secret_expires_at": 0,
+    "client_uri": "",
+    "created_at": "2025-02-23T00:22:27Z",
+    "grant_types": [
+        "authorization_code",
+        "refresh_token"
+    ],
+    "jwks": {},
+    "logo_uri": "",
+    "metadata": {},
+    "owner": "",
+    "policy_uri": "",
+    "redirect_uris": [
+        "http://localhost:3000/callback"
+    ],
+    "registration_access_token": "ory_at_DcrcPbrd2VvroicLFTIt27jNnTiVzuoE_g8TkW6BYVc.7fXdOwW9wac7cAm_nwCZgb2HdQyb2PvQM10RHmw-VLQ",
+    "registration_client_uri": "http://localhost:4444/oauth2/register/",
+    "request_object_signing_alg": "RS256",
+    "response_types": [
+        "code"
+    ],
+    "scope": "openid offline",
+    "skip_consent": true,
+    "skip_logout_consent": true,
+    "subject_type": "public",
+    "token_endpoint_auth_method": "client_secret_post",
+    "access_token_strategy": "jwt",
+    "tos_uri": "",
+    "updated_at": "2025-02-23T00:22:27.478276Z",
+    "userinfo_signed_response_alg": "none"
+}

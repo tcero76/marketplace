@@ -27,7 +27,7 @@ services:
       USERNAME: guest
       PASSWORD: guest
     volumes:
-      - ./rabbitmq/init_rabbitmq.sh:/app/init_rabbitmq.sh:ro
+      - ./config/rabbitmq/init_rabbitmq.sh:/app/init_rabbitmq.sh:ro
     profiles:
       - job
     networks:
