@@ -1,14 +1,74 @@
 import { AxiosResponse } from "axios";
 import { type Recomendations,
-    type ItemPage,
     type SearchPosts,
     type Modelo, 
-    AuthType} from "../types";
+    AuthType,
+    AuthorizationType,
+    FetchLoginChallengeType,
+    LoginPayloadType,
+    LoginResponseType,
+    Posteo,
+    SearchType} from "../types";
 import { IHttpApi } from "./IHttpApi";
-import { createAsyncThunk } from "@reduxjs/toolkit";
+import { AsyncThunk, createAsyncThunk } from "@reduxjs/toolkit";
 import { mockAxiosResponse } from  './ResponseHelper'
 
 export default class HttpMock implements IHttpApi {
+    fetchLoginChallenge: AsyncThunk<FetchLoginChallengeType, void, object> = 
+        createAsyncThunk(
+            '/fetchLoginChallenge',
+            async (): Promise<FetchLoginChallengeType> => {
+                return Promise.resolve({
+                    loginChallenge: 'mock_challenge',
+                    state: 'mock_state',
+                });
+            });
+    login: AsyncThunk<AxiosResponse<AuthorizationType, any>, LoginPayloadType, object> =
+        createAsyncThunk(
+            '/login',
+            async (payload: LoginPayloadType): Promise<AxiosResponse<AuthorizationType>> => {
+                console.log("🚀 ~ HttpMock ~ payload:", payload)
+                return Promise.resolve(mockAxiosResponse<AuthorizationType>({
+                    accessToken:'',
+                    refreshToken:'',
+                }))
+            })
+
+    loginGoogle: AsyncThunk<AxiosResponse<LoginResponseType, any>, void, object> =
+        createAsyncThunk(
+            '/loginGoogle',
+            async (): Promise<AxiosResponse<LoginResponseType>> => {
+                return Promise.resolve(mockAxiosResponse<LoginResponseType>({
+                    url: "mock_access_token_google"},{}));
+            });
+
+    logout: AsyncThunk<AxiosResponse<string, any>, void, object> =
+        createAsyncThunk( 
+            '/logout',
+            async (): Promise<AxiosResponse<string>> => {
+                return Promise.resolve(mockAxiosResponse<string>("Mock logout successful",{}));
+            });
+    getModelos(): Promise<AxiosResponse<string[]>> {
+        return Promise.resolve(mockAxiosResponse<string[]>([]))
+    }
+    sendPost(posteo: Posteo): Promise<AxiosResponse<string>> {
+        console.log("🚀 ~ HttpMock ~ sendPost ~ posteo:", posteo)
+        return Promise.resolve(mockAxiosResponse<string>("Mock post successful",{}));
+    }
+    getPosteos(modelo?: string): Promise<AxiosResponse<Posteo[]>> {
+        console.log("🚀 ~ HttpMock ~ getPosteos ~ modelo:", modelo)
+        return Promise.resolve(mockAxiosResponse<Posteo[]>([{
+            texto: "Estoy mirando c´omo funciona esta cosa con #CristinaTocco y s´i, parece que funcionar rebien #maca .",
+            menciones: [
+                "CristinaTocco",
+                "maca"
+            ],
+        }]))
+    }
+
+    signUp(user: string, password: string): Promise<AxiosResponse<string>> {
+        return Promise.resolve(mockAxiosResponse<string>("Mock sign up successful",{}));
+    }
 
     RedirectAuthServer() {
         window.location.href = `http://${import.meta.env.VITE_API_URL}:${import.meta.env.VITE_PORT}/login`;
@@ -35,6 +95,7 @@ export default class HttpMock implements IHttpApi {
       );
 
     getRecomendations(userId: string): Promise<AxiosResponse<Recomendations[]>> {
+        console.log("🚀 ~ HttpMock ~ getRecomendations ~ userId:", userId)
         return Promise.resolve(mockAxiosResponse<Recomendations[]>([
             {
                 "user_id": "123e4567-e89b-12d3-a456-426614174000",
@@ -9143,21 +9204,18 @@ export default class HttpMock implements IHttpApi {
             }
         ], {}));
     }
-    searchPosts(search: string): Promise<AxiosResponse<ItemPage<SearchPosts>>> {
-        return Promise.resolve(mockAxiosResponse<ItemPage<SearchPosts>>({
-            items: [
-                {
-                    id: 1,
-                    descripcion: "Mock post description" + search,
-                    descripcionTSV: "Mock post description",
-                    rank: 1
-                }
-            ],
-            limit: 10,
-            offset: 0,
-            total: 1
-        }, {}));
+
+    searchPosts(search:SearchType): Promise<AxiosResponse<SearchPosts[]>> {
+        return Promise.resolve(mockAxiosResponse<SearchPosts[]>([{
+            id: 1,
+            descripcion: "Mock post description" + search,
+            descripcionTSV: "Mock post description",
+            modelo: 'CristinaTocco',
+            rank: 1
+        }]
+        , {}));
     }
+    
     getModelo(modelo: string): Promise<AxiosResponse<Modelo>> {
         return Promise.resolve(mockAxiosResponse<Modelo>({
             id: 1,

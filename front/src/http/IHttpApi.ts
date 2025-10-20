@@ -15,7 +15,6 @@ export interface IHttpApi {
     login: AsyncThunk<AxiosResponse<AuthorizationType>,LoginPayloadType, object>;
     loginGoogle: AsyncThunk<AxiosResponse<LoginResponseType>,void, object>;
     logout: AsyncThunk<AxiosResponse<string>,void, object>;
-    refresh:AsyncThunk<AxiosResponse<AuthorizationType>, void, object>;
     getAuthenticated: AsyncThunk<AxiosResponse<AuthType>, void, object>;
     getRecomendations(userId:string):Promise<AxiosResponse<Recomendations[]>> 
     searchPosts(search:searchType):Promise<AxiosResponse<SearchPosts[]>> 

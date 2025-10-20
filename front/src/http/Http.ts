@@ -1,7 +1,7 @@
 
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import axios, { AxiosInstance, AxiosResponse } from "axios"
-import { type AuthorizationType,
+import { SearchType, type AuthorizationType,
   type AuthType,
   type FetchLoginChallengeType,
   type LoginPayloadType,
@@ -9,10 +9,10 @@ import { type AuthorizationType,
   type Modelo,
   type Posteo,
   type Recomendations,
-  type SearchPosts,
-  type searchType } from "../types/index.ts"
+  type SearchPosts } from "../types/index.ts"
 import { IHttpApi } from './IHttpApi.ts';
-
+import { setAuthenticated } from '../store/AuthSlice.tsx';
+import { store } from '../store/store.tsx';
 
 export default class Http implements IHttpApi {
   private _api: AxiosInstance;
@@ -30,6 +30,7 @@ export default class Http implements IHttpApi {
         refreshSubscribers.forEach((cb) => cb(newToken));
         refreshSubscribers = [];
     }
+
     api.interceptors.response.use(
       (response) => response,
       async (error) => {
@@ -41,11 +42,13 @@ export default class Http implements IHttpApi {
             try {
               const res = await axios.post(`${import.meta.env.VITE_HOST}/bff/refresh`, {});
               const newAccessToken = res.data.accessToken;
-              sessionStorage.setItem("Access_Token", newAccessToken);
+              await sessionStorage.setItem("Access_Token", newAccessToken);
+              store.dispatch(setAuthenticated(true))
               onRefreshed(newAccessToken);
               isRefreshing = false;
               return api(originalRequest);
             } catch (refreshErr) {
+              store.dispatch(setAuthenticated(false))
               isRefreshing = false;
               sessionStorage.removeItem("Access_Token");
               // dispatch(login())
@@ -100,7 +103,6 @@ export default class Http implements IHttpApi {
             {
               headers: {
                 'Content-Type': 'application/json',
-                'Authorization': `Bearer ${sessionStorage.getItem("Access_Token")}`
               }
             }
             )
@@ -156,17 +158,11 @@ export default class Http implements IHttpApi {
       );
     })
 
-  refresh = createAsyncThunk<AxiosResponse<AuthorizationType>, void>(
-    '/refresh',
-    async ():Promise<AxiosResponse<AuthorizationType>> => {
-      return await axios.post(`${import.meta.env.VITE_HOST}/bff/refresh`, {});
-  });
-
   getRecomendations(userId:string): Promise<AxiosResponse<Recomendations[]>> {
     return this._api
     .get(`${import.meta.env.VITE_HOST}/bff/usuario/getRecommendations?userId=${userId}`)
   }
-  searchPosts(search:searchType): Promise<AxiosResponse<SearchPosts[]>> {
+  searchPosts(search:SearchType): Promise<AxiosResponse<SearchPosts[]>> {
     return this._api
     .post(`${import.meta.env.VITE_HOST}/bff/usuario/searchPosts`,
       { ...search }
@@ -188,13 +184,12 @@ export default class Http implements IHttpApi {
       { ...posteo }
     )
   } 
-  getPosteos(modelo?:string):Promise<AxiosResponse<Posteo>> {
+  getPosteos(modelo?:string):Promise<AxiosResponse<Posteo[]>> {
     let url = `${import.meta.env.VITE_HOST}/bff/usuario/getPosteos`
     if (modelo) {
       url += `?modelo=${modelo}`
     }
-    return this._api
-    .get(url)
+    return this._api.get(url)
   }
   signUp(user:string,password:string):Promise<AxiosResponse<string>> {
     return axios.post(`${import.meta.env.VITE_HOST}/bff/signup`, 
