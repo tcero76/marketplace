@@ -5,7 +5,7 @@ go 1.25.1
 require (
 	github.com/go-redis/redis/v8 v8.11.5
 	github.com/labstack/gommon v0.4.2
-	github.com/tcero76/marketplace/bff v0.0.0
+	github.com/tcero76/marketplace/bff-service v0.0.0
 	github.com/tcero76/marketplace/redis/config v0.0.0
 )
 
@@ -31,7 +31,7 @@ require (
 	gorm.io/gorm v1.31.0 // indirect
 )
 
-replace github.com/tcero76/marketplace/bff => ../../bff
+replace github.com/tcero76/marketplace/bff-service => ../../bff-service
 
 replace github.com/tcero76/marketplace/redis/config => ../config
 
