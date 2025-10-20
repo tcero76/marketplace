@@ -3,8 +3,8 @@ module github.com/tcero76/marketplace/postgres/services
 go 1.25.1
 
 require (
-	github.com/labstack/gommon v0.4.2
-	github.com/tcero76/marketplace/bff v0.0.0
+	github.com/sirupsen/logrus v1.9.3
+	github.com/tcero76/marketplace/bff-service v0.0.0
 	github.com/tcero76/marketplace/postgres/config v0.0.0
 	github.com/tcero76/marketplace/postgres/model v0.0.0
 	github.com/tcero76/marketplace/rabbitmq/events v0.0.0
@@ -14,7 +14,7 @@ require (
 
 replace github.com/tcero76/marketplace/rabbitmq/events => ../../rabbitmq/events
 
-replace github.com/tcero76/marketplace/bff => ../../bff
+replace github.com/tcero76/marketplace/bff-service => ../../bff-service
 
 replace github.com/tcero76/marketplace/postgres/config => ../config
 
@@ -32,6 +32,7 @@ require (
 	github.com/jackc/puddle/v2 v2.2.2 // indirect
 	github.com/jinzhu/inflection v1.0.0 // indirect
 	github.com/jinzhu/now v1.1.5 // indirect
+	github.com/labstack/gommon v0.4.2 // indirect
 	github.com/lib/pq v1.10.9 // indirect
 	github.com/mattn/go-colorable v0.1.13 // indirect
 	github.com/mattn/go-isatty v0.0.20 // indirect

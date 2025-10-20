@@ -3,9 +3,9 @@ package services
 import (
 	"strings"
 
-	"github.com/labstack/gommon/log"
-	"github.com/tcero76/marketplace/bff/dto"
-	"github.com/tcero76/marketplace/bff/payload"
+	log "github.com/sirupsen/logrus"
+	"github.com/tcero76/marketplace/bff-service/dto"
+	"github.com/tcero76/marketplace/bff-service/payload"
 	"github.com/tcero76/marketplace/postgres/config"
 	"github.com/tcero76/marketplace/postgres/model"
 	"gorm.io/gorm"
@@ -55,6 +55,7 @@ type SelectSpec struct {
 }
 
 func (s SelectSpec) Apply(db *gorm.DB) *gorm.DB {
+	log.Info("SelectSpec Words son: ", s.Words)
 	if len(s.Words) > 0 {
 		tsQuery := strings.Join(s.Words, " | ")
 		return db.

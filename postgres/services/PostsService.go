@@ -1,8 +1,8 @@
 package services
 
 import (
-	"github.com/tcero76/marketplace/bff/dto"
-	"github.com/tcero76/marketplace/bff/services"
+	"github.com/tcero76/marketplace/bff-service/dto"
+	"github.com/tcero76/marketplace/bff-service/services"
 	"github.com/tcero76/marketplace/postgres/config"
 	"github.com/tcero76/marketplace/postgres/model"
 
@@ -42,6 +42,7 @@ func (c *PostsService) CreatePosteo(posteoDTO *dto.Posteo) error {
 
 func (c *PostsService) GetPosteos(modelo string) []dto.Posteo {
 	posteos := []model.Posteo{}
-	c.DB.Where("menciones = ARRAY[?]::text[];", "#"+modelo).Find(&posteos)
+	c.DB.Where("menciones @> ARRAY[?]::text[]", modelo).
+		Find(&posteos)
 	return dto.ToPosteosDTO(posteos)
 }
