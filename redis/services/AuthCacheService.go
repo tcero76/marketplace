@@ -6,7 +6,7 @@ import (
 
 	"github.com/go-redis/redis/v8"
 	"github.com/labstack/gommon/log"
-	"github.com/tcero76/marketplace/bff/services"
+	"github.com/tcero76/marketplace/bff-service/services"
 	"github.com/tcero76/marketplace/redis/config"
 )
 
@@ -19,8 +19,28 @@ func NewAuthCacheService() services.IAuthCacheService {
 	return &AuthCacheService{Rdb: rdb}
 }
 
+// type SessionData struct {
+// 	AccessToken  string `redis:"access_token"`
+// 	RefreshToken string `redis:"refresh_token"`
+// 	UserID       string `redis:"user_id"`
+// 	UserAgent    string `redis:"user_agent"`
+// 	IP           string `redis:"ip"`
+// }
+
+// func SaveSession(rdb *redis.Client, key string, s SessionData) error {
+// 	return rdb.HSet(context.Background(), key, s).Err()
+// }
+
+// func GetSession(rdb *redis.Client, key string) (*SessionData, error) {
+// 	var s SessionData
+// 	if err := rdb.HGetAll(context.Background(), key).Scan(&s); err != nil {
+// 		return nil, err
+// 	}
+// 	return &s, nil
+// }
+
 func (h *AuthCacheService) StoreTokenInRedis(sessionID string, key string, value string, ctx context.Context) error {
-	log.Info("Storing in Redis: sessionID=", sessionID, " key=", key, " value=", value)
+	log.Debug("Storing in Redis: sessionID=", sessionID, " key=", key, " value=", value)
 	err := h.Rdb.HSet(
 		ctx,
 		"session:"+sessionID,
@@ -39,7 +59,7 @@ func (h *AuthCacheService) StoreTokenInRedis(sessionID string, key string, value
 }
 
 func (h *AuthCacheService) LoadTokenFromRedis(sessionID string, key string, ctx context.Context) (string, error) {
-	log.Info("Loading from Redis: sessionID=", sessionID, " key=", key)
+	log.Debug("Loading from Redis: sessionID=", sessionID, " key=", key)
 	data, err := h.Rdb.HGet(ctx,
 		"session:"+sessionID,
 		key).Result()
@@ -51,7 +71,7 @@ func (h *AuthCacheService) LoadTokenFromRedis(sessionID string, key string, ctx 
 }
 
 func (h *AuthCacheService) LoadSessionAll(sessionID string, ctx context.Context) (map[string]string, error) {
-	log.Info("Loading all from Redis: sessionID=", sessionID)
+	log.Debug("Loading all from Redis: sessionID=", sessionID)
 	data, err := h.Rdb.HGetAll(ctx,
 		"session:"+sessionID).Result()
 	if err != nil {
@@ -62,7 +82,7 @@ func (h *AuthCacheService) LoadSessionAll(sessionID string, ctx context.Context)
 }
 
 func (h *AuthCacheService) SaveSessionAll(sessionID string, session map[string]string, ctx context.Context) error {
-	log.Info("Saving all to Redis: sessionID=", sessionID)
+	log.Debug("Saving all to Redis: sessionID=", sessionID)
 	return h.Rdb.HSet(ctx,
 		"session:"+sessionID,
 		session).Err()
