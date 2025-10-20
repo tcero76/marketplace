@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/tcero76/marketplace/bff/services"
+	"github.com/tcero76/marketplace/bff-service/services"
 
 	"github.com/labstack/echo/v4"
 )

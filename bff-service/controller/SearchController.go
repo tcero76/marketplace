@@ -3,8 +3,8 @@ package controller
 import (
 	"net/http"
 
-	"github.com/tcero76/marketplace/bff/payload"
-	"github.com/tcero76/marketplace/bff/services"
+	"github.com/tcero76/marketplace/bff-service/payload"
+	"github.com/tcero76/marketplace/bff-service/services"
 
 	"github.com/labstack/echo/v4"
 	log "github.com/sirupsen/logrus"

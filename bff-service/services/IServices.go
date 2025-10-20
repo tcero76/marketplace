@@ -3,9 +3,9 @@ package services
 import (
 	"context"
 
-	"github.com/tcero76/marketplace/bff/dto"
-	dtoClickhouse "github.com/tcero76/marketplace/bff/dto/clickhouse"
-	"github.com/tcero76/marketplace/bff/payload"
+	"github.com/tcero76/marketplace/bff-service/dto"
+	dtoClickhouse "github.com/tcero76/marketplace/bff-service/dto/clickhouse"
+	"github.com/tcero76/marketplace/bff-service/payload"
 )
 
 type IUserService interface {

@@ -6,9 +6,9 @@ import (
 
 	"github.com/golang-jwt/jwt/v4"
 	"github.com/google/uuid"
-	"github.com/tcero76/marketplace/bff/dto"
-	"github.com/tcero76/marketplace/bff/payload"
-	"github.com/tcero76/marketplace/bff/services"
+	"github.com/tcero76/marketplace/bff-service/dto"
+	"github.com/tcero76/marketplace/bff-service/payload"
+	"github.com/tcero76/marketplace/bff-service/services"
 
 	"github.com/labstack/echo/v4"
 	log "github.com/sirupsen/logrus"
@@ -54,11 +54,12 @@ func CreatePosteo(postService services.IPostsService) echo.HandlerFunc {
 
 func GetPosteos(postService services.IPostsService) echo.HandlerFunc {
 	return func(c echo.Context) error {
-		log.Info("Obteniendo posteos")
+		log.Info("GetPosteos Entrando")
+		log.Debug("Obteniendo posteos")
 		modelo := c.QueryParams().Get("modelo")
-		log.Info("Modelo recibido: ", modelo)
+		log.Debug("Modelo recibido: ", modelo)
 		modelos := postService.GetPosteos(modelo)
-		log.Info("Posteos encontrados: ", modelos)
+		log.Debug("Posteos encontrados: ", modelos)
 		return c.JSON(http.StatusOK, modelos)
 	}
 }

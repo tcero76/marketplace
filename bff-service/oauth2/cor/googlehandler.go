@@ -6,8 +6,8 @@ import (
 	"math/big"
 	"net/http"
 
-	"github.com/tcero76/marketplace/bff/dto"
-	"github.com/tcero76/marketplace/bff/model"
+	"github.com/tcero76/marketplace/bff-service/dto"
+	"github.com/tcero76/marketplace/bff-service/model"
 
 	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"

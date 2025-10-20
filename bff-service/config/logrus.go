@@ -17,3 +17,13 @@ func InitLogrus() {
 	log.AddHook(hook)
 	log.SetFormatter(&log.JSONFormatter{})
 }
+
+func InitDev() {
+	log.SetReportCaller(true)
+	log.SetFormatter(&log.TextFormatter{
+		ForceColors:               true,
+		FullTimestamp:             true,
+		DisableColors:             false,
+		EnvironmentOverrideColors: true,
+	})
+}

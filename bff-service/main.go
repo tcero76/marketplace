@@ -4,11 +4,11 @@ import (
 	"context"
 	"os"
 
-	"github.com/tcero76/marketplace/bff/config"
-	"github.com/tcero76/marketplace/bff/controller"
+	"github.com/tcero76/marketplace/bff-service/config"
+	"github.com/tcero76/marketplace/bff-service/controller"
 
-	"github.com/tcero76/marketplace/bff/oauth2"
-	"github.com/tcero76/marketplace/bff/oauth2/cor"
+	"github.com/tcero76/marketplace/bff-service/oauth2"
+	"github.com/tcero76/marketplace/bff-service/oauth2/cor"
 	clickServices "github.com/tcero76/marketplace/clickhouse/services"
 	modelServices "github.com/tcero76/marketplace/postgres/services"
 	redisServices "github.com/tcero76/marketplace/redis/services"
@@ -23,10 +23,14 @@ var hydraAdminClient *hydra.APIClient
 var ctx = context.Background()
 
 func main() {
+	log.Info("Iniciando servidor...")
 	if os.Getenv("PROFILE") == "prod" {
 		config.InitLogrus()
+		log.SetLevel(log.InfoLevel)
+	} else {
+		config.InitDev()
+		log.SetLevel(log.DebugLevel)
 	}
-	log.SetLevel(log.TraceLevel)
 
 	authCacheService := redisServices.NewAuthCacheService()
 	userServices := modelServices.NewUserService()
@@ -66,6 +70,6 @@ func main() {
 	protegido.GET("/getPosteos", controller.GetPosteos(postService))
 	e.GET("/getPosts", controller.GetPosts(postService))
 
-	log.Info("Servidor iniciado en el puerto: ", os.Getenv("PORT"))
+	log.Debug("Servidor iniciado en el puerto: ", os.Getenv("PORT"))
 	e.Start(":" + os.Getenv("PORT"))
 }
