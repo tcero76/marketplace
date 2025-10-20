@@ -1,4 +1,4 @@
-import { createSlice } from "@reduxjs/toolkit"
+import { createSlice, PayloadAction } from "@reduxjs/toolkit"
 import getUserApi  from "../http/HttpFactory"
 
 type User = {
@@ -29,6 +29,9 @@ export const authSlice = createSlice({
             const loginChallenge = sessionStorage.getItem("login_challenge")
             const stateVerification = sessionStorage.getItem("state")
             window.location.href = `${import.meta.env.VITE_HOST}/login?login_challenge=${loginChallenge}&state=${stateVerification}`
+        },
+        setAuthenticated: (state, action: PayloadAction<boolean>) => {
+            state.isAuthenticated = action.payload
         }
     },
     extraReducers: (builder) => {
@@ -69,11 +72,8 @@ export const authSlice = createSlice({
             state.avatar = ''
             state.loginChallenge = ''
             state.state = ''
-        })
-        .addCase(getUserApi().refresh.fulfilled, (_,action) => {
-            sessionStorage.setItem("Access_Token", action.payload.data.accessToken)
         });
     }
 })
 
-export const { redirectLogin } = authSlice.actions;
+export const { redirectLogin, setAuthenticated } = authSlice.actions;
