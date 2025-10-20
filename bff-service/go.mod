@@ -1,4 +1,4 @@
-module github.com/tcero76/marketplace/bff
+module github.com/tcero76/marketplace/bff-service
 
 go 1.25.1
 

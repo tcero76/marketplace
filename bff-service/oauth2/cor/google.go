@@ -5,7 +5,7 @@ import (
 
 	"github.com/tcero76/marketplace/postgres/model"
 
-	"github.com/tcero76/marketplace/bff/services"
+	"github.com/tcero76/marketplace/bff-service/services"
 
 	"github.com/labstack/gommon/log"
 	"golang.org/x/oauth2"

@@ -4,7 +4,7 @@ import (
 	"net/http"
 	"slices"
 
-	"github.com/tcero76/marketplace/bff/services"
+	"github.com/tcero76/marketplace/bff-service/services"
 
 	"github.com/labstack/echo/v4"
 	log "github.com/sirupsen/logrus"
@@ -12,13 +12,14 @@ import (
 
 func GetModelo(modeloService services.IModeloService) echo.HandlerFunc {
 	return func(c echo.Context) error {
+		log.Info("Entrando a GetModelo")
 		query := c.QueryParam("modelo")
 		modelo, err := modeloService.GetModelByModelo(query)
 		if err != nil {
 			log.Error("Error in GetModelByModelo: ", err)
 			return c.String(http.StatusInternalServerError, "Error fetching modelo: "+err.Error())
 		}
-		log.Info("Modelo found: ", modelo)
+		log.Debug("Modelo found: ", modelo)
 		c.JSON(http.StatusOK, modelo)
 		return nil
 	}

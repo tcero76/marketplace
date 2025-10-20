@@ -1,8 +1,8 @@
 package oauth2
 
 import (
-	"github.com/tcero76/marketplace/bff/oauth2/cor"
-	"github.com/tcero76/marketplace/bff/services"
+	"github.com/tcero76/marketplace/bff-service/oauth2/cor"
+	"github.com/tcero76/marketplace/bff-service/services"
 )
 
 func InitOauth2Handlers(authCacheService services.IAuthCacheService,

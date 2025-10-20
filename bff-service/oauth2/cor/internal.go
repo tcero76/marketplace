@@ -6,8 +6,8 @@ import (
 	"log"
 	"os"
 
-	"github.com/tcero76/marketplace/bff/dto"
-	"github.com/tcero76/marketplace/bff/services"
+	"github.com/tcero76/marketplace/bff-service/dto"
+	"github.com/tcero76/marketplace/bff-service/services"
 	"github.com/tcero76/marketplace/postgres/model"
 
 	hydra "github.com/ory/hydra-client-go/v2"
