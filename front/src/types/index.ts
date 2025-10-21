@@ -1,6 +1,8 @@
 
 export * from './auth'
+export * from './button'
 export * from './chat'
+export * from './modal'
 export * from './modelo'
 export * from './posteo'
 export * from './recomendation'

@@ -1,16 +1,18 @@
 import { useEffect, useRef, useState } from 'react'
 import TextEditor from './textEditor/TextEditor';
-import { TOAST_TYPES, type Posteo } from '../../types';
-import getUserApi from './../../http/HttpFactory';
+import { TextEditorType, TOAST_TYPES, type Posteo } from '../../../types';
+import getUserApi from '../../../http/HttpFactory';
 import { AxiosResponse } from 'axios';
 import { useParams } from 'react-router';
-import Button from '../../components/buttons/Button';
-import ModalHtml, { ModalHtmlHandle } from '../../components/modal/ModalHtml';
-import { useUIContext } from '../../context/UIContext';
+import Button from '../../../components/buttons/Button';
+import ModalHtml, { ModalHtmlHandle } from '../../../components/modal/ModalHtml';
+import { useUIContext } from '../../../context/UIContext';
+import Post from './Post';
 
 const CreatePost = () => {
     const { modelo } = useParams(); 
     const uiContext = useUIContext();
+    const refTextEditor = useRef<TextEditorType>(null);
     const refPosteo = useRef<Posteo>({menciones:[], texto:''});
     const refModal = useRef<ModalHtmlHandle>(null);
     const [ posteos, setPosteos ] = useState<Posteo[]>([]);
@@ -32,29 +34,30 @@ const CreatePost = () => {
         })
     }
     const onClickAbrirPost = () => {
+        refTextEditor.current?.cleanInput()
+        refModal.current?.open()
+    }
+    const onEditar = (posteo:Posteo) => {
+        refTextEditor.current?.setPosteo(posteo)
         refModal.current?.open()
     }
     return (
         <>
-            <ModalHtml onClickModal={onClickPosteo} ref={refModal}>
-                <TextEditor onChangePosteo={(p) => refPosteo.current = p}/>
+            <ModalHtml onClickModal={onClickPosteo} ref={refModal} iconBtnAccept='send'>
+                <TextEditor onChangePosteo={(p) => refPosteo.current = p} ref={refTextEditor}/>
             </ModalHtml>
-            <div>
-                <Button btnType="primary" label="Postear" onClick={onClickAbrirPost}/>
-            </div>
+            <Button
+                btnType="primary"
+                label="Postear"
+                onClick={onClickAbrirPost}/>
             <div className="list-group">
-            {posteos.map((p,idx) => {
-                return (
-                    <li key={idx} className="list-group-item">
-                        <div className="card" style={{width: "18rem;"}}>
-                            {p.menciones.map((m, i) => <span key={i} className="badge text-bg-secondary me-1">{m}</span>)}
-                            <div className="card-body">
-                                <p>{p.texto}</p>
-                            </div>
-                        </div>
-                    </li>
-                )
-            })}
+                {posteos.map((p,idx) => {
+                    return (
+                        <li key={idx} className="list-group-item">
+                            <Post index={p} editar={onEditar}/>
+                        </li>
+                    )
+                })}
             </div>
         </>
     )

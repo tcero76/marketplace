@@ -2,7 +2,7 @@ import { } from 'react'
 import SimpleChat from './chat/SimpleChat'
 import Pago from './Pago'
 import { VideoPlayer } from './VideoPlayer'
-import CreatePost from './CreatePost'
+import CreatePost from './post/CreatePost'
 
 const Detalle = () => {
     return (

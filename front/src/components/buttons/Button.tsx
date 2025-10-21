@@ -1,15 +1,11 @@
-import { ComponentPropsWithoutRef } from 'react'
+import { } from 'react'
+import { ButtonProps } from '../../types'
 
-export type ButtonProps = {
-    btnType:string
-    label:string
-} & ComponentPropsWithoutRef<'button'>
-
-const Button = ({btnType, label, ...props}:ButtonProps) => {
+const Button = ({btnType, label, icon, ...props}:ButtonProps) => {
     return (<button type="button"
                 className={`btn btn-${btnType} py-2 rounded`}
                 {...props}
-                >{label}</button>
+                >{label && <span>{label}</span>}{icon && <span className={`bi bi-${icon}`}></span>}</button>
     )
 }
 
