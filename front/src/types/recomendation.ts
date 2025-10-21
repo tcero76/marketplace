@@ -5,3 +5,8 @@ export type Recomendations = {
     modelo:string
     score:number
   }
+
+export type ItemProps = {
+  key: number,
+  item: Recomendations[]
+}
