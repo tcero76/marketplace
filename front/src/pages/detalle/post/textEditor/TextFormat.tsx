@@ -1,10 +1,10 @@
 import { useRef, useState, useEffect, useImperativeHandle, ForwardedRef, forwardRef } from 'react'
-import getUserApi from '../../../http/HttpFactory';
+import getUserApi from '../../../../http/HttpFactory';
 import { AxiosResponse } from 'axios';
 import {
   type TextAndPos,
   type TextFormatProps,
-  type TextFormatType } from '../../../types';
+  type TextFormatType } from '../../../../types';
 
 const storeCaretPosition = (editor:HTMLDivElement):number => {
     const selection = window.getSelection();
@@ -47,6 +47,9 @@ const TextFormat = forwardRef<TextFormatType,TextFormatProps>(({ highlight, ...p
   useImperativeHandle(ref,() => ({
     cleanInput:() => {
       setTextAndPos({text:'', pos:0})
+    },
+    setInput:(text:string) => {
+      setTextAndPos({text, pos:text.length})
     }
   }))
 

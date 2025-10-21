@@ -2,12 +2,15 @@ import { ForwardedRef, forwardRef, useImperativeHandle, useRef } from 'react';
 import TextFormat from './TextFormat.tsx';
 import { type TextEditorProps,
   type TextEditorType,
-  type TextFormatType } from '../../../types/index.ts';
+  type TextFormatType } from '../../../../types/index.ts';
 
 const TextEditor = forwardRef<TextEditorType,TextEditorProps>(({onChangePosteo, ...props},ref:ForwardedRef<TextEditorType>) => {
   const textFormatRef = useRef<TextFormatType>({ cleanInput:() => null });
   useImperativeHandle(ref,()=>({
-    cleanInput:() => textFormatRef.current.cleanInput()
+    cleanInput:() => textFormatRef.current.cleanInput(),
+    setPosteo:(posteo) => { 
+      textFormatRef.current.setInput(posteo.texto);
+    }
   }))
   const highlight = (texto:string):string => {
       const regex = /#[\p{L}\p{N}_]+/gu;
@@ -22,7 +25,11 @@ const TextEditor = forwardRef<TextEditorType,TextEditorProps>(({onChangePosteo, 
         return `<span class="highlight" contenteditable="true">${safe}</span>`;
       });
   }
-  return <TextFormat highlight={highlight} ref={textFormatRef} { ...props }/>
+  return <TextFormat
+            highlight={highlight}
+            ref={textFormatRef}
+            { ...props }
+          />
 });
 
 export default TextEditor;

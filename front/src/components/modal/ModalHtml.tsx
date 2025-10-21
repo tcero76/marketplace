@@ -4,7 +4,7 @@ import { Modal } from 'bootstrap'
 import { ModalHtmlHandle, ModalHtmlProps } from '../../types';
 
 const ModalHtml= forwardRef<ModalHtmlHandle, ModalHtmlProps>((
-  {isHeader=false,textHeader,textBtnAccept,onClickModal, children},
+  {isHeader=false,textHeader,textBtnAccept,iconBtnAccept, onClickModal, children},
     ref:ForwardedRef<ModalHtmlHandle>) => {
     const refModal = useRef<HTMLDivElement>(null);
     useImperativeHandle(ref, () => ({
@@ -33,9 +33,9 @@ const ModalHtml= forwardRef<ModalHtmlHandle, ModalHtmlProps>((
                     {children}
                 </div>
                 <div className="modal-footer">
-                    <Button btnType="secondary" label="Close"
+                    <Button btnType="secondary" label="Cancelar"
                         data-bs-dismiss="modal"/>
-                    <Button btnType="primary" label={textBtnAccept}
+                    <Button btnType="primary" label={textBtnAccept} icon={iconBtnAccept}
                     onClick={onClickModal}/>
                 </div>
                 </div>
