@@ -1,21 +1,10 @@
 import { ForwardedRef, forwardRef, useImperativeHandle, useRef } from 'react'
 import Button from '../buttons/Button'
 import { Modal } from 'bootstrap'
+import { ModalHtmlHandle, ModalHtmlProps } from '../../types';
 
-export type ModalHtmlProps = {
-    onClickModal: () => void
-    children: React.ReactNode
-    isHeader?: boolean
-    textHeader?: string
-    textBtnAccept?: string
-}
-
-export type ModalHtmlHandle = {
-  open: () => void;
-  close: () => void;
-};
 const ModalHtml= forwardRef<ModalHtmlHandle, ModalHtmlProps>((
-  {isHeader=false,textHeader,textBtnAccept = "Guardar",onClickModal, children},
+  {isHeader=false,textHeader,textBtnAccept,onClickModal, children},
     ref:ForwardedRef<ModalHtmlHandle>) => {
     const refModal = useRef<HTMLDivElement>(null);
     useImperativeHandle(ref, () => ({
