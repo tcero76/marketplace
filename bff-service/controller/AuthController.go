@@ -81,16 +81,16 @@ func verifyToken(tokenStr string) (jwt.MapClaims, error) {
 		}
 		return getKeyFromJWKS(kid)
 	}
-
 	token, err := jwt.ParseWithClaims(tokenStr, jwt.MapClaims{}, keyFunc)
 	if err != nil {
-		return nil, fmt.Errorf("failed to parse token: %w", err)
+		log.Error("Error parsing token: ", err)
+		return nil, err
 	}
 
 	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
 		return claims, nil
 	}
-
+	log.Error("Invalid token")
 	return nil, errors.New("invalid token")
 }
 
@@ -140,20 +140,17 @@ func RefreshTokenHandler(authCacheService services.IAuthCacheService) echo.Handl
 			RedirectURL: redirect,
 			Scopes:      []string{"openid", "offline_access", "mediamtx:stream"},
 		}
-		log.Debug("Usando el siguiente Refresh Token: ", token)
-
+		log.Debug("Usando el siguiente Access Token: ", token.AccessToken)
 		token := &oauth2.Token{
-			// AccessToken:  sessionData["access_token"],
-			// TokenType:    "Bearer",
 			RefreshToken: sessionData["refresh_token"],
 			Expiry:       time.Now().Add(-time.Minute),
 		}
-
+		log.Debug("Access Token Refrescado: ", token.AccessToken)
 		ctx := c.Request().Context()
 		ts := conf.TokenSource(ctx, token)
 		log.Debug("TokenSource creado", ts)
 		newToken, err := ts.Token()
-		log.Info("Nuevo token obtenido", newToken)
+		log.Debug("Nuevo token obtenido", newToken)
 		if err != nil {
 			log.WithField("err", err).Error("Error al refrescar token")
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to refresh token")
@@ -184,7 +181,6 @@ func SignUpHandler(userService services.IUserService) echo.HandlerFunc {
 			log.Error("Email already in use: ", req.Email)
 			return echo.NewHTTPError(http.StatusConflict, "Email already in use")
 		}
-
 		newUser := dto.UserDTO{
 			UserID:   uuid.New(),
 			Nombre:   req.Email,

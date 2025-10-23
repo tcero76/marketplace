@@ -16,17 +16,30 @@ import (
 
 func GetPosts(postService services.IPostsService) echo.HandlerFunc {
 	return func(c echo.Context) error {
-		limit, errLimit := strconv.Atoi(c.QueryParam("limit"))
-		if errLimit != nil {
-			limit = 10
+		log.Info("GetPosts Entrando")
+		limit, err := strconv.Atoi(c.QueryParam("limit"))
+		if err != nil {
+			log.Error("Error al parsear limit: ", err)
+			c.JSON(http.StatusBadRequest, map[string]string{
+				"error": "limit inválido",
+			})
 		}
-		offset, errOffset := strconv.Atoi(c.QueryParam("offset"))
-		if errOffset != nil {
-			offset = 0
+		offset, err := strconv.Atoi(c.QueryParam("offset"))
+		if err != nil {
+			log.Error("Error al parsear offset: ", err)
+			c.JSON(http.StatusBadRequest, map[string]string{
+				"error": "offset inválido",
+			})
 		}
 		posts := postService.GetPosts(limit, offset)
+		log.Debug("Posts encontrados: ", posts)
 		total := postService.GetTotalPosts()
-		return c.JSON(http.StatusOK, payload.PostsPage{Items: posts, Limit: limit, Offset: offset, Total: total})
+		log.Debug("Total de posts: ", total)
+		return c.JSON(http.StatusOK, payload.PostsPage{
+			Items:  posts,
+			Limit:  limit,
+			Offset: offset,
+			Total:  total})
 	}
 }
 
@@ -35,19 +48,23 @@ func CreatePosteo(postService services.IPostsService) echo.HandlerFunc {
 		log.Info("Creando posteo")
 		posteo := dto.Posteo{}
 		if err := c.Bind(&posteo); err != nil {
+			log.Error("Error al parsear el body: ", err)
 			return c.JSON(http.StatusBadRequest, map[string]string{
 				"error": "no se pudo parsear el body",
 			})
 		}
 		claims := c.Get("user").(jwt.MapClaims)
 		sub := claims["sub"].(string)
-		log.Info("Usuario: ", sub)
+		log.Debug("Usuario: ", sub)
 		userId, err := uuid.Parse(sub)
 		if err != nil {
 			log.Error("Error al parsear el userId: ", err)
+			return c.JSON(http.StatusBadRequest, map[string]string{
+				"error": "userId inválido",
+			})
 		}
 		posteo.UserId = userId
-		log.Info("Posteo recibido: ", posteo)
+		log.Debug("Posteo recibido: ", posteo)
 		return postService.CreatePosteo(&posteo)
 	}
 }
