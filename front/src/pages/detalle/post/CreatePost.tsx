@@ -1,19 +1,21 @@
 import { useEffect, useRef, useState } from 'react'
 import TextEditor from './textEditor/TextEditor';
-import { TextEditorType, TOAST_TYPES, type Posteo } from '../../../types';
+import { ModalHtmlHandle, TextEditorType, TOAST_TYPES, type Posteo } from '../../../types';
 import getUserApi from '../../../http/HttpFactory';
 import { AxiosResponse } from 'axios';
 import { useParams } from 'react-router';
 import Button from '../../../components/buttons/Button';
-import ModalHtml, { ModalHtmlHandle } from '../../../components/modal/ModalHtml';
+import ModalHtml from '../../../components/modal/ModalHtml';
 import { useUIContext } from '../../../context/UIContext';
 import Post from './Post';
 
+
+const posteoInicial: Posteo = { menciones: [], texto: '', id:'', userId: '' };
 const CreatePost = () => {
     const { modelo } = useParams(); 
     const uiContext = useUIContext();
     const refTextEditor = useRef<TextEditorType>(null);
-    const refPosteo = useRef<Posteo>({menciones:[], texto:''});
+    const refPosteo = useRef<Posteo>(posteoInicial);
     const refModal = useRef<ModalHtmlHandle>(null);
     const [ posteos, setPosteos ] = useState<Posteo[]>([]);
     useEffect(() => {

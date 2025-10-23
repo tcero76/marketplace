@@ -24,7 +24,7 @@ createRoot(document.getElementById('root')!).render(
           <UIProvider>
             <QueryClientProvider client={queryClient}>
               <RouterProvider router={router}/>
-              <ReactQueryDevtools initialIsOpen={false} />
+              {import.meta.env.VITE_PROFILE == 'dev' && <ReactQueryDevtools initialIsOpen={false} />}
             </QueryClientProvider>
           </UIProvider>
         </Provider>

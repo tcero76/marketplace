@@ -3,6 +3,8 @@ import { ComponentPropsWithoutRef } from 'react'
 export type Posteo = {
     menciones:string[]
     texto:string
+    id: string
+    userId: string
   }
 
 export type TextEditorType = {

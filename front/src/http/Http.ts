@@ -179,6 +179,7 @@ export default class Http implements IHttpApi {
   }
 
   sendPost(posteo:Posteo):Promise<AxiosResponse<string>> {
+    console.log("🚀 ~ Http ~ sendPost ~ posteo:", posteo)
     return this._api
     .post(`${import.meta.env.VITE_HOST}/bff/usuario/createPost`,
       { ...posteo }
