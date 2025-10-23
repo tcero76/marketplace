@@ -1,6 +1,7 @@
 package services
 
 import (
+	log "github.com/sirupsen/logrus"
 	"github.com/tcero76/marketplace/bff-service/dto"
 	"github.com/tcero76/marketplace/bff-service/services"
 	"github.com/tcero76/marketplace/postgres/config"
@@ -36,13 +37,14 @@ func (c *PostsService) GetTotalPosts() int64 {
 
 func (c *PostsService) CreatePosteo(posteoDTO *dto.Posteo) error {
 	posteo := dto.ToPosteoModel(posteoDTO)
-	result := c.DB.Create(&posteo)
+	result := c.DB.Save(&posteo)
 	return result.Error
 }
 
 func (c *PostsService) GetPosteos(modelo string) []dto.Posteo {
+	log.Info("GetPosteos Entrando al servicio modelo: ", modelo)
 	posteos := []model.Posteo{}
-	c.DB.Where("menciones @> ARRAY[?]::text[]", modelo).
+	c.DB.Debug().Where("menciones @> ARRAY[?]::text[]", "#"+modelo).
 		Find(&posteos)
 	return dto.ToPosteosDTO(posteos)
 }
