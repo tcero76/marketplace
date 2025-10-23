@@ -58,9 +58,8 @@ export default function App() {
     <Virtuoso ref={container}
       style={{ overflowX: 'hidden' }}
       data={recomendations}
-      itemContent={(index, item) => {
-        return <Item key={index} item={item}/>
-      }}
+      itemContent={(index, item) => <Item key={index} item={item}/>}
+      computeItemKey={(index) => index}
     >
     </Virtuoso>
   );

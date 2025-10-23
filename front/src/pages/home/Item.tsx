@@ -4,7 +4,7 @@ import { ItemProps } from '../../types';
 import getUserApi  from "../../http/HttpFactory"
 
 
-const Item:FC<ItemProps> = ({key, item}:ItemProps) => {
+const Item:FC<ItemProps> = ({item}:ItemProps) => {
   const results = useQueries({
     queries: item.map(i => ({
       queryKey: ['modelo', i.modelo], // clave única por modelo
@@ -17,11 +17,10 @@ const Item:FC<ItemProps> = ({key, item}:ItemProps) => {
     })),
   })
     return (
-        <div key={key} className="row mb-3 text-center">
+      <div className="row mb-3 text-center">
       {results.map((result, idx) => {
         if (result.isLoading) return <p key={idx}>Cargando...</p>
         if (result.error) return <p key={idx}>Error</p>
-
         const modelo = result.data
         return (
           <div key={idx} className="col-sm-4 themed-grid-col">
