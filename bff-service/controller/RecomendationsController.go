@@ -11,7 +11,9 @@ func GetRecommendations(recomendationService services.IRecomendationService) ech
 	return func(c echo.Context) error {
 		log.Info("Fetching recommendations for user")
 		userId := c.QueryParam("userId")
+		log.Debug("User ID: ", userId)
 		items := recomendationService.GetRecomendations(c.Request().Context(), userId)
+		log.Debug("Recommendations: ", items)
 		return c.JSON(200, items)
 	}
 }

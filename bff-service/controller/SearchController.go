@@ -22,13 +22,14 @@ func GetSearch(searchService services.ISearchService) echo.HandlerFunc {
 		log.Info("Entrando a search")
 		var req payload.SearchRequest
 		if err := c.Bind(&req); err != nil {
+			log.Error("Error al parsear JSON: ", err)
 			return c.JSON(http.StatusBadRequest, map[string]string{
 				"error": "Error al parsear JSON",
 			})
 		}
-		log.Info("Request de search: ", req)
+		log.Debug("Request de search: ", req)
 		modeloSearchs := searchService.GetSearch(req)
+		log.Debug("Searchs encontrados: ", modeloSearchs)
 		return c.JSON(http.StatusOK, modeloSearchs)
 	}
-	return nil
 }

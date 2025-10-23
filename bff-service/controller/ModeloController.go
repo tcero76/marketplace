@@ -14,6 +14,7 @@ func GetModelo(modeloService services.IModeloService) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		log.Info("Entrando a GetModelo")
 		query := c.QueryParam("modelo")
+		log.Debug("Query parametro modelo: ", query)
 		modelo, err := modeloService.GetModelByModelo(query)
 		if err != nil {
 			log.Error("Error in GetModelByModelo: ", err)
@@ -36,7 +37,7 @@ func GetModelos(modeloService services.IModeloService) echo.HandlerFunc {
 				}
 			}
 		})
-		c.JSON(http.StatusOK, nombres)
-		return nil
+		log.Debug("Modelos found: ", nombres)
+		return c.JSON(http.StatusOK, nombres)
 	}
 }
