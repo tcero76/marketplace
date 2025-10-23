@@ -29,6 +29,7 @@ func (s *ModeloService) GetModelByModelo(query string) (*dto.Modelo, error) {
 		Where("modelo = ?", query).
 		Where("modelo = ?", query).First(modelo)
 	if result.Error != nil {
+		log.Error("Error al obtener el modelo: ", result.Error)
 		return nil, result.Error
 	}
 	return dto.ToModeloDTO(modelo), nil
@@ -47,6 +48,7 @@ func (s *ModeloService) GetSearch(text []string) (*[]dto.Modelo, error) {
 	`
 	result := s.DB.Raw(query, tsquery, tsquery).Scan(&modelos)
 	if result.Error != nil {
+		log.Error("Error al obtener los modelos: ", result.Error)
 		return nil, result.Error
 	}
 	return &modelos, nil
@@ -54,6 +56,10 @@ func (s *ModeloService) GetSearch(text []string) (*[]dto.Modelo, error) {
 
 func (s *ModeloService) GetModelos() []dto.Modelo {
 	var modelos []model.Modelo
-	s.DB.Select("modelo").Find(&modelos)
+	err := s.DB.Select("modelo").Find(&modelos)
+	if err.Error != nil {
+		log.Error("Error al obtener los modelos: ", err.Error)
+		return []dto.Modelo{}
+	}
 	return dto.ToModelosDTO(modelos)
 }
