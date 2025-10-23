@@ -80,7 +80,11 @@ func (s *SearchService) GetSearch(searchRequest payload.SearchRequest) []dto.Sea
 		SelectSpec{Words: searchRequest.Text},
 	}
 	var modeloSearchDTOs []dto.SearchDTO
-	ApplySpecifications(s.DB.Model(&model.Modelo{}), specs...).
+	err := ApplySpecifications(s.DB.Model(&model.Modelo{}), specs...).
 		Find(&modeloSearchDTOs)
+	if err.Error != nil {
+		log.Error("Error al obtener los modelos en GetSearch: ", err.Error)
+		return []dto.SearchDTO{}
+	}
 	return modeloSearchDTOs
 }
