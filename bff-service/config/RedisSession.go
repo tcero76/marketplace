@@ -16,10 +16,10 @@ var ctx = context.Background()
 func RedisSessionMiddleware(authCacheService services.IAuthCacheService) echo.MiddlewareFunc {
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(c echo.Context) error {
-			log.Info("Ip remota: ", c.Request().RemoteAddr)
-			log.Info("User Agent: ", c.Request().Header.Get("User-Agent"))
+			log.Trace("Ip remota: ", c.Request().RemoteAddr)
+			log.Trace("User Agent: ", c.Request().Header.Get("User-Agent"))
 			cookie, err := c.Cookie("session_id")
-			log.Debug("Cookie session_id: ", cookie)
+			log.Trace("Cookie session_id: ", cookie)
 			var sessionID string
 			if err != nil || cookie.Value == "" {
 				sessionID = uuid.New().String()
@@ -35,8 +35,14 @@ func RedisSessionMiddleware(authCacheService services.IAuthCacheService) echo.Mi
 				c.SetCookie(newCookie)
 			} else {
 				sessionID = cookie.Value
+				log.Debug("Session ID from cookie: ", sessionID)
 			}
 			val, err := authCacheService.LoadSessionAll(sessionID, ctx)
+			s, err2 := authCacheService.GetSession(sessionID)
+			if err2 == nil {
+				log.Debug("Session data from Redis: ", s)
+			}
+			log.Info("Session data loaded: ", s)
 			if err == nil {
 				if len(val) == 0 {
 					sessionData := make(map[string]string)
@@ -44,10 +50,15 @@ func RedisSessionMiddleware(authCacheService services.IAuthCacheService) echo.Mi
 					sessionData["isAuthenticated"] = "false"
 					c.Set("session_data", sessionData)
 					err = authCacheService.SaveSessionAll(sessionID, sessionData, ctx)
+					if err != nil {
+						log.Error("Error al crear session: ", err)
+						return c.JSON(http.StatusInternalServerError, "Error al crear session: "+err.Error())
+					}
 				} else {
 					c.Set("session_data", val)
 				}
 			} else {
+				log.Error("Error al cargar session: ", err)
 				return c.JSON(http.StatusInternalServerError, "Error al crear session: "+err.Error())
 			}
 			return next(c)

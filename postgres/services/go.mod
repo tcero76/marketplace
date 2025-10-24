@@ -1,10 +1,11 @@
 module github.com/tcero76/marketplace/postgres/services
 
-go 1.25.1
+go 1.25.2
 
 require (
 	github.com/sirupsen/logrus v1.9.3
 	github.com/tcero76/marketplace/bff-service v0.0.0
+	github.com/tcero76/marketplace/config v0.0.0
 	github.com/tcero76/marketplace/postgres/config v0.0.0
 	github.com/tcero76/marketplace/postgres/model v0.0.0
 	github.com/tcero76/marketplace/rabbitmq/events v0.0.0
@@ -16,6 +17,8 @@ replace github.com/tcero76/marketplace/rabbitmq/events => ../../rabbitmq/events
 
 replace github.com/tcero76/marketplace/bff-service => ../../bff-service
 
+replace github.com/tcero76/marketplace/config => ../../config
+
 replace github.com/tcero76/marketplace/postgres/config => ../config
 
 replace github.com/tcero76/marketplace/postgres/model => ../model
@@ -24,6 +27,7 @@ replace github.com/tcero76/marketplace/clickhouse/model => ../../clickhouse/mode
 
 require (
 	filippo.io/edwards25519 v1.1.0 // indirect
+	github.com/bshuster-repo/logrus-logstash-hook v1.1.0 // indirect
 	github.com/go-sql-driver/mysql v1.8.1 // indirect
 	github.com/google/uuid v1.6.0 // indirect
 	github.com/jackc/pgpassfile v1.0.0 // indirect

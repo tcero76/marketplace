@@ -16,6 +16,7 @@ import (
 	"github.com/labstack/echo/v4"
 	hydra "github.com/ory/hydra-client-go/v2"
 	log "github.com/sirupsen/logrus"
+	logConfig "github.com/tcero76/marketplace/config"
 )
 
 var hydraAdminClient *hydra.APIClient
@@ -25,11 +26,9 @@ var ctx = context.Background()
 func main() {
 	log.Info("Iniciando servidor...")
 	if os.Getenv("PROFILE") == "prod" {
-		config.InitLogrus()
-		log.SetLevel(log.InfoLevel)
+		logConfig.InitLogrus()
 	} else {
-		config.InitDev()
-		log.SetLevel(log.DebugLevel)
+		logConfig.InitDev()
 	}
 
 	authCacheService := redisServices.NewAuthCacheService()
@@ -70,6 +69,6 @@ func main() {
 	protegido.GET("/getPosteos", controller.GetPosteos(postService))
 	e.GET("/getPosts", controller.GetPosts(postService))
 
-	log.Debug("Servidor iniciado en el puerto: ", os.Getenv("PORT"))
+	log.Info("Servidor iniciado en el puerto: ", os.Getenv("PORT"))
 	e.Start(":" + os.Getenv("PORT"))
 }

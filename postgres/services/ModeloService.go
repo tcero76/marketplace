@@ -1,10 +1,12 @@
 package services
 
 import (
+	"os"
 	"strings"
 
 	"github.com/tcero76/marketplace/bff-service/dto"
 	"github.com/tcero76/marketplace/bff-service/services"
+	logConfig "github.com/tcero76/marketplace/config"
 	"github.com/tcero76/marketplace/postgres/config"
 	"github.com/tcero76/marketplace/postgres/model"
 
@@ -18,6 +20,11 @@ type ModeloService struct {
 
 func NewModeloService() services.IModeloService {
 	db := config.GetPostgres()
+	if os.Getenv("PROFILE") == "prod" {
+		logConfig.InitLogrus()
+	} else {
+		logConfig.InitDev()
+	}
 	return &ModeloService{DB: db}
 }
 

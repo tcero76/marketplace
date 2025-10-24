@@ -7,6 +7,7 @@ services:
     working_dir: /bff-service
     volumes:
       - ../../../bff-service:/bff-service
+      - ../../../config:/config
       - ../../../postgres:/postgres
       - ../../../clickhouse:/clickhouse
       - ../../../rabbitmq:/rabbitmq
@@ -41,7 +42,6 @@ services:
       - db
       - cache
       - broker
-      - envoy
       - clickhouse
   cache-updater-service:
     image: tcero76/cache-updater-service:${TAG}
