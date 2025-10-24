@@ -12,7 +12,7 @@ func InitLogrus() {
 	if err != nil {
 		log.Fatal(err)
 	}
-
+	log.SetLevel(log.InfoLevel)
 	hook := logrustash.New(conn, logrustash.DefaultFormatter(log.Fields{"type": "bff"}))
 	log.AddHook(hook)
 	log.SetFormatter(&log.JSONFormatter{})
@@ -21,9 +21,11 @@ func InitLogrus() {
 func InitDev() {
 	log.SetReportCaller(true)
 	log.SetFormatter(&log.TextFormatter{
-		ForceColors:               true,
-		FullTimestamp:             true,
-		DisableColors:             false,
-		EnvironmentOverrideColors: true,
+		ForceColors:               false,
+		FullTimestamp:             false,
+		DisableColors:             true,
+		EnvironmentOverrideColors: false,
 	})
+	log.SetFormatter(&log.TextFormatter{})
+	log.SetLevel(log.InfoLevel)
 }

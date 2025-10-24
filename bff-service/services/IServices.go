@@ -6,6 +6,7 @@ import (
 	"github.com/tcero76/marketplace/bff-service/dto"
 	dtoClickhouse "github.com/tcero76/marketplace/bff-service/dto/clickhouse"
 	"github.com/tcero76/marketplace/bff-service/payload"
+	"github.com/tcero76/marketplace/redis/model"
 )
 
 type IUserService interface {
@@ -41,4 +42,6 @@ type IAuthCacheService interface {
 	LoadTokenFromRedis(sessionID string, key string, ctx context.Context) (string, error)
 	LoadSessionAll(sessionID string, ctx context.Context) (map[string]string, error)
 	SaveSessionAll(sessionID string, session map[string]string, ctx context.Context) error
+	GetSession(key string) (*model.SessionData, error)
+	SaveSession(key string, s model.SessionData) error
 }

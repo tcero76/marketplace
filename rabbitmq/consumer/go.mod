@@ -1,8 +1,7 @@
 module github.com/tcero76/marketplace/rabbitmq/consumer
 
-go 1.25.1
+go 1.25.2
 
-require (
-	github.com/joho/godotenv v1.5.1
-	github.com/rabbitmq/amqp091-go v1.10.0
-)
+require github.com/rabbitmq/amqp091-go v1.10.0
+
+replace github.com/tcero76/marketplace/config => ../../config

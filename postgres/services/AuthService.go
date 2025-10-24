@@ -3,10 +3,12 @@ package services
 import (
 	"encoding/json"
 	"fmt"
+	"os"
 	"time"
 
 	"github.com/tcero76/marketplace/bff-service/dto"
 	"github.com/tcero76/marketplace/bff-service/services"
+	logConfig "github.com/tcero76/marketplace/config"
 
 	"github.com/tcero76/marketplace/postgres/config"
 	"github.com/tcero76/marketplace/postgres/model"
@@ -23,6 +25,11 @@ type UserService struct {
 
 func NewUserService() services.IUserService {
 	db := config.GetPostgres()
+	if os.Getenv("PROFILE") == "prod" {
+		logConfig.InitLogrus()
+	} else {
+		logConfig.InitDev()
+	}
 	return &UserService{DB: db}
 }
 

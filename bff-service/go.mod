@@ -1,10 +1,9 @@
 module github.com/tcero76/marketplace/bff-service
 
-go 1.25.1
+go 1.25.2
 
 require (
 	github.com/MicahParks/keyfunc v1.9.0
-	github.com/bshuster-repo/logrus-logstash-hook v1.1.0
 	github.com/go-redis/redis/v8 v8.11.5
 	github.com/golang-jwt/jwt/v4 v4.5.2
 	github.com/google/uuid v1.6.0
@@ -18,9 +17,10 @@ require (
 	github.com/stretchr/testify v1.11.1
 	github.com/tcero76/marketplace/clickhouse/model v0.0.0
 	github.com/tcero76/marketplace/clickhouse/services v0.0.0
+	github.com/tcero76/marketplace/config v0.0.0
 	github.com/tcero76/marketplace/postgres/model v0.0.0
 	github.com/tcero76/marketplace/postgres/services v0.0.0
-	github.com/tcero76/marketplace/redis/services v0.0.0-00010101000000-000000000000
+	github.com/tcero76/marketplace/redis/services v0.0.0
 	golang.org/x/oauth2 v0.28.0
 	gorm.io/gorm v1.31.0
 )
@@ -28,6 +28,8 @@ require (
 replace github.com/tcero76/marketplace/rabbitmq/events => ../rabbitmq/events
 
 replace github.com/tcero76/marketplace/clickhouse/config => ../clickhouse/config
+
+replace github.com/tcero76/marketplace/config => ../config
 
 replace github.com/tcero76/marketplace/clickhouse/services => ../clickhouse/services
 
@@ -39,6 +41,8 @@ replace github.com/tcero76/marketplace/postgres/services => ../postgres/services
 
 replace github.com/tcero76/marketplace/postgres/model => ../postgres/model
 
+replace github.com/tcero76/marketplace/redis/model => ../redis/model
+
 replace github.com/tcero76/marketplace/redis/config => ../redis/config
 
 replace github.com/tcero76/marketplace/redis/services => ../redis/services
@@ -49,6 +53,7 @@ require (
 	github.com/ClickHouse/ch-go v0.68.0 // indirect
 	github.com/ClickHouse/clickhouse-go/v2 v2.40.3 // indirect
 	github.com/andybalholm/brotli v1.2.0 // indirect
+	github.com/bshuster-repo/logrus-logstash-hook v1.1.0 // indirect
 	github.com/cespare/xxhash/v2 v2.1.2 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/decred/dcrd/dcrec/secp256k1/v4 v4.4.0 // indirect
@@ -82,6 +87,7 @@ require (
 	github.com/tcero76/marketplace/postgres/config v0.0.0 // indirect
 	github.com/tcero76/marketplace/rabbitmq/events v0.0.0 // indirect
 	github.com/tcero76/marketplace/redis/config v0.0.0 // indirect
+	github.com/tcero76/marketplace/redis/model v0.0.0 // indirect
 	github.com/valyala/bytebufferpool v1.0.0 // indirect
 	github.com/valyala/fasttemplate v1.2.2 // indirect
 	go.opentelemetry.io/otel v1.38.0 // indirect

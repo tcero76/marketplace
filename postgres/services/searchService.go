@@ -1,11 +1,13 @@
 package services
 
 import (
+	"os"
 	"strings"
 
 	log "github.com/sirupsen/logrus"
 	"github.com/tcero76/marketplace/bff-service/dto"
 	"github.com/tcero76/marketplace/bff-service/payload"
+	logConfig "github.com/tcero76/marketplace/config"
 	"github.com/tcero76/marketplace/postgres/config"
 	"github.com/tcero76/marketplace/postgres/model"
 	"gorm.io/gorm"
@@ -17,6 +19,11 @@ type SearchService struct {
 
 func NewSearchService() *SearchService {
 	db := config.GetPostgres()
+	if os.Getenv("PROFILE") == "prod" {
+		logConfig.InitLogrus()
+	} else {
+		logConfig.InitDev()
+	}
 	return &SearchService{DB: db}
 }
 
