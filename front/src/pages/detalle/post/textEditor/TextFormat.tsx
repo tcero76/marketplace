@@ -104,7 +104,7 @@ const TextFormat = forwardRef<TextFormatType,TextFormatProps>(({ highlight, ...p
       .then((res:AxiosResponse<string[]>) => {
         dictionary = res.data.map(m => `#${m}`);
       })
-  })
+  },[])
 
   useEffect(() => {
     const editor = editorRef.current;
@@ -113,6 +113,7 @@ const TextFormat = forwardRef<TextFormatType,TextFormatProps>(({ highlight, ...p
   },[textAndPos])
 
   const onKey = () => {
+
     const sel = window.getSelection();
     if (!sel || sel.rangeCount === 0) return;
     const range = sel.getRangeAt(0);
@@ -121,7 +122,6 @@ const TextFormat = forwardRef<TextFormatType,TextFormatProps>(({ highlight, ...p
     if (match) {
       const current = match[0];
       const options = dictionary.filter((d) => d.toLowerCase().startsWith(current.toLowerCase())).slice(0, 5);;
-
       if (options.length > 0) {
         showSuggestions(options, range);
       } else {
@@ -132,7 +132,12 @@ const TextFormat = forwardRef<TextFormatType,TextFormatProps>(({ highlight, ...p
     }
   }
 
-  const handleChange = async () => {
+  const handleChange = async (ev: React.FormEvent<HTMLDivElement>) => {
+    const native = ev.nativeEvent as InputEvent;
+    const inputType = native.inputType;
+    if(inputType === 'insertCompositionText' || inputType === 'deleteCompositionText') {
+      return
+    }
     const editor = editorRef.current;
     const tP = {
       text:editor.innerText, pos:storeCaretPosition(editor)
@@ -150,6 +155,7 @@ const TextFormat = forwardRef<TextFormatType,TextFormatProps>(({ highlight, ...p
             onInput={handleChange}
             dangerouslySetInnerHTML={{ __html: textAndPos.text}}
             style={{ padding: '10px', minHeight: '100px' }}
+            suppressContentEditableWarning
             {...props}
           />
         <ul id="suggestions" className="list-group suggestions d-none" ref={suggestionsRef}></ul>
