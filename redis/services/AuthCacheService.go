@@ -2,9 +2,11 @@ package services
 
 import (
 	"context"
+	"fmt"
 	"os"
 	"time"
 
+	"github.com/fatih/structs"
 	"github.com/go-redis/redis/v8"
 	log "github.com/sirupsen/logrus"
 	"github.com/tcero76/marketplace/bff-service/services"
@@ -32,7 +34,16 @@ func NewAuthCacheService() services.IAuthCacheService {
 }
 
 func (h *AuthCacheService) SaveSession(key string, s model.SessionData) error {
-	err := h.Rdb.HSet(context.Background(), key, s).Err()
+	log.Info("Saving session to Redis")
+	log.Info("SaveSession arg Key =", key)
+	if key == "" {
+		log.Error("Error: key is empty")
+		return nil
+	}
+	st := structs.New(s)
+	st.TagName = "redis"
+	data := st.Map()
+	err := h.Rdb.HSet(context.Background(), "session:"+key, data).Err()
 	if err != nil {
 		log.Error("Error saving session to Redis: ", err)
 	}
@@ -40,15 +51,31 @@ func (h *AuthCacheService) SaveSession(key string, s model.SessionData) error {
 }
 
 func (h *AuthCacheService) GetSession(key string) (*model.SessionData, error) {
-	var s model.SessionData
-	if err := h.Rdb.HGetAll(context.Background(), key).Scan(&s); err != nil {
+	log.Info("Getting session from Redis")
+	log.Info("GetSession arg Key =", key)
+	m, err := h.Rdb.HGetAll(context.Background(), "session:"+key).Result()
+	if err != nil {
+		log.Error("Error getting session from Redis: ", err)
 		return nil, err
 	}
-	return &s, nil
+	if len(m) == 0 {
+		return nil, fmt.Errorf("no session found for key: %s", key)
+	}
+	s := &model.SessionData{
+		AccessToken:     m["access_token"],
+		RefreshToken:    m["refresh_token"],
+		UserID:          m["user_id"],
+		Idp:             m["idp"],
+		SessionID:       m["session_id"],
+		LoginChallenge:  m["login_challenge"],
+		IsAuthenticated: m["is_authenticated"] == "true",
+	}
+	return s, nil
 }
 
 func (h *AuthCacheService) StoreTokenInRedis(sessionID string, key string, value string, ctx context.Context) error {
-	log.Info("Storing in Redis: sessionID=", sessionID, " key=", key, " value=", value)
+	log.Info("Storing in Redis")
+	log.Debug("sessionID=", sessionID, " key=", key, " value=", value)
 	err := h.Rdb.HSet(
 		ctx,
 		"session:"+sessionID,

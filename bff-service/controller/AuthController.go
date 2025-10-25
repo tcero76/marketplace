@@ -21,6 +21,7 @@ import (
 	"github.com/tcero76/marketplace/bff-service/oauth2/cor"
 	"github.com/tcero76/marketplace/bff-service/payload"
 	"github.com/tcero76/marketplace/bff-service/services"
+	"github.com/tcero76/marketplace/redis/model"
 
 	"golang.org/x/oauth2"
 )
@@ -115,9 +116,14 @@ func AuthHandler(c echo.Context) error {
 func LogoutHandler(authCacheService services.IAuthCacheService) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		log.Info("LogoutHandler called")
-		sessionData := c.Get("session_data").(map[string]string)
-		authCacheService.StoreTokenInRedis(sessionData["session_id"], "isAuthenticated", "false", c.Request().Context())
-		authCacheService.StoreTokenInRedis(sessionData["session_id"], "refresh_token", "", c.Request().Context())
+		sessionData := c.Get("session_data").(*model.SessionData)
+		sessionData.IsAuthenticated = false
+		sessionData.RefreshToken = ""
+		err := authCacheService.SaveSession(sessionData.SessionID, *sessionData)
+		if err != nil {
+			log.WithField("err", err).Error("Error saving session data during logout")
+			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to logout")
+		}
 		return c.JSON(http.StatusOK, map[string]string{
 			"message": "Logout successful",
 		})
@@ -128,7 +134,7 @@ func RefreshTokenHandler(authCacheService services.IAuthCacheService) echo.Handl
 	return func(c echo.Context) error {
 		log.Info("RefreshTokenHandler called")
 		redirect := "http://" + os.Getenv("HOST_EXTERNAL") + ":" + os.Getenv("PORT_EXTERNAL") + os.Getenv("RedirectURL")
-		sessionData := c.Get("session_data").(map[string]string)
+		sessionData := c.Get("session_data").(*model.SessionData)
 		log.Debug("Session Data: ", sessionData)
 		conf := &oauth2.Config{
 			ClientID:     os.Getenv("CLIENT_ID"),
@@ -140,9 +146,9 @@ func RefreshTokenHandler(authCacheService services.IAuthCacheService) echo.Handl
 			RedirectURL: redirect,
 			Scopes:      []string{"openid", "offline_access", "mediamtx:stream"},
 		}
-		log.Debug("Usando el siguiente Access Token: ", token.AccessToken)
+		log.Debug("Usando el siguiente Access Token: ", sessionData.AccessToken)
 		token := &oauth2.Token{
-			RefreshToken: sessionData["refresh_token"],
+			RefreshToken: sessionData.RefreshToken,
 			Expiry:       time.Now().Add(-time.Minute),
 		}
 		log.Debug("Access Token Refrescado: ", token.AccessToken)
@@ -155,8 +161,8 @@ func RefreshTokenHandler(authCacheService services.IAuthCacheService) echo.Handl
 			log.WithField("err", err).Error("Error al refrescar token")
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to refresh token")
 		}
-
-		err = authCacheService.StoreTokenInRedis(sessionData["session_id"], "refresh_token", newToken.RefreshToken, ctx)
+		sessionData.RefreshToken = newToken.RefreshToken
+		err = authCacheService.SaveSession(sessionData.SessionID, *sessionData)
 		if err != nil {
 			log.WithField("err", err).Error("Error storing refresh token")
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to store refresh token")

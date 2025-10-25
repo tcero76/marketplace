@@ -1,11 +1,11 @@
 package cor
 
 import (
-	"fmt"
 	"net/http"
 
 	"github.com/labstack/echo/v4"
-	"github.com/labstack/gommon/log"
+	log "github.com/sirupsen/logrus"
+	"github.com/tcero76/marketplace/redis/model"
 )
 
 type LoginInternalHandler struct {
@@ -15,15 +15,18 @@ type LoginInternalHandler struct {
 
 func (h *LoginInternalHandler) Handle(c echo.Context) error {
 	var idp = c.QueryParam("idp")
-	sessionData := c.Get("session_data").(map[string]string)
-	h.AuthCacheService.StoreTokenInRedis(sessionData["session_id"], "idp", idp, c.Request().Context())
+	sessionData := c.Get("session_data").(*model.SessionData)
+	sessionData.LoginChallenge = c.QueryParam("login_challenge")
+	if sessionData.LoginChallenge == "" {
+		return c.String(http.StatusBadRequest, "No login challenge provided")
+	}
+	sessionData.Idp = idp
+	err := h.AuthCacheService.SaveSession(sessionData.SessionID, *sessionData)
+	if err != nil {
+		log.Error("Error saving session data: ", err)
+		return c.String(http.StatusInternalServerError, "Error saving session data: "+err.Error())
+	}
 	if idp == "internal" {
-		h.AuthCacheService.StoreTokenInRedis(sessionData["session_id"], "idp", idp, c.Request().Context())
-		loginChallenge := c.QueryParam("login_challenge")
-		log.Info("Login challenge received: ", loginChallenge)
-		if loginChallenge == "" {
-			return c.String(http.StatusBadRequest, "No login challenge provided")
-		}
 		err := h.setEncodedCookie(&c)
 		if err != nil {
 			return c.String(http.StatusBadRequest, "Error setting cookie: "+err.Error())
@@ -31,12 +34,13 @@ func (h *LoginInternalHandler) Handle(c echo.Context) error {
 		userForm := c.FormValue("user")
 		// password := c.FormValue("password")
 		userDTO, err := h.InternalAuth.userServices.GetUser(userForm)
+		sessionData.UserID = userDTO.UserID.String()
 		if err != nil {
 			log.Error("Error fetching user from DB: ", err)
 			return c.String(http.StatusBadRequest, "Error fetching user: "+err.Error())
 		}
 		log.Info("UserDTO from db: ", userDTO)
-		redirect, errLogin := h.InternalAuth.Login(loginChallenge, userDTO, c.Request().Context())
+		redirect, errLogin := h.InternalAuth.Login(sessionData.LoginChallenge, userDTO, c.Request().Context())
 		if errLogin != nil {
 			return c.String(http.StatusBadRequest, "Error in login: "+errLogin.Error())
 		}
@@ -58,7 +62,7 @@ func (h *ConsentInternalHandler) Handle(c echo.Context) error {
 	}
 	var expectedState string
 	err = s.Decode("oauth_state", cookie.Value, &expectedState)
-	fmt.Printf("ExpectedState: %s, CookieValue: %s \n", expectedState, cookie.Value)
+	log.Debug("ExpectedState and CookieValue: ", expectedState, cookie.Value)
 	if err != nil {
 		return c.String(http.StatusBadRequest, "Invalid state cookie")
 	}
@@ -81,8 +85,8 @@ type CallbackInternalHandler struct {
 }
 
 func (h *CallbackInternalHandler) Handle(c echo.Context) error {
-	sessionData := c.Get("session_data").(map[string]string)
-	if sessionData["idp"] == "internal" {
+	sessionData := c.Get("session_data").(*model.SessionData)
+	if sessionData.Idp == "internal" {
 		code := c.QueryParam("code")
 		if code == "" {
 			return c.String(http.StatusBadRequest, "No code provided")
@@ -101,21 +105,10 @@ func (h *CallbackInternalHandler) Handle(c echo.Context) error {
 			return c.String(http.StatusBadRequest, "State mismatch")
 		}
 		token := h.InternalAuth.Callback(code, c.Request().Context())
-		sessionId := c.Get("session_data").(map[string]string)["session_id"]
-		err := h.AuthCacheService.StoreTokenInRedis(sessionId, "access_token", token.AccessToken, c.Request().Context())
-		if err != nil {
-			log.Error("Error storing access token in Redis: ", err)
-		}
-		log.Info("Token stored in Redis for sessionId: ", token)
-		err = h.AuthCacheService.StoreTokenInRedis(sessionId, "refresh_token", token.RefreshToken, c.Request().Context())
-		if err != nil {
-			log.Error("Error storing refresh token in Redis: ", err)
-		}
-		log.Info("Storing isAuthenticated true in Redis for sessionId: ", sessionId)
-		err = h.AuthCacheService.StoreTokenInRedis(sessionId, "isAuthenticated", "true", c.Request().Context())
-		if err != nil {
-			log.Error("Error storing access token in Redis: ", err)
-		}
+		sessionData.AccessToken = token.AccessToken
+		sessionData.RefreshToken = token.RefreshToken
+		h.AuthCacheService.SaveSession(sessionData.SessionID, *sessionData)
+		log.Debug("Storing tokens in session Data: ", sessionData)
 		return c.Redirect(http.StatusFound, "/home?accessToken="+token.AccessToken)
 	} else {
 		return h.Next.Handle(c)

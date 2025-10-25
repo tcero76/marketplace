@@ -9,6 +9,7 @@ import (
 	"github.com/labstack/echo/v4"
 	log "github.com/sirupsen/logrus"
 	"github.com/tcero76/marketplace/bff-service/services"
+	"github.com/tcero76/marketplace/redis/model"
 )
 
 var ctx = context.Background()
@@ -37,30 +38,16 @@ func RedisSessionMiddleware(authCacheService services.IAuthCacheService) echo.Mi
 				sessionID = cookie.Value
 				log.Debug("Session ID from cookie: ", sessionID)
 			}
-			val, err := authCacheService.LoadSessionAll(sessionID, ctx)
-			s, err2 := authCacheService.GetSession(sessionID)
-			if err2 == nil {
-				log.Debug("Session data from Redis: ", s)
+			log.Info("Session ID: ", sessionID)
+			val, err := authCacheService.GetSession(sessionID)
+			if err != nil {
+				log.Error("Error getting session: ", err)
+				sessionData := &model.SessionData{}
+				sessionData.SessionID = sessionID
+				sessionData.IsAuthenticated = false
+				authCacheService.SaveSession(sessionID, *sessionData)
 			}
-			log.Info("Session data loaded: ", s)
-			if err == nil {
-				if len(val) == 0 {
-					sessionData := make(map[string]string)
-					sessionData["session_id"] = sessionID
-					sessionData["isAuthenticated"] = "false"
-					c.Set("session_data", sessionData)
-					err = authCacheService.SaveSessionAll(sessionID, sessionData, ctx)
-					if err != nil {
-						log.Error("Error al crear session: ", err)
-						return c.JSON(http.StatusInternalServerError, "Error al crear session: "+err.Error())
-					}
-				} else {
-					c.Set("session_data", val)
-				}
-			} else {
-				log.Error("Error al cargar session: ", err)
-				return c.JSON(http.StatusInternalServerError, "Error al crear session: "+err.Error())
-			}
+			c.Set("session_data", val)
 			return next(c)
 		}
 	}

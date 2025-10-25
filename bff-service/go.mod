@@ -10,7 +10,6 @@ require (
 	github.com/gorilla/securecookie v1.1.2
 	github.com/joho/godotenv v1.5.1
 	github.com/labstack/echo/v4 v4.13.3
-	github.com/labstack/gommon v0.4.2
 	github.com/lestrrat-go/jwx/v2 v2.1.6
 	github.com/ory/hydra-client-go/v2 v2.2.1
 	github.com/sirupsen/logrus v1.9.3
@@ -20,6 +19,7 @@ require (
 	github.com/tcero76/marketplace/config v0.0.0
 	github.com/tcero76/marketplace/postgres/model v0.0.0
 	github.com/tcero76/marketplace/postgres/services v0.0.0
+	github.com/tcero76/marketplace/redis/model v0.0.0
 	github.com/tcero76/marketplace/redis/services v0.0.0
 	golang.org/x/oauth2 v0.28.0
 	gorm.io/gorm v1.31.0
@@ -58,6 +58,7 @@ require (
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/decred/dcrd/dcrec/secp256k1/v4 v4.4.0 // indirect
 	github.com/dgryski/go-rendezvous v0.0.0-20200823014737-9f7001d12a5f // indirect
+	github.com/fatih/structs v1.1.0 // indirect
 	github.com/go-faster/city v1.0.1 // indirect
 	github.com/go-faster/errors v0.7.1 // indirect
 	github.com/go-sql-driver/mysql v1.8.1 // indirect
@@ -69,6 +70,7 @@ require (
 	github.com/jinzhu/inflection v1.0.0 // indirect
 	github.com/jinzhu/now v1.1.5 // indirect
 	github.com/klauspost/compress v1.18.0 // indirect
+	github.com/labstack/gommon v0.4.2 // indirect
 	github.com/lestrrat-go/blackmagic v1.0.3 // indirect
 	github.com/lestrrat-go/httpcc v1.0.1 // indirect
 	github.com/lestrrat-go/httprc v1.0.6 // indirect
@@ -87,7 +89,6 @@ require (
 	github.com/tcero76/marketplace/postgres/config v0.0.0 // indirect
 	github.com/tcero76/marketplace/rabbitmq/events v0.0.0 // indirect
 	github.com/tcero76/marketplace/redis/config v0.0.0 // indirect
-	github.com/tcero76/marketplace/redis/model v0.0.0 // indirect
 	github.com/valyala/bytebufferpool v1.0.0 // indirect
 	github.com/valyala/fasttemplate v1.2.2 // indirect
 	go.opentelemetry.io/otel v1.38.0 // indirect

@@ -8,10 +8,11 @@ import (
 
 	"github.com/tcero76/marketplace/bff-service/dto"
 	"github.com/tcero76/marketplace/bff-service/model"
+	redisModel "github.com/tcero76/marketplace/redis/model"
 
 	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
-	"github.com/labstack/gommon/log"
+	log "github.com/sirupsen/logrus"
 	"golang.org/x/oauth2"
 	"gorm.io/gorm"
 )
@@ -23,9 +24,11 @@ type LoginGoogleHandler struct {
 
 func (h *LoginGoogleHandler) Handle(c echo.Context) error {
 	var idp = c.QueryParam("idp")
+	sessionData := c.Get("session_data").(*redisModel.SessionData)
 	if idp == "google" {
 		redirect, _ := h.GoogleAuth.Login(c.QueryParam("state"), nil, c.Request().Context())
-		h.AuthCacheService.StoreTokenInRedis(c.Get("session_data").(map[string]string)["session_id"], "loginChallenge", c.QueryParam("login_challenge"), c.Request().Context())
+		sessionData.LoginChallenge = c.QueryParam("login_challenge")
+		h.AuthCacheService.SaveSession(sessionData.SessionID, *sessionData)
 		url := make(map[string]string)
 		url["url"] = redirect
 		return c.JSON(http.StatusOK, url)
@@ -48,8 +51,8 @@ type CallbackGoogleHandler struct {
 }
 
 func (h *CallbackGoogleHandler) Handle(c echo.Context) error {
-	sessionData := c.Get("session_data").(map[string]string)
-	if sessionData["idp"] == "google" && sessionData["isAuthenticated"] == "false" {
+	sessionData := c.Get("session_data").(*redisModel.SessionData)
+	if sessionData.Idp == "google" && sessionData.IsAuthenticated == false {
 		log.Info("Entró a CallbackGoogleHandler")
 		token, err := h.GoogleAuth.Callback(c.QueryParam("code"), c.Request().Context())
 		if err != nil {
@@ -99,14 +102,15 @@ func (h *CallbackGoogleHandler) Handle(c echo.Context) error {
 			return c.String(http.StatusInternalServerError, "Error in internal login: "+err.Error())
 		}
 		h.setEncodedCookie(&c)
-		err = h.AuthCacheService.StoreTokenInRedis(sessionData["session_id"], "isAuthenticated", "true", c.Request().Context())
+
+		sessionData.IsAuthenticated = true
+		sessionData.Idp = "internal"
+
+		err = h.AuthCacheService.SaveSession(sessionData.SessionID, *sessionData)
 		if err != nil {
-			log.Error("Error storing isAuthenticated in Redis: ", err)
-			return c.String(http.StatusInternalServerError, "Error storing isAuthenticated in Redis: "+err.Error())
-		}
-		err = h.AuthCacheService.StoreTokenInRedis(sessionData["session_id"], "idp", "internal", c.Request().Context())
-		if err != nil {
-			log.Error("Error storing access token in Redis: ", err)
+			log.Error("Error saving session data to Redis: ", err)
+			return c.String(http.StatusInternalServerError, "Error saving session data to Redis: "+err.Error())
+
 		}
 		return c.Redirect(http.StatusFound, redirect)
 	}
