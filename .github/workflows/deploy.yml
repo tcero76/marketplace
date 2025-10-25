@@ -153,8 +153,8 @@ jobs:
 
       - name: Generate final docker-compose.yml
         run: |
-          mkdir -p /mnt/data/{timescaleDB/data,redis/data,prometheus,mediamtx,grafana,clickhouse/data}
-
+          sudo mkdir -p /mnt/data/{timescaleDB/data,redis/data,prometheus,mediamtx,grafana,clickhouse/data}
+          sudo chown -R $USER:$USER /mnt/data
           docker compose config \
           | sed '1d' \
           | sed -E '
