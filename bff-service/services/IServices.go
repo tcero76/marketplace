@@ -38,7 +38,6 @@ type IRecomendationService interface {
 }
 
 type IAuthCacheService interface {
-	StoreTokenInRedis(sessionID string, key string, value string, ctx context.Context) error
 	LoadTokenFromRedis(sessionID string, key string, ctx context.Context) (string, error)
 	LoadSessionAll(sessionID string, ctx context.Context) (map[string]string, error)
 	SaveSessionAll(sessionID string, session map[string]string, ctx context.Context) error

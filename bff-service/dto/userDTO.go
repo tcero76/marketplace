@@ -2,7 +2,7 @@ package dto
 
 import (
 	"github.com/google/uuid"
-	"github.com/labstack/gommon/log"
+	log "github.com/sirupsen/logrus"
 	"github.com/tcero76/marketplace/postgres/model"
 )
 
