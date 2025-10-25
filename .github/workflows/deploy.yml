@@ -186,7 +186,7 @@ jobs:
             done
           "
       - name: Flyway migrate
-        uses: flyway/flyway-action@v1
+        uses: red-gate/FlywayGithubAction@main
         with:
           url: jdbc:postgresql://${{ secrets.POSTGRES_HOST }}:${{ secrets.POSTGRES_PORT }}/${{ secrets.POSTGRES_DB }} 
           user: ${{ secrets.POSTGRES_USER }}
