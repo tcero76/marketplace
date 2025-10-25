@@ -24,7 +24,7 @@ services:
       replicas: 1
       placement:
         constraints:
-          - node.hostname == swarm-worker-0
+          - node.hostname == swarm-manager
       restart_policy:
         condition: on-failure
       resources:
