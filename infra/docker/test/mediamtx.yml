@@ -9,7 +9,7 @@ services:
       - "1935:1935"
     volumes:
       - ./config/mediamtx/mediamtx.yml:/etc/mediamtx/mediamtx.yml
-      - ../../volumes/mediamtx/data:/data
+      - ${MEDIAMTX_VOLUME}/data:/data
     environment:
       - MEDIAMTX_CONFIG_PATH=/etc/mediamtx/mediamtx.yml
     restart: unless-stopped

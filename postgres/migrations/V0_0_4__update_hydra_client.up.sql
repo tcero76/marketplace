@@ -1,0 +1,1 @@
+update hydra.hydra_client set scope = 'openid offline mediamtx:stream' where id = '657d0bb0-2314-4c8b-b649-1525af797d72';

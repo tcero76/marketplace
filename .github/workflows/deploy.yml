@@ -171,3 +171,24 @@ jobs:
         run: |
           ssh -o StrictHostKeyChecking=no root@${{ secrets.MANAGER_IP }} \
             "docker stack deploy -c /root/docker-compose.yml mystack --with-registry-auth"
+
+      - name: Wait for Postgres to be ready
+        run: |
+          ssh -o StrictHostKeyChecking=no root@${{ secrets.MANAGER_IP }} "
+            echo 'Esperando a que el servicio Postgres esté en estado Running...';
+            for i in {1..30}; do
+              if docker service ps mystack_db --filter 'desired-state=running' | grep Running; then
+                echo 'Postgres está activo';
+                break
+              fi
+              echo 'Esperando...';
+              sleep 5;
+            done
+          "
+      - name: Flyway migrate
+        uses: flyway/flyway-action@v1
+        with:
+          url: jdbc:postgresql://${{ secrets.POSTGRES_HOST }}:${{ secrets.POSTGRES_PORT }}/${{ secrets.POSTGRES_DB }} 
+          user: ${{ secrets.POSTGRES_USER }}
+          password: ${{ secrets.POSTGRES_PASSWORD }}
+          locations: filesystem:./postgres/migrations

@@ -1,3 +1,47 @@
 networks:
   application:
+    name: marketplace_network
     driver: bridge
+volumes:
+  timescaledb_data:
+    name: timescaledb_data
+    driver_opts:
+      type: none
+      device: ${POSTGRES_VOLUME}/data
+      o: bind
+  clickhouse_data:
+    name: clickhouse_data
+    driver_opts:
+      type: none
+      device: ${CLICKHOUSE_VOLUME}/data
+      o: bind
+  rabbitmq_data:
+    name: rabbitmq_data
+    driver_opts:
+      type: none
+      device: ${RABBITMQ_VOLUME}/data
+      o: bind
+  redis_data:
+    name: redis_data
+    driver_opts:
+      type: none
+      device: ${REDIS_VOLUME}/data
+      o: bind
+  grafana_data:
+    name: grafana_data
+    driver_opts:
+      type: none
+      device: ${GRAFANA_VOLUME}/data
+      o: bind
+  prometheus_data:
+    name: prometheus_data
+    driver_opts:
+      type: none
+      device: ${PROMETHEUS_VOLUME}/data
+      o: bind
+  mediamtx_data:
+    name: mediamtx_data
+    driver_opts:
+      type: none
+      device: ${MEDIAMTX_VOLUME}/data
+      o: bind

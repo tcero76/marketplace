@@ -1,0 +1,1 @@
+ALTER TABLE marketplace.users ADD COLUMN email VARCHAR(255);
