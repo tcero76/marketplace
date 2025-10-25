@@ -8,7 +8,7 @@ services:
     #            -c max_wal_senders=10
     #            -c max_replication_slots=10
     volumes:
-      - ${POSTGRES_VOLUME}/data:/var/lib/postgresql/data
+      - timescaledb_data:/var/lib/postgresql/data
     ports:
       - 5432:5432
     environment:

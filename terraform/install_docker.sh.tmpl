@@ -38,4 +38,5 @@ for i in {1..30}; do
 done
 token=$(ssh -o StrictHostKeyChecking=no root@${manager_ip} "cat /root/worker_token.txt")
 docker swarm join --token $token ${manager_ip}:2377
+ssh -o StrictHostKeyChecking=no root@${manager_ip} "docker node update --label-add role=app $(hostname)"
 %{ endif }

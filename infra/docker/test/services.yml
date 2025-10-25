@@ -1,6 +1,5 @@
 services:
   bff-service:
-    image: tcero76/bff-service:${TAG}
     build:
       dockerfile: Dockerfile
       context: ../../../bff-service
@@ -44,7 +43,6 @@ services:
       - broker
       - clickhouse
   cache-updater-service:
-    image: tcero76/cache-updater-service:${TAG}
     build:
       dockerfile: Dockerfile
       context: ../../../cache-updater
@@ -66,7 +64,6 @@ services:
       - cache
       - broker
   broker-email-service:
-    image: tcero76/broker-email-service:${TAG}
     build:
       dockerfile: Dockerfile
       context: ../../../broker-email-service
@@ -92,7 +89,6 @@ services:
       broker:
         condition: service_healthy
   db-updater-service:
-    image: tcero76/db-updater-service:${TAG}
     build:
       dockerfile: Dockerfile
       context: ../../../db-updater
@@ -114,7 +110,6 @@ services:
       - db
       - broker
   db-broker-service:
-    image: tcero76/db-broker-service:${TAG}
     build:
       dockerfile: Dockerfile
       context: ../../../db-broker-service
@@ -138,7 +133,6 @@ services:
       - db
       - broker
   ws-service:
-    image: tcero76/ws-service:${TAG}
     build:
       dockerfile: Dockerfile
       context: ../../../ws-service
@@ -160,7 +154,6 @@ services:
     networks:
       - ${NETWORK_APPLICATION}
   front:
-    image: node:${NODE_VERSION}
     container_name: front
     profiles:
       - front
@@ -182,7 +175,6 @@ services:
     depends_on:
       - envoy
   solana-service:
-    image: tcero76/solana-service:${TAG}
     build:
       dockerfile: Dockerfile
       context: ../../solana-service
@@ -202,7 +194,6 @@ services:
     networks:
       - ${NETWORK_APPLICATION}
   scrap-service:
-    image: tcero76/scrap-service:${TAG}
     build:
       dockerfile: Dockerfile
       context: ../../../scrap-service
@@ -228,7 +219,6 @@ services:
     networks:
       - ${NETWORK_APPLICATION}
   beat-service:
-    image: tcero76/beat-service:${TAG}
     build:
       dockerfile: Dockerfile
       context: ../../../beat-service
@@ -253,7 +243,6 @@ services:
     networks:
       - ${NETWORK_APPLICATION}
   recomender-service:
-    image: tcero76/recomender-service:${TAG}
     build:
       dockerfile: Dockerfile
       context: ../../../recomender-service
@@ -282,7 +271,6 @@ services:
     networks:
       - ${NETWORK_APPLICATION}
   mediamtx-service:
-    image: tcero76/mediamtx-service:${TAG}
     build:
       dockerfile: Dockerfile
       context: ../../../mediamtx-service

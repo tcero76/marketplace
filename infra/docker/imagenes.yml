@@ -1,0 +1,25 @@
+services:
+  bff-service:
+    image: tcero76/bff-service:${TAG}
+  cache-updater-service:
+    image: tcero76/cache-updater-service:${TAG}
+  broker-email-service:
+    image: tcero76/broker-email-service:${TAG}
+  db-updater-service:
+    image: tcero76/db-updater-service:${TAG}
+  db-broker-service:
+    image: tcero76/db-broker-service:${TAG}
+  ws-service:
+    image: tcero76/ws-service:${TAG}
+  front:
+    image: node:${NODE_VERSION}
+  solana-service:
+    image: tcero76/solana-service:${TAG}
+  scrap-service:
+    image: tcero76/scrap-service:${TAG}
+  beat-service:
+    image: tcero76/beat-service:${TAG}
+  recomender-service:
+    image: tcero76/recomender-service:${TAG}
+  mediamtx-service:
+    image: tcero76/mediamtx-service:${TAG}

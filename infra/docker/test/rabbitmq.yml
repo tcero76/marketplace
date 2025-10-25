@@ -6,6 +6,8 @@ services:
       - broker
     tty: true
     stdin_open: true
+    volumes:
+      - ${RABBITMQ_VOLUME}:/var/lib/rabbitmq
     ports:
       - 5672:5672
       - 15672:15672
