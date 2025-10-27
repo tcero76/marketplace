@@ -163,7 +163,9 @@ jobs:
 
       - name: Copy docker-compose.yml to manager
         run: |
-          mkdir ~/infra/{docker/prod}
+          ssh -o StrictHostKeyChecking=no root@${{ secrets.MANAGER_IP }} "
+            mkdir ~/infra/{docker/prod}
+          "
           scp -o StrictHostKeyChecking=no infra/docker/imagenes.yml \
             root@${{ secrets.MANAGER_IP }}:/root/infra/docker/imagenes.yml
           scp -o StrictHostKeyChecking=no infra/docker/prod/* \
