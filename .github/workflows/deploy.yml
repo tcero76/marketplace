@@ -151,20 +151,10 @@ jobs:
         with:
           ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
-      - name: Generate final docker-compose.yml
-        run: |
-
-          docker compose config \
-          | sed '1d' \
-          | sed -E '
-            s/^([[:space:]]*cpus:[[:space:]]*)([0-9]+)$/\1"\2"/;
-            s/^([[:space:]]*published:[[:space:]]*)"([0-9]+)"/\1\2/
-          ' >> docker-compose.final.yml
-
       - name: Copy docker-compose.yml to manager
         run: |
           ssh -o StrictHostKeyChecking=no root@${{ secrets.MANAGER_IP }} "
-            mkdir ~/infra/{docker/prod}
+            mkdir /root/infra/{docker/prod}
           "
           scp -o StrictHostKeyChecking=no infra/docker/imagenes.yml \
             root@${{ secrets.MANAGER_IP }}:/root/infra/docker/imagenes.yml
