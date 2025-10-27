@@ -34,13 +34,27 @@ services:
         reservations:
           memory: 512M
   flyway:
-    image: flyway/flyway
-    restart: "no"
-    profiles:
-      - job
-    command: -url=jdbc:postgresql://db:5432/${POSTGRES_DB} -user=${POSTGRES_USER} -password=${POSTGRES_PASSWORD} -schemas=marketplace,scrap -locations=filesystem:/flyway/sql migrate
-    volumes:
-      - ${POSTGRES_VOLUME}/migrations:/flyway/sql
+    image: tcero76/flyway
+    build:
+      dockerfile: Dockerfile
+      context: ../../../postgres/migrations/
+    deploy:
+      mode: replicated-job
+      restart_policy:
+        condition: none
+      placement:
+        constraints:
+          - node.hostname == swarm-manager
+    command: >
+      -url=jdbc:postgresql://${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}
+      -user=${POSTGRES_USER}
+      -password=${POSTGRES_PASSWORD}
+      -schemas=marketplace,scrap
+      -locations=filesystem:/flyway/sql
+      -connectRetries=10
+      migrate
+    # volumes:
+    #   - ${POSTGRES_VOLUME}/migrations:/flyway/sql
     networks:
       - ${TF_VAR_overlay_network:-application}
     depends_on:
