@@ -163,13 +163,25 @@ jobs:
 
       - name: Copy docker-compose.yml to manager
         run: |
-          scp -o StrictHostKeyChecking=no docker-compose.final.yml \
-            root@${{ secrets.MANAGER_IP }}:/root/docker-compose.yml
+          mkdir ~/infra/{docker/prod}
+          scp -o StrictHostKeyChecking=no infra/docker/imagenes.yml \
+            root@${{ secrets.MANAGER_IP }}:/root/infra/docker/imagenes.yml
+          scp -o StrictHostKeyChecking=no infra/docker/prod/* \
+            root@${{ secrets.MANAGER_IP }}:/root/infra/docker/prod/
 
       - name: Deploy stack on Swarm manager
         run: |
-          ssh -o StrictHostKeyChecking=no root@${{ secrets.MANAGER_IP }} \
-            "docker stack deploy -c /root/docker-compose.yml mystack --with-registry-auth"
+          STACK_NAME="mystack"
+          COMPOSE_DIR="infra/docker/prod/"
+
+          # Crea la lista de archivos
+          COMPOSE_FILES=$(ls $COMPOSE_DIR/*.yml | xargs -I{} echo "-c {}" | tr '\n' ' ')
+
+          echo "Desplegando stack $STACK_NAME con:"
+          echo "$COMPOSE_FILES"
+
+          # Ejecuta el deploy con todos los YAMLs
+          docker stack deploy -c infra/docker/imagenes.yml $COMPOSE_FILES $STACK_NAME --with-registry-auth
 
       - name: Wait for Postgres to be ready
         run: |
