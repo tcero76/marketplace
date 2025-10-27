@@ -19,11 +19,13 @@ services:
     networks:
       - ${NETWORK_APPLICATION}
   flyway:
-    image: flyway/flyway
-    restart: "no"
+    image: tcero76/flyway
+    build:
+      dockerfile: Dockerfile
+      context: /home/leonardo/marketplace/postgres/migrations/
     profiles:
-      - job
-    command: -url=jdbc:postgresql://db:5432/${POSTGRES_DB} -user=${POSTGRES_USER} -password=${POSTGRES_PASSWORD} -schemas=marketplace,scrap -locations=filesystem:/flyway/sql migrate
+      - postgres
+    command: -url=jdbc:postgresql://${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB} -user=${POSTGRES_USER} -password=${POSTGRES_PASSWORD} -schemas=marketplace,scrap -locations=filesystem:/flyway/sql migrate
     volumes:
       - ${POSTGRES_VOLUME}/migrations:/flyway/sql
     networks:
