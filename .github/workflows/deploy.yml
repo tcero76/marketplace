@@ -158,7 +158,7 @@ jobs:
           "
           scp -o StrictHostKeyChecking=no infra/docker/imagenes.yml \
             root@${{ secrets.MANAGER_IP }}:/root/docker/imagenes.yml
-          scp -o StrictHostKeyChecking=no infra/docker/* \
+          scp -o StrictHostKeyChecking=no infra/docker/prod/* \
             root@${{ secrets.MANAGER_IP }}:/root/docker/
 
       - name: Deploy stack on Swarm manager
