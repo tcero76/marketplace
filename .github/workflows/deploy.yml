@@ -153,6 +153,7 @@ jobs:
 
       - name: Generate final docker-compose.yml
         run: |
+
           docker compose config \
           | sed '1d' \
           | sed -E '
