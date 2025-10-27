@@ -172,8 +172,10 @@ jobs:
           echo "Desplegando stack $STACK_NAME con:"
           echo "$COMPOSE_FILES"
 
+          ssh -o StrictHostKeyChecking=no root@${{ secrets.MANAGER_IP }} "
+            docker stack deploy $COMPOSE_FILES $STACK_NAME --with-registry-auth
+          "
           # Ejecuta el deploy con todos los YAMLs
-          docker stack deploy $COMPOSE_FILES $STACK_NAME --with-registry-auth
 
       - name: Wait for Postgres to be ready
         run: |
