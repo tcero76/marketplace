@@ -15,8 +15,11 @@ set -x
 # Configurar almacenamiento persistente para PostgreSQL
 mkfs.ext4 /dev/disk/by-id/scsi-0DO_Volume_swarm-postgres-data
 mkdir -p /mnt/data
+
 mount /dev/disk/by-id/scsi-0DO_Volume_swarm-postgres-data /mnt/data
 echo "/dev/disk/by-id/scsi-0DO_Volume_swarm-postgres-data /mnt/data ext4 defaults,nofail 0 2" >> /etc/fstab
+
+mkdir -p /mnt/data/{timescaleDB/data,redis/data,prometheus,mediamtx,grafana,clickhouse/data}
 
 echo "${internal_pubkey}" >> /root/.ssh/authorized_keys
 docker swarm init --advertise-addr $(hostname -I | awk '{print $1}')
