@@ -187,7 +187,7 @@ jobs:
       - name: Flyway migrate
         uses: red-gate/FlywayGithubAction@main
         with:
-          url: jdbc:postgresql://${{ secrets.POSTGRES_HOST }}:${{ secrets.POSTGRES_PORT }}/${{ secrets.POSTGRES_DB }} 
+          url: jdbc:postgresql://${{ secrets.MANAGER_IP }}:${{ secrets.POSTGRES_PORT }}/${{ secrets.POSTGRES_DB }} 
           user: ${{ secrets.POSTGRES_USER }}
           password: ${{ secrets.POSTGRES_PASSWORD }}
           locations: filesystem:./postgres/migrations
