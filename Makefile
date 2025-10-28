@@ -83,6 +83,3 @@ tfssh:
 
 redis:
 	@docker compose --env-file ${ENVIRONMENTS} exec -it cache redis-cli
-
-migra2:
-	docker run --rm --network mystack_default myregistry.com/myapp:latest npm run migrate
