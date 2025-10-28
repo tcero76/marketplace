@@ -151,6 +151,22 @@ jobs:
         with:
           ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
+      - name: Crear archivo .env
+        run: |
+          ssh user@TU_SERVIDOR "bash -c 'cat > ~/root/.env <<EOF
+          POSTGRES_USER=${{ secrets.POSTGRES_USER }}
+          POSTGRES_HOST=${{ secrets.POSTGRES_HOST}}
+          POSTGRES_PORT=${{ secrets.POSTGRES_PORT}}
+          POSTGRES_DB=${{ secrets.POSTGRES_DB }}
+          POSTGRES_VOLUME=${{ secrets.POSTGRES_VOLUME }}
+          NETWORK_APPLICATION=${{ secrets.NETWORK_APPLICATION }}
+          EOF'"
+
+      - name: Crear secrets en Docker Swarm
+        run: |
+          echo "${{ secrets.POSTGRES_PASSWORD }}" | docker secret create postgres_password -
+        shell: bash
+
       - name: Copy docker-compose.yml to manager
         run: |
           ssh -o StrictHostKeyChecking=no root@${{ secrets.MANAGER_IP }} "
@@ -167,26 +183,13 @@ jobs:
           COMPOSE_DIR="/root/docker"
 
           # Crea la lista de archivos
-          COMPOSE_FILES=$(ls $COMPOSE_DIR/*.yml | xargs -I{} echo "-c {}" | tr '\n' ' ')
+          COMPOSE_FILES="-c infra/docker/prod/postgres.yml" #$(ls $COMPOSE_DIR/*.yml | xargs -I{} echo "-c {}" | tr '\n' ' ')
 
           echo "Desplegando stack $STACK_NAME con:"
           echo "$COMPOSE_FILES"
 
           ssh -o StrictHostKeyChecking=no root@${{ secrets.MANAGER_IP }} "
-            docker stack deploy $COMPOSE_FILES $STACK_NAME --with-registry-auth
+            docker stack deploy --env-file ./.env $COMPOSE_FILES $STACK_NAME --with-registry-auth
           "
           # Ejecuta el deploy con todos los YAMLs
 
-      - name: Wait for Postgres to be ready
-        run: |
-          ssh -o StrictHostKeyChecking=no root@${{ secrets.MANAGER_IP }} "
-            echo 'Esperando a que el servicio Postgres esté en estado Running...';
-            for i in {1..30}; do
-              if docker service ps mystack_db --filter 'desired-state=running' | grep Running; then
-                echo 'Postgres está activo';
-                break
-              fi
-              echo 'Esperando...';
-              sleep 5;
-            done
-          "
