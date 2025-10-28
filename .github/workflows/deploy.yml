@@ -187,9 +187,6 @@ jobs:
           STACK_NAME=mystack
           COMPOSE_FILES="-c /root/docker/postgres.yml -c /root/docker/common.yml"
 
-          # Copiamos el archivo .env al manager remoto
-          scp -o StrictHostKeyChecking=no .env root@${{ secrets.MANAGER_IP }}:/root/.env
-
           # Ejecutamos el deploy remoto usando heredoc
           ssh -o StrictHostKeyChecking=no root@${{ secrets.MANAGER_IP }} <<'EOF'
             set -e
