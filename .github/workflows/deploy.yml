@@ -194,8 +194,11 @@ jobs:
           echo "$COMPOSE_FILES"
 
           ssh -o StrictHostKeyChecking=no root@${{ secrets.MANAGER_IP }} "
-            export \$(cat .env | grep -v '^#' | xargs)
+            export $(cat /root/.env | grep -v '^#' | xargs);
+          "
+          ssh -o StrictHostKeyChecking=no root@${{ secrets.MANAGER_IP }} "
             docker stack deploy $COMPOSE_FILES $STACK_NAME --with-registry-auth
           "
-          # Ejecuta el deploy con todos los YAMLs
+
+
 
