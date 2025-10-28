@@ -59,7 +59,6 @@ services:
       -locations=filesystem:/flyway/sql \
       -connectRetries=10 \
       migrate
-      '
     networks:
       - ${NETWORK_APPLICATION:-application}
     depends_on:
