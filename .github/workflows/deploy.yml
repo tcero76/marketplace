@@ -183,19 +183,8 @@ jobs:
             root@${{ secrets.MANAGER_IP }}:/root/docker/
 
       - name: Deploy stack on Swarm manager
-        run: |
-          ssh -o StrictHostKeyChecking=no root@${{ secrets.MANAGER_IP }} "
-            set -e
-            echo 'Cargando variables de entorno...'
+        run: ssh -o StrictHostKeyChecking=no root@${{ secrets.MANAGER_IP }} "/root/deploy_stack.sh"
 
-            # Carga variables del .env remoto
-            set -a
-            . /root/.env
-            set +a
-
-            # Ejecuta el deploy
-            docker stack deploy -c /root/docker/postgres.yml -c /root/docker/common.yml mystack --with-registry-auth
-          "
 
 
 
