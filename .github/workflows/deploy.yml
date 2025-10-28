@@ -184,19 +184,19 @@ jobs:
 
       - name: Deploy stack on Swarm manager
         run: |
+          STACK_NAME=mystack
+          COMPOSE_DIR=/root/docker
 
-          ssh -o StrictHostKeyChecking=no root@${{ secrets.MANAGER_IP }} '
-            STACK_NAME="mystack"
-            COMPOSE_DIR=/root/docker
+          # Crea la lista de archivos
+          COMPOSE_FILES="-c ./docker/postgres.yml -c ./docker/common.yml" #$(ls $COMPOSE_DIR/*.yml | xargs -I{} echo "-c {}" | tr '\n' ' ')
 
-            # Crea la lista de archivos
-            COMPOSE_FILES="-c ./docker/postgres.yml -c ./docker/common.yml" #$(ls $COMPOSE_DIR/*.yml | xargs -I{} echo "-c {}" | tr '\n' ' ')
-
-            echo "Desplegando stack $STACK_NAME con:"
-            echo "$COMPOSE_FILES"
-            export $(cat /root/.env | grep -v '^#' | xargs);
-            docker stack deploy $COMPOSE_FILES $STACK_NAME --with-registry-auth
+          echo "Desplegando stack $STACK_NAME con:"
+          echo "$COMPOSE_FILES"
+            export $(cat /root/.env | xargs);
           '
+          ssh -o StrictHostKeyChecking=no root@${{ secrets.MANAGER_IP }} "
+            docker stack deploy $COMPOSE_FILES $STACK_NAME --with-registry-auth
+          "
 
 
 
