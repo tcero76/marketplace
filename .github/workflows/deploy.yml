@@ -185,13 +185,13 @@ jobs:
           COMPOSE_DIR="/root/docker"
 
           # Crea la lista de archivos
-          COMPOSE_FILES="-c infra/docker/prod/postgres.yml" #$(ls $COMPOSE_DIR/*.yml | xargs -I{} echo "-c {}" | tr '\n' ' ')
+          COMPOSE_FILES="-c ./infra/docker/prod/postgres.yml" #$(ls $COMPOSE_DIR/*.yml | xargs -I{} echo "-c {}" | tr '\n' ' ')
 
           echo "Desplegando stack $STACK_NAME con:"
           echo "$COMPOSE_FILES"
 
           ssh -o StrictHostKeyChecking=no root@${{ secrets.MANAGER_IP }} "
-            docker stack deploy --env-file ./.env $COMPOSE_FILES $STACK_NAME --with-registry-auth
+            docker stack deploy $COMPOSE_FILES $STACK_NAME --with-registry-auth
           "
           # Ejecuta el deploy con todos los YAMLs
 
