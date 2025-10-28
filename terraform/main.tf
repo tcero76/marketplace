@@ -7,17 +7,10 @@ terraform {
   }
 }
 
-# -----------------------------
-# 1️⃣  Crear VPC privada
-# -----------------------------
-
 data "digitalocean_vpc" "default" {
   region = var.region
 }
 
-# -----------------------------
-# 2️⃣  Crear Droplets SIN IP pública
-# -----------------------------
 data "digitalocean_ssh_key" "default" {
   name = var.ssh_key_name
 }
@@ -42,6 +35,25 @@ resource "digitalocean_droplet" "swarm_manager" {
   size      = var.size
   image     = var.image
   ssh_keys  = [data.digitalocean_ssh_key.default.id]
+
+  provisioner "file" {
+    source      = "${path.module}/scripts/deploy_stack.sh"
+    destination = "/root/deploy_stack.sh"
+  }
+
+  provisioner "remote-exec" {
+    inline = [
+      "chmod +x /root/deploy_stack.sh"
+    ]
+  }
+
+  connection {
+    type        = "ssh"
+    user        = "root"
+    host        = self.ipv4_address
+    private_key = file(var.ssh_private_key)
+  }
+
   user_data = templatefile("${path.module}/install_docker.sh.tmpl", {
     manager_ip = ""
     is_manager = true
