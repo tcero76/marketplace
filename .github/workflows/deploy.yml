@@ -164,7 +164,9 @@ jobs:
 
       - name: Crear secrets en Docker Swarm
         run: |
-          echo "${{ secrets.POSTGRES_PASSWORD }}" | docker secret create postgres_password -
+          ssh -o StrictHostKeyChecking=no root@${{ secrets.MANAGER_IP }} "
+            echo "${{ secrets.POSTGRES_PASSWORD }}" | docker secret create postgres_password -
+          "
         shell: bash
 
       - name: Copy docker-compose.yml to manager
