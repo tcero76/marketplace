@@ -66,5 +66,7 @@ services:
       - db
 volumes:
   postgres:
-
+secrets:
+  postgres_password:
+    external: true
       
