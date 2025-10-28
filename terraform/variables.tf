@@ -26,3 +26,7 @@ variable "overlay_network" {
   type = string
   default = "application"
 }
+
+variable "ssh_private_key" {
+  default = "~/.ssh/id_rsa"
+}
