@@ -166,9 +166,9 @@ jobs:
         continue-on-error: true
         run: |
           ssh -o StrictHostKeyChecking=no root@${{ secrets.MANAGER_IP }} "
-          echo '${{ secrets.POSTGRES_PASSWORD }}' | docker secret create postgres_password - \
-            && echo '✅ Secret postgres_password creado' \
-            || echo 'ℹ️ Secret postgres_password ya existe, continuando...'
+            echo '${{ secrets.POSTGRES_PASSWORD }}' | docker secret create postgres_password - \
+              && echo '✅ Secret postgres_password creado' \
+              || echo 'ℹ️ Secret postgres_password ya existe, continuando...'
           "
         shell: bash
 
@@ -188,7 +188,7 @@ jobs:
           COMPOSE_DIR="/root/docker"
 
           # Crea la lista de archivos
-          COMPOSE_FILES="-c ./infra/docker/prod/postgres.yml" #$(ls $COMPOSE_DIR/*.yml | xargs -I{} echo "-c {}" | tr '\n' ' ')
+          COMPOSE_FILES="-c ./docker/postgres.yml" #$(ls $COMPOSE_DIR/*.yml | xargs -I{} echo "-c {}" | tr '\n' ' ')
 
           echo "Desplegando stack $STACK_NAME con:"
           echo "$COMPOSE_FILES"
