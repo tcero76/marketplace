@@ -190,8 +190,10 @@ jobs:
           COMPOSE_FILES="-c ./docker/postgres.yml -c ./docker/common.yml" #$(ls $COMPOSE_DIR/*.yml | xargs -I{} echo "-c {}" | tr '\n' ' ')
           echo "Desplegando stack $STACK_NAME con:"
           echo "$COMPOSE_FILES"
-          ssh -o StrictHostKeyChecking=no root@${{ secrets.MANAGER_IP }} "
+          ssh -o StrictHostKeyChecking=no root@${{ secrets.MANAGER_IP }} '
             export $(cat /root/.env | xargs);
+          '
+          ssh -o StrictHostKeyChecking=no root@${{ secrets.MANAGER_IP }} "
             docker stack deploy $COMPOSE_FILES $STACK_NAME --with-registry-auth
           "
 
