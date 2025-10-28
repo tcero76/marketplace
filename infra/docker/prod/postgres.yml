@@ -52,9 +52,9 @@ services:
         sleep 3;
       done;
       echo "✅ DB lista. Ejecutando migraciones...";
-      flyway -url=jdbc:postgresql://${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB} \
-      -user=${POSTGRES_USER} \
-      -password=${POSTGRES_PASSWORD} \
+      flyway -url=jdbc:postgresql://$${POSTGRES_HOST}:$${POSTGRES_PORT}/$${POSTGRES_DB} \
+      -user=$${POSTGRES_USER} \
+      -password=$${POSTGRES_PASSWORD} \
       -schemas=marketplace,scrap \
       -locations=filesystem:/flyway/sql \
       -connectRetries=10 \
