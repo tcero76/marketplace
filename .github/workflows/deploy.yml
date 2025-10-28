@@ -187,17 +187,20 @@ jobs:
           STACK_NAME=mystack
           COMPOSE_FILES="-c /root/docker/postgres.yml -c /root/docker/common.yml"
 
-          ssh -o StrictHostKeyChecking=no root@${{ secrets.MANAGER_IP }} '
-            set -e
-            echo "Desplegando stack '$STACK_NAME' con:"
-            echo "'$COMPOSE_FILES'"
+          # Copiamos el archivo .env al manager remoto
+          scp -o StrictHostKeyChecking=no .env root@${{ secrets.MANAGER_IP }}:/root/.env
 
-            # Exporta variables del .env remoto
+          # Ejecutamos el deploy remoto usando heredoc
+          ssh -o StrictHostKeyChecking=no root@${{ secrets.MANAGER_IP }} <<'EOF'
+            set -e
+            echo "Cargando variables de entorno..."
             export $(cat /root/.env | xargs)
 
-            # Ejecuta docker stack deploy
-            docker stack deploy '$COMPOSE_FILES' '$STACK_NAME' --with-registry-auth
-          '
+            echo "Desplegando stack ${STACK_NAME} con:"
+            echo "${COMPOSE_FILES}"
+
+            docker stack deploy ${COMPOSE_FILES} ${STACK_NAME} --with-registry-auth
+          EOF
 
 
 
