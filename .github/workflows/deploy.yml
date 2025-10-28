@@ -194,7 +194,7 @@ jobs:
             echo "'$COMPOSE_FILES'"
 
             # Exporta variables del .env remoto
-            export $(cat '$COMPOSE_DIR'/../.env | xargs)
+            export $(cat /root/.env | xargs)
 
             # Ejecuta docker stack deploy
             docker stack deploy '$COMPOSE_FILES' '$STACK_NAME' --with-registry-auth
