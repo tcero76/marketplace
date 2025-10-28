@@ -163,9 +163,12 @@ jobs:
           EOF'"
 
       - name: Crear secrets en Docker Swarm
+        continue-on-error: true
         run: |
           ssh -o StrictHostKeyChecking=no root@${{ secrets.MANAGER_IP }} "
-            echo "${{ secrets.POSTGRES_PASSWORD }}" | docker secret create postgres_password -
+          echo '${{ secrets.POSTGRES_PASSWORD }}' | docker secret create postgres_password - \
+            && echo '✅ Secret postgres_password creado' \
+            || echo 'ℹ️ Secret postgres_password ya existe, continuando...'
           "
         shell: bash
 
