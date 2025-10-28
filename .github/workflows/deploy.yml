@@ -186,16 +186,19 @@ jobs:
         run: |
           STACK_NAME=mystack
           COMPOSE_DIR=/root/docker
-          # Crea la lista de archivos
-          COMPOSE_FILES="-c ./docker/postgres.yml -c ./docker/common.yml" #$(ls $COMPOSE_DIR/*.yml | xargs -I{} echo "-c {}" | tr '\n' ' ')
-          echo "Desplegando stack $STACK_NAME con:"
-          echo "$COMPOSE_FILES"
+          COMPOSE_FILES="-c $COMPOSE_DIR/postgres.yml -c $COMPOSE_DIR/common.yml"
+
           ssh -o StrictHostKeyChecking=no root@${{ secrets.MANAGER_IP }} '
-            export $(cat /root/.env | xargs);
+            set -e
+            echo "Desplegando stack '$STACK_NAME' con:"
+            echo "'$COMPOSE_FILES'"
+
+            # Exporta variables del .env remoto
+            export $(cat '$COMPOSE_DIR'/.env | xargs)
+
+            # Ejecuta docker stack deploy
+            docker stack deploy '$COMPOSE_FILES' '$STACK_NAME' --with-registry-auth
           '
-          ssh -o StrictHostKeyChecking=no root@${{ secrets.MANAGER_IP }} "
-            docker stack deploy $COMPOSE_FILES $STACK_NAME --with-registry-auth
-          "
 
 
 
