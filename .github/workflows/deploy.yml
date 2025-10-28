@@ -186,7 +186,7 @@ jobs:
         run: |
 
           ssh -o StrictHostKeyChecking=no root@${{ secrets.MANAGER_IP }} '
-            STACK_NAME=mystack
+            STACK_NAME="mystack"
             COMPOSE_DIR=/root/docker
 
             # Crea la lista de archivos
