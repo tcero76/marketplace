@@ -184,8 +184,8 @@ jobs:
 
       - name: Deploy stack on Swarm manager
         run: |
-          STACK_NAME="mystack"
-          COMPOSE_DIR="/root/docker"
+          STACK_NAME=mystack
+          COMPOSE_DIR=/root/docker
 
           # Crea la lista de archivos
           COMPOSE_FILES="-c ./docker/postgres.yml -c ./docker/common.yml" #$(ls $COMPOSE_DIR/*.yml | xargs -I{} echo "-c {}" | tr '\n' ' ')
