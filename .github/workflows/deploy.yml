@@ -185,8 +185,7 @@ jobs:
       - name: Deploy stack on Swarm manager
         run: |
           STACK_NAME=mystack
-          COMPOSE_DIR=/root/docker
-          COMPOSE_FILES="-c $COMPOSE_DIR/postgres.yml -c $COMPOSE_DIR/common.yml"
+          COMPOSE_FILES="-c /root/docker/postgres.yml -c /root/docker/common.yml"
 
           ssh -o StrictHostKeyChecking=no root@${{ secrets.MANAGER_IP }} '
             set -e
