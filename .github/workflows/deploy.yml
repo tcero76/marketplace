@@ -184,12 +184,13 @@ jobs:
 
       - name: Deploy stack on Swarm manager
         run: |
-          STACK_NAME=mystack
-          COMPOSE_FILES="-c /root/docker/postgres.yml -c /root/docker/common.yml"
-
-          # Ejecutamos el deploy remoto usando heredoc
           ssh -o StrictHostKeyChecking=no root@${{ secrets.MANAGER_IP }} <<'EOF'
             set -e
+
+            # Definimos variables en el remoto
+            STACK_NAME=mystack
+            COMPOSE_FILES="-c /root/docker/postgres.yml -c /root/docker/common.yml"
+
             echo "Cargando variables de entorno..."
             export $(cat /root/.env | xargs)
 
