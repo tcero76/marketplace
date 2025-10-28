@@ -37,6 +37,13 @@ services:
     build:
       dockerfile: Dockerfile
       context: ../../../postgres/migrations/
+    environment:
+     POSTGRES_USER: ${POSTGRES_USER}
+     POSTGRES_DB: ${POSTGRES_DB}
+     POSTGRES_HOST: ${POSTGRES_HOST}
+     POSTGRES_PORT: ${POSTGRES_PORT}
+    secrets:
+      - postgres_password
     deploy:
       mode: replicated-job
       restart_policy:
@@ -44,21 +51,7 @@ services:
       placement:
         constraints:
           - node.hostname == swarm-manager
-    entrypoint: sh -c
-    command: |
-      POSTGRES_PASSWORD=$(cat /run/secrets/postgres_password)
-      echo "⏳ Esperando que la DB esté lista...";
-      until pg_isready -h db -U "${POSTGRES_USER}" -d "${POSTGRES_DB}"; do
-        sleep 3;
-      done;
-      echo "✅ DB lista. Ejecutando migraciones...";
-      flyway -url=jdbc:postgresql://${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB} \
-      -user=${POSTGRES_USER} \
-      -password=${POSTGRES_PASSWORD} \
-      -schemas=marketplace,scrap \
-      -locations=filesystem:/flyway/sql \
-      -connectRetries=10 \
-      migrate
+    entrypoint: ["entrypoint.sh"]
     networks:
       - ${NETWORK_APPLICATION:-application}
     depends_on:
