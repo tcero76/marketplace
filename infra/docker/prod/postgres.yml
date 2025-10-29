@@ -51,7 +51,6 @@ services:
       placement:
         constraints:
           - node.hostname == swarm-manager
-    entrypoint: ["entrypoint.sh"]
     networks:
       - ${NETWORK_APPLICATION:-application}
     depends_on:
