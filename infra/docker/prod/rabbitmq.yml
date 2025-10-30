@@ -24,10 +24,10 @@ services:
         reservations:
           memory: 512M
   broker-job:
-    image: rabbitmq:${RABBITMQ_VERSION}
+    image: tcero76/rabbitmq-init
     build:
       dockerfile: Dockerfile
-      context: ../../../rabbitmq/scripts/
+      context: ../../rabbitmq/scripts/
     entrypoint: [ "sh", "/app/init_rabbitmq.sh" ]
     environment:
       HOST: broker
