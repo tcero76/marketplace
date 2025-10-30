@@ -165,8 +165,8 @@ jobs:
           POSTGRES_PORT=${{ secrets.POSTGRES_PORT}}
           POSTGRES_DB=${{ secrets.POSTGRES_DB }}
           POSTGRES_VOLUME=${{ secrets.POSTGRES_VOLUME }}
-          RABBITMQ_VERSION=${{ secrets.RABBITMQ_VERSION }}
-          RABBITMQ_VOLUME=${{ secrets.RABBITMQ_VOLUME }}
+          RABBITMQ_VERSION=$RABBITMQ_VERSION
+          RABBITMQ_VOLUME=$RABBITMQ_VOLUME
           NETWORK_APPLICATION=${{ secrets.NETWORK_APPLICATION }}
           EOF'"
 
