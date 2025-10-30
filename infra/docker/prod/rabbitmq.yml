@@ -28,7 +28,7 @@ services:
     build:
       dockerfile: Dockerfile
       context: ../../rabbitmq/scripts/
-    entrypoint: [ "sh", "/app/init_rabbitmq.sh" ]
+    entrypoint: [ "sh", "/init_rabbitmq.sh" ]
     environment:
       HOST: broker
       PORT: 15672
