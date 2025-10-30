@@ -1,10 +1,6 @@
 services:
   hydra:
     image: oryd/hydra:${HYDRA_VERSION}
-    tty: true
-    stdin_open: true
-    profiles:
-      - hydra
     ports:
       - "4444:4444"
       - "4445:4445"
