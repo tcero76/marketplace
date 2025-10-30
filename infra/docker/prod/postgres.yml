@@ -26,12 +26,12 @@ services:
           - node.hostname == swarm-manager
       restart_policy:
         condition: on-failure
-      resources:
-        limits:
-          cpus: "1"
-          memory: 1G
-        reservations:
-          memory: 512M
+      # resources:
+      #   limits:
+      #     cpus: "1"
+      #     memory: 1G
+      #   reservations:
+      #     memory: 512M
   flyway:
     image: tcero76/flyway
     build:
