@@ -54,7 +54,7 @@ resource "digitalocean_droplet" "swarm_manager" {
     private_key = file(var.ssh_private_key)
   }
 
-  user_data = templatefile("${path.module}/install_docker.sh.tmpl", {
+  user_data = templatefile("${path.module}/scripts/install_docker.sh.tmpl", {
     manager_ip = ""
     is_manager = true
     internal_pubkey = tls_private_key.swarm_internal.public_key_openssh
@@ -78,8 +78,8 @@ resource "digitalocean_droplet" "swarm_worker" {
   image     = var.image
   ssh_keys  = [data.digitalocean_ssh_key.default.id]
 
-  depends_on = [digitalocean_droplet.swarm_manager]  # 👈 fuerza el orden
-  user_data = templatefile("${path.module}/install_docker.sh.tmpl", {
+  depends_on = [digitalocean_droplet.swarm_manager]
+  user_data = templatefile("${path.module}/scripts/install_docker.sh.tmpl", {
     manager_ip = digitalocean_droplet.swarm_manager.ipv4_address
     is_manager = false
     internal_privkey = tls_private_key.swarm_internal.private_key_pem
