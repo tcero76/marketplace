@@ -7,8 +7,8 @@ services:
     #   postgres -c wal_level=logical
     #            -c max_wal_senders=10
     #            -c max_replication_slots=10
-    volumes:
-      - timescaledb_data:/var/lib/postgresql/data
+    # volumes:
+    #   - timescaledb_data:/var/lib/postgresql/data
     ports:
       - 5432:5432
     environment:
@@ -22,12 +22,17 @@ services:
     image: tcero76/flyway
     build:
       dockerfile: Dockerfile
-      context: /home/leonardo/marketplace/postgres/migrations/
-    profiles:
-      - postgres
-    command: -url=jdbc:postgresql://${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB} -user=${POSTGRES_USER} -password=${POSTGRES_PASSWORD} -schemas=marketplace,scrap -locations=filesystem:/flyway/sql migrate
+      context: ../../../postgres/migrations/
+    environment:
+     POSTGRES_USER: ${POSTGRES_USER}
+     POSTGRES_DB: ${POSTGRES_DB}
+     POSTGRES_HOST: ${POSTGRES_HOST}
+     POSTGRES_PORT: ${POSTGRES_PORT}
+     POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     volumes:
-      - ${POSTGRES_VOLUME}/migrations:/flyway/sql
+      - /home/leonardo/marketplace/infra/docker/test/postgres_password:/run/secrets/postgres_password
+    profiles: ["postgres"]
+    # command: -url=jdbc:postgresql://${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB} -user=${POSTGRES_USER} -password=${POSTGRES_PASSWORD} -schemas=marketplace,scrap -locations=filesystem:/flyway/sql migrate
     networks:
       - ${NETWORK_APPLICATION}
     depends_on:

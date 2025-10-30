@@ -2,35 +2,42 @@ services:
   broker:
     image: rabbitmq:${RABBITMQ_VERSION}
     container_name: broker
-    profiles:
-      - broker
-    tty: true
-    stdin_open: true
     ports:
       - 5672:5672
       - 15672:15672
+    volumes:
+      - ${RABBITMQ_VOLUME}:/var/lib/rabbitmq
     networks:
-      - ${NETWORK_APPLICATION}
-    healthcheck:
-      test: ["CMD", "rabbitmqctl", "status"]
-      interval: 5s
-      retries: 5
-      timeout: 2s
+      - ${NETWORK_APPLICATION:-application}
+    deploy:
+      mode: replicated
+      replicas: 1
+      placement:
+        constraints:
+          - node.hostname == swarm-manager
+      restart_policy:
+        condition: on-failure
+      resources:
+        limits:
+          cpus: "1"
+          memory: 1G
+        reservations:
+          memory: 512M
   broker-job:
     image: rabbitmq:${RABBITMQ_VERSION}
-    restart: "no"
-    container_name: brokerJob
+    build:
+      dockerfile: Dockerfile
+      context: ../../../rabbitmq/scripts/
     entrypoint: [ "sh", "/app/init_rabbitmq.sh" ]
     environment:
       HOST: broker
       PORT: 15672
       USERNAME: guest
       PASSWORD: guest
-    volumes:
-      - ./config/rabbitmq/init_rabbitmq.sh:/app/init_rabbitmq.sh:ro
-    profiles:
-      - job
-    networks:
-      - ${NETWORK_APPLICATION}
-    depends_on:
-      - broker
+    deploy:
+      mode: replicated-job
+      restart_policy:
+        condition: none
+      placement:
+        constraints:
+          - node.hostname == swarm-manager
