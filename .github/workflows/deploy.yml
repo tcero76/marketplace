@@ -10,7 +10,7 @@ env:
   PROFILE: ${{ secrets.PROFILE }}
   # Application
   PORT_EXTERNAL: ${{ secrets.PORT_EXTERNAL }} 
-  HOST_EXTERNAL: ${{ secrets.HOST_EXTERNAL }} 
+  HOST_EXTERNAL: ${{ secrets.MANAGER_IP }} 
   HOST_URL: ${{ secrets.HOST_URL }} 
   HOST_WS: ${{ secrets.HOST_WS }} 
   NETWORK_APPLICATION: ${{ secrets.NETWORK_APPLICATION }} 
@@ -167,6 +167,9 @@ jobs:
           POSTGRES_VOLUME=${{ secrets.POSTGRES_VOLUME }}
           RABBITMQ_VERSION=$RABBITMQ_VERSION
           RABBITMQ_VOLUME=$RABBITMQ_VOLUME
+          HYDRA_VERSION=${{ secrets.HYDRA_VERSION }}
+          HOST_EXTERNAL=${{ secrets.MANAGER_IP }}
+          PORT_EXTERNAL=${{ secrets.PORT_EXTERNAL }}
           NETWORK_APPLICATION=${{ secrets.NETWORK_APPLICATION }}
           EOF'"
 
