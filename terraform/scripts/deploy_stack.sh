@@ -14,6 +14,7 @@ fi
 echo "Desplegando stack..."
 docker stack deploy \
   -c /root/docker/postgres.yml \
+  -c /root/docker/rabbitmq.yml \
   -c /root/docker/common.yml \
   mystack \
   --with-registry-auth
