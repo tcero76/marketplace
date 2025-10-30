@@ -1,7 +1,6 @@
 services:
   hydra:
     image: oryd/hydra:${HYDRA_VERSION}
-    container_name: hydra
     tty: true
     stdin_open: true
     profiles:
@@ -18,7 +17,13 @@ services:
       - SECRETS_SYSTEM=some_secret_key_system
       - TTL_ACCESS_TOKEN=1h
       - TTL_REFRESH_TOKEN=720h
-    depends_on:
-     - db
     networks:
-      - ${NETWORK_APPLICATION}
+      - ${NETWORK_APPLICATION:-application}
+    deploy:
+      mode: replicated
+      replicas: 1
+      placement:
+        constraints:
+          - node.hostname == swarm-worker-0
+      restart_policy:
+        condition: on-failure
