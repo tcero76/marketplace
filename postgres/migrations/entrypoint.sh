@@ -1,5 +1,7 @@
 #!/bin/sh
+
 set -e
+
 POSTGRES_PASSWORD=$(cat /run/secrets/postgres_password)
 echo "⏳ Esperando que la DB esté lista..."
 until pg_isready -h db -U "$POSTGRES_USER" -d "$POSTGRES_DB"; do
