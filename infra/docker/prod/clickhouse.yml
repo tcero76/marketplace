@@ -1,8 +1,6 @@
 services:
   clickhouse:
     image: bitnamilegacy/clickhouse:${CLICKHOUSE_VERSION}
-    container_name: clickhouse
-    profiles: ["clickhouse"]
     volumes:
       - ${CLICKHOUSE_VOLUME}/data:/bitnami/clickhouse/data
       - ${CLICKHOUSE_VOLUME}/migrations:/docker-entrypoint-initdb.d
