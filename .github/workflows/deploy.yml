@@ -74,13 +74,13 @@ env:
   DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }} 
   DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }} 
   # volumes
-  CLICKHOUSE_VOLUME: /home/leonardo/marketplace/infra/volumes/clickhouse
-  POSTGRES_VOLUME: /home/leonardo/marketplace/infra/volumes/timescaleDB
-  RABBITMQ_VOLUME: /home/leonardo/marketplace/infra/volumes/rabbitmq
-  REDIS_VOLUME: /home/leonardo/marketplace/infra/volumes/redis
-  GRAFANA_VOLUME: /home/leonardo/marketplace/infra/volumes/grafana
-  PROMETHEUS_VOLUME: /home/leonardo/marketplace/infra/volumes/prometheus
-  MEDIAMTX_VOLUME: /home/leonardo/marketplace/infra/volumes/mediamtx
+  CLICKHOUSE_VOLUME: /mnt/data/clickhouse
+  POSTGRES_VOLUME: /mnt/data/timescaleDB
+  RABBITMQ_VOLUME: /mnt/data/rabbitmq
+  REDIS_VOLUME: /mnt/data/redis
+  GRAFANA_VOLUME: /mnt/data/grafana
+  PROMETHEUS_VOLUME: /mnt/data/prometheus
+  MEDIAMTX_VOLUME: /mnt/data/mediamtx
 
 jobs:
   terraform:
