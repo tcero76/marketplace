@@ -1,12 +1,15 @@
 services:
   cache:
     image: redis:${REDIS_VERSION}
-    container_name: cache
-    profiles:
-      - cache
     ports:
       - 6379:6379
-    # volumes:
-    #   - ../redis/conf/redis.conf:/usr/local/etc/redis/redis.conf
     networks:
-      - ${NETWORK_APPLICATION}
+      - ${NETWORK_APPLICATION:-application}
+    deploy:
+      mode: replicated
+      replicas: 1
+      placement:
+        constraints:
+          - node.hostname == swarm-worker-0
+      restart_policy:
+        condition: on-failure
