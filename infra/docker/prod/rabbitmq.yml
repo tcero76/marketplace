@@ -34,6 +34,8 @@ services:
       PORT: 15672
       USERNAME: guest
       PASSWORD: guest
+    networks:
+      - ${NETWORK_APPLICATION:-application}
     deploy:
       mode: replicated-job
       restart_policy:
