@@ -53,7 +53,6 @@ static_resources:
                     typed_config:
                       "@type": type.googleapis.com/envoy.extensions.filters.http.router.v3.Router
   clusters:
-
     - name: mediamtx_hls
       connect_timeout: 1s
       type: logical_dns
@@ -65,10 +64,8 @@ static_resources:
           - endpoint:
               address:
                 socket_address:
-                  address: mediamtx  # Dirección IP donde está MediaMTX
-                  port_value: 8888       # Puerto HTTP que sirve HLS
-
-
+                  address: mediamtx
+                  port_value: 8888
     - name: bff_service
       connect_timeout: 0.25s
       type: STRICT_DNS

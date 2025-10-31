@@ -16,4 +16,11 @@ services:
     volumes:
       - ./config/envoy/envoy.yaml:/tmpl/envoy.yaml
     networks:
-      - ${NETWORK_APPLICATION}
+      - ${NETWORK_APPLICATION:-application}
+    deploy:
+      mode: replicated-job
+      restart_policy:
+        condition: none
+      placement:
+        constraints:
+          - node.hostname == swarm-manager

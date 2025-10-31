@@ -3,9 +3,11 @@ services:
     image: bitnamilegacy/clickhouse:${CLICKHOUSE_VERSION}
     container_name: clickhouse
     profiles: ["clickhouse"]
+    tty: true
+    stdin_open: true
     volumes:
-      - ${CLICKHOUSE_VOLUME}/data:/bitnami/clickhouse/data
-      - ${CLICKHOUSE_VOLUME}/migrations:/docker-entrypoint-initdb.d
+      # - ${CLICKHOUSE_VOLUME}/data:/bitnami/clickhouse/data
+      - ../../clickhouse/houseplant/init.sh:/docker-entrypoint-initdb.d/init.sh
     ports:
       - 8123:8123
       - 9000:9000
@@ -14,4 +16,25 @@ services:
       - CLICKHOUSE_ADMIN_PASSWORD=${CLICKHOUSE_PASSWORD}
       - CLICKHOUSE_INITSCRIPTS_DIR=/docker-entrypoint-initdb.d
     networks:
-      - ${NETWORK_APPLICATION}
+      - ${NETWORK_APPLICATION:-application}
+  houseplant:
+    image: tcero76/houseplant:${HOUSEPLANT_VERSION}
+    build:
+      dockerfile: Dockerfile
+      context: ../../clickhouse/houseplant/
+    restart: "no"
+    profiles: ["clickhouse"]
+    container_name: houseplant
+    tty: true
+    stdin_open: true
+    working_dir: /
+    environment:
+      CLICKHOUSE_HOST: clickhouse
+      CLICKHOUSE_PORT: 9000
+      CLICKHOUSE_USER: ${CLICKHOUSE_USER}
+      CLICKHOUSE_PASSWORD: ${CLICKHOUSE_PASSWORD}
+      CLICKHOUSE_DB: default
+    networks:
+      - ${NETWORK_APPLICATION:-application}
+    depends_on:
+      - clickhouse

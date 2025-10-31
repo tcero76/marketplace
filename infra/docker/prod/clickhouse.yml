@@ -11,6 +11,8 @@ services:
       - CLICKHOUSE_ADMIN_USER=${CLICKHOUSE_USER}
       - CLICKHOUSE_ADMIN_PASSWORD=${CLICKHOUSE_PASSWORD}
       - CLICKHOUSE_INITSCRIPTS_DIR=/docker-entrypoint-initdb.d
+    secrets:
+      - clickhouse_password
     networks:
       - ${NETWORK_APPLICATION:-application}
     deploy:
@@ -21,3 +23,6 @@ services:
           - node.hostname == swarm-manager
       restart_policy:
         condition: on-failure
+secrets:
+  clickhouse_password:
+    external: true
