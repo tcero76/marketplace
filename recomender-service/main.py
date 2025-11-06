@@ -7,11 +7,18 @@ from celery import Celery
 import os
 import clickhouse_connect
 from datetime import datetime
+from rabbitmq.celeryconfig import queues, routes
 
-QUEUE_NAME = os.getenv("RECOMENDER_QUEUE", "recommendation_queue")
-BROKER = os.getenv("BROKER", "localhost")
+RECOMENDER_QUEUE = os.getenv("CMD_RECOMMENDER_CALCULATE_QUEUE", "cmd_recommender_calculate_queue")
 
-app = Celery('main', broker=BROKER)
+app = Celery('arsmate')
+app.conf.update(
+    broker_url=os.environ.get("BROKER"),
+    task_queues=queues.task_queues_recomender,
+    task_routes={
+        'main.calculate_recommendations_task': {'queue': RECOMENDER_QUEUE}
+    }
+)
 
 @app.task
 def calculate_recommendations_task():

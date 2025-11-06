@@ -66,23 +66,23 @@ done
 echo "RabbitMQ disponible, ejecutando configuración..."
 
 # Crear colas
-create_queue_if_missing "chat_event_queue" "/" '{"x-queue-type":"classic"}'
-create_queue_if_missing "solana_event_queue" "/" '{"x-queue-type":"classic"}'
-create_queue_if_missing "recomender_queue" "/" '{"x-queue-type":"classic"}'
-create_queue_if_missing "chat_cache_updater_queue" "/" '{"x-queue-type":"classic"}'
-create_queue_if_missing "chat_db_updater_queue" "/" '{"x-queue-type":"classic"}'
-create_queue_if_missing "user_db_updater_queue" "/" '{"x-queue-type":"classic"}'
+create_queue_if_missing ${CMD_CHAT_MESSAGE_DELIVERY_QUEUE} "/" '{"x-queue-type":"classic"}'
+create_queue_if_missing ${EVT_PAYMENT_PERSISTENCE_QUEUE} "/" '{"x-queue-type":"classic"}'
+create_queue_if_missing ${CMD_CHAT_MESSAGE_PERSISTENCE_QUEUE} "/" '{"x-queue-type":"classic"}'
+create_queue_if_missing ${EVT_USER_REGISTERED_EMAIL_QUEUE} "/" '{"x-queue-type":"classic"}'
+create_queue_if_missing ${RABBITMQ_CHAT_CACHE_UPDATER_QUEUE} "/" '{"x-queue-type":"classic"}'
 
 # Crear exchanges
-create_exchange_if_missing "recomender_queue" "direct" "/"
-create_exchange_if_missing "logs" "fanout" "/"
-create_exchange_if_missing "user_db_updater_exchange" "fanout" "/"
+create_exchange_if_missing ${EVT_PAYMENT_COMPLETED_EXCHANGE} "fanout" "/"
+create_exchange_if_missing ${CMD_CHAT_MESSAGE_SEND_EXCHANGE} "fanout" "/"
+create_exchange_if_missing ${EVT_USER_REGISTERED_EXCHANGE} "fanout" "/"
 
 # Crear bindings
-create_binding_if_missing "logs" "chat_event_queue" "queue" "" "/"
-create_binding_if_missing "logs" "chat_cache_updater_queue" "queue" "" "/"
-create_binding_if_missing "logs" "chat_db_updater_queue" "queue" "" "/"
-create_binding_if_missing "recomender_queue" "recomender_queue" "queue" "recomender_queue" "/"
-create_binding_if_missing "user_db_updater_exchange" "user_db_updater_queue" "queue" "user_db_updater_queue" "/"
+create_binding_if_missing ${EVT_PAYMENT_COMPLETED_EXCHANGE} ${EVT_PAYMENT_PERSISTENCE_QUEUE} "queue" "" "/"
+create_binding_if_missing ${CMD_CHAT_MESSAGE_SEND_EXCHANGE} ${CMD_CHAT_MESSAGE_DELIVERY_QUEUE} "queue" "" "/"
+create_binding_if_missing ${CMD_CHAT_MESSAGE_SEND_EXCHANGE} ${RABBITMQ_CHAT_CACHE_UPDATER_QUEUE} "queue" "" "/"
+create_binding_if_missing ${CMD_CHAT_MESSAGE_SEND_EXCHANGE} ${CMD_CHAT_MESSAGE_PERSISTENCE_QUEUE} "queue" "" "/"
+create_binding_if_missing ${EVT_USER_REGISTERED_EXCHANGE} ${EVT_USER_REGISTERED_EMAIL_QUEUE} "queue" ${EVT_USER_REGISTERED_EMAIL_QUEUE} "/"
+
 
 

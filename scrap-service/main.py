@@ -10,9 +10,18 @@ from scrapy.utils.project import get_project_settings
 import os
 import subprocess
 import psycopg2
+from rabbitmq.celeryconfig import queues, routes
 
-SCRAPY_QUEUE = os.getenv("SCRAPY_QUEUE", "scrapy_queue")
-app = Celery('arsmate', broker=os.environ.get("BROKER"))
+SCRAPY_QUEUE = os.getenv("CMD_SCRAPY_START_QUEUE", "cmd_scrapy_start_queue")
+
+app = Celery('arsmate')
+app.conf.update(
+    broker_url=os.environ.get("BROKER"),
+    task_queues=queues.task_queues_scrap,
+    task_routes={
+        'main.run_modelo_spider': {'queue': SCRAPY_QUEUE}
+    }
+)
 
 metrics_thread_started = False
 
@@ -22,8 +31,6 @@ def start_metrics_server():
     while True:
         RAM_USAGE.set(psutil.virtual_memory().percent)
         time.sleep(5)
-
-
 
 @app.task
 def run_modelos(_=None):
