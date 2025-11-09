@@ -6,8 +6,8 @@ services:
       - broker
     tty: true
     stdin_open: true
-    volumes:
-      - ${RABBITMQ_VOLUME}:/var/lib/rabbitmq
+    # volumes:
+    #   - ${RABBITMQ_VOLUME}:/var/lib/rabbitmq
     ports:
       - 5672:5672
       - 15672:15672
@@ -19,19 +19,33 @@ services:
       retries: 5
       timeout: 2s
   broker-job:
-    image: rabbitmq:${RABBITMQ_VERSION}
+    image: tcero76/rabbitmq-init
+    build:
+      dockerfile: Dockerfile
+      context: ../../rabbitmq/scripts/
     restart: "no"
     container_name: brokerJob
-    entrypoint: [ "sh", "/app/init_rabbitmq.sh" ]
+    entrypoint: ["/init/init_rabbitmq.sh"]
     environment:
       HOST: broker
       PORT: 15672
       USERNAME: guest
       PASSWORD: guest
+      CMD_RECOMMENDER_CALCULATE_QUEUE: ${CMD_RECOMMENDER_CALCULATE_QUEUE}
+      CMD_SCRAPY_START_QUEUE: ${CMD_SCRAPY_START_QUEUE}
+      RABBITMQ_QUEUE: ${RABBITMQ_QUEUE}
+      RABBITMQ_CHAT_CACHE_UPDATER_QUEUE: ${RABBITMQ_CHAT_CACHE_UPDATER_QUEUE}
+      CMD_CHAT_MESSAGE_PERSISTENCE_QUEUE: ${CMD_CHAT_MESSAGE_PERSISTENCE_QUEUE}
+      EVT_USER_REGISTERED_EMAIL_QUEUE: ${EVT_USER_REGISTERED_EMAIL_QUEUE}
+      EVT_USER_REGISTERED_EXCHANGE: ${EVT_USER_REGISTERED_EXCHANGE}
+      CMD_CHAT_MESSAGE_SEND_EXCHANGE: ${CMD_CHAT_MESSAGE_SEND_EXCHANGE}
+      EVT_PAYMENT_COMPLETED_EXCHANGE: ${EVT_PAYMENT_COMPLETED_EXCHANGE}
+      EVT_PAYMENT_PERSISTENCE_QUEUE: ${EVT_PAYMENT_PERSISTENCE_QUEUE}
+      CMD_CHAT_MESSAGE_DELIVERY_QUEUE: ${CMD_CHAT_MESSAGE_DELIVERY_QUEUE}
     volumes:
-      - ./config/rabbitmq/init_rabbitmq.sh:/app/init_rabbitmq.sh:ro
+      - ../../rabbitmq/scripts/:/init/
     profiles:
-      - job
+      - broker              
     networks:
       - ${NETWORK_APPLICATION}
     depends_on:

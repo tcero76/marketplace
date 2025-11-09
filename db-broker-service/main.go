@@ -46,8 +46,8 @@ func main() {
 		for _, evt := range events {
 			// Publicar en RabbitMQ
 			err = ch.Publish(
-				os.Getenv("RABBITMQ_USER_DB_UPDATER_EXCHANGE"), // exchange
-				os.Getenv("RABBITMQ_USER_DB_UPDATER_QUEUE"),    // routing key
+				os.Getenv("EVT_USER_REGISTERED_EXCHANGE"),    // exchange
+				os.Getenv("EVT_USER_REGISTERED_EMAIL_QUEUE"), // routing key
 				false,
 				false,
 				amqp.Publishing{

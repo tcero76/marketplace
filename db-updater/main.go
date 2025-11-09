@@ -25,7 +25,7 @@ func main() {
 	defer ch.Close()
 
 	msgs, err := ch.Consume(
-		os.Getenv("RABBITMQ_CHAT_DB_UPDATER_QUEUE"),
+		os.Getenv("CMD_CHAT_MESSAGE_PERSISTENCE_QUEUE"),
 		"",
 		true,
 		false,

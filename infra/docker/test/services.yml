@@ -2,15 +2,15 @@ services:
   bff-service:
     build:
       dockerfile: Dockerfile
-      context: ../../../bff-service
+      context: ../../bff-service
     working_dir: /bff-service
     volumes:
-      - ../../../bff-service:/bff-service
-      - ../../../config:/config
-      - ../../../postgres:/postgres
-      - ../../../clickhouse:/clickhouse
-      - ../../../rabbitmq:/rabbitmq
-      - ../../../redis:/redis
+      - ../../bff-service:/bff-service
+      - ../../config:/config
+      - ../../postgres:/postgres
+      - ../../clickhouse:/clickhouse
+      - ../../rabbitmq:/rabbitmq
+      - ../../redis:/redis
     profiles:
       - bff
     container_name: bff
@@ -74,7 +74,7 @@ services:
     stdin_open: true
     tty: true
     environment:
-      - RABBITMQ_USER_DB_UPDATER_QUEUE=${RABBITMQ_USER_DB_UPDATER_QUEUE}
+      - EVT_USER_REGISTERED_EMAIL_QUEUE=${EVT_USER_REGISTERED_EMAIL_QUEUE}
       - BROKER=${BROKER}
       - SMTP_HOST=${SMTP_HOST}
       - SMTP_PORT=${SMTP_PORT}
@@ -101,7 +101,7 @@ services:
     environment:
       - DATABASE_URL=postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:5432/${POSTGRES_DB}?sslmode=disable&options=-c%20search_path%3Dmarketplace
       - BROKER=${BROKER}
-      - RABBITMQ_CHAT_DB_UPDATER_QUEUE=${RABBITMQ_CHAT_DB_UPDATER_QUEUE}
+      - CMD_CHAT_MESSAGE_PERSISTENCE_QUEUE=${CMD_CHAT_MESSAGE_PERSISTENCE_QUEUE}
     networks:
       - ${NETWORK_APPLICATION}
     volumes:
@@ -121,8 +121,8 @@ services:
     tty: true
     environment:
       - DATABASE_URL=postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:5432/${POSTGRES_DB}?sslmode=disable&options=-c%20search_path%3Dmarketplace
-      - RABBITMQ_USER_DB_UPDATER_QUEUE=${RABBITMQ_USER_DB_UPDATER_QUEUE}
-      - RABBITMQ_USER_DB_UPDATER_EXCHANGE=${RABBITMQ_USER_DB_UPDATER_EXCHANGE}
+      - EVT_USER_REGISTERED_EMAIL_QUEUE=${EVT_USER_REGISTERED_EMAIL_QUEUE}
+      - EVT_USER_REGISTERED_EXCHANGE=${EVT_USER_REGISTERED_EXCHANGE}
       - BROKER=${BROKER}
     networks:
       - ${NETWORK_APPLICATION}
@@ -135,7 +135,7 @@ services:
   ws-service:
     build:
       dockerfile: Dockerfile
-      context: ../../../ws-service
+      context: ../../ws-service
     container_name: ws
     profiles:
       - ws
@@ -143,12 +143,13 @@ services:
     stdin_open: true
     environment:
       - MIX_ENV=dev
-      - RABBITMQ_QUEUE=${RABBITMQ_QUEUE}
+      - CMD_CHAT_MESSAGE_DELIVERY_QUEUE=${CMD_CHAT_MESSAGE_DELIVERY_QUEUE}
+      - CMD_CHAT_MESSAGE_SEND_EXCHANGE=${CMD_CHAT_MESSAGE_SEND_EXCHANGE}
       - RABBITMQ_HOST=broker
     ports:
       - 4000:4000
     volumes:
-      - ../../../ws-service:/ws-service
+      - ../../ws-service:/ws-service
     depends_on:
       - broker
     networks:
@@ -169,7 +170,7 @@ services:
     ports:
      - 5173:5173
     volumes:
-      - ../../../front:/app
+      - ../../front:/app
     networks:
       - ${NETWORK_APPLICATION}
     depends_on:
@@ -189,6 +190,7 @@ services:
     environment:
       - PROGRAMID=${PROGRAMID}
       - BROKER=${BROKER}
+      - EVT_PAYMENT_COMPLETED_EXCHANGE=${EVT_PAYMENT_COMPLETED_EXCHANGE}
     volumes:
       - ../../solana-service:/app
     networks:
@@ -196,11 +198,11 @@ services:
   scrap-service:
     build:
       dockerfile: Dockerfile
-      context: ../../../scrap-service
-    working_dir: /app/
+      context: ../../scrap-service
+    working_dir: /app/scrap-service/
     profiles:
       - scrap
-    command: [ "celery", "-A", "main", "worker", "--loglevel=debug", "-Q", "${SCRAPY_QUEUE}" ]
+    command: [ "celery", "-A", "main", "worker", "--loglevel=debug"]
     container_name: scrap-worker
     tty: true
     stdin_open: true
@@ -211,9 +213,11 @@ services:
       - TOTAL_POSTS=${TOTAL_POSTS}
       - USERNAME_INSTA=${USERNAME_INSTA}
       - PASSWORD_INSTA=${PASSWORD_INSTA}
-      - SCRAPY_QUEUE=${SCRAPY_QUEUE}
+      - CMD_SCRAPY_START_QUEUE=${CMD_SCRAPY_START_QUEUE}
+      - CMD_SCRAPY_START_EXCHANGE=${CMD_SCRAPY_START_EXCHANGE}
     volumes:
-      - ../../../scrap-service:/app
+      - ../../scrap-service:/app/scrap-service
+      - ../../rabbitmq:/app/rabbitmq
     depends_on:
       - broker
     networks:
@@ -221,8 +225,8 @@ services:
   beat-service:
     build:
       dockerfile: Dockerfile
-      context: ../../../beat-service
-    working_dir: /beat-service/
+      context: ../../beat-service
+    working_dir: /app/beat-service/
     profiles:
       - scrap
     container_name: beat
@@ -233,10 +237,13 @@ services:
       - BROKER=${BROKER}
       - CRON_HOUR=${CRON_HOUR}
       - CRON_MINUTE=${CRON_MINUTE}
-      - RECOMENDER_QUEUE=${RECOMENDER_QUEUE}
-      - SCRAPY_QUEUE=${SCRAPY_QUEUE}
+      - CMD_RECOMMENDER_CALCULATE_QUEUE=${CMD_RECOMMENDER_CALCULATE_QUEUE}
+      - CMD_RECOMMENDER_CALCULATE_EXCHANGE=${CMD_RECOMMENDER_CALCULATE_EXCHANGE}
+      - CMD_SCRAPY_START_QUEUE=${CMD_SCRAPY_START_QUEUE}
+      - CMD_SCRAPY_START_EXCHANGE=${CMD_SCRAPY_START_EXCHANGE}
     volumes:
-      - ../../../beat-service:/beat-service
+      - ../../beat-service:/app/beat-service
+      - ../../rabbitmq:/app/rabbitmq
     depends_on:
       - broker
       - scrap-service
@@ -245,11 +252,11 @@ services:
   recomender-service:
     build:
       dockerfile: Dockerfile
-      context: ../../../recomender-service
-    working_dir: /recomender-service/
+      context: ../../recomender-service
+    working_dir: /app/recomender-service/
     profiles:
       - scrap
-    command: [ "celery", "-A", "main", "worker","--loglevel=debug", "-Q", "${RECOMENDER_QUEUE}" ]
+    command: [ "celery", "-A", "main", "worker","--loglevel=debug" ]
     container_name: recomender
     tty: true
     stdin_open: true
@@ -257,13 +264,17 @@ services:
       - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}
       - BROKER=${BROKER}
       - PORT=8000
-      - RECOMENDER_QUEUE=${RECOMENDER_QUEUE}
       - TOTAL_POSTS=${TOTAL_POSTS}
       - CACHE=redis://cache:6379/0
       - CLICKHOUSE_USER=${CLICKHOUSE_USER}
       - CLICKHOUSE_PASSWORD=${CLICKHOUSE_PASSWORD}
+      - CMD_RECOMMENDER_CALCULATE_QUEUE=${CMD_RECOMMENDER_CALCULATE_QUEUE}
+      - CMD_RECOMMENDER_CALCULATE_EXCHANGE=${CMD_RECOMMENDER_CALCULATE_EXCHANGE}
+      - CMD_SCRAPY_START_QUEUE=${CMD_SCRAPY_START_QUEUE}
+      - CMD_SCRAPY_START_EXCHANGE=${CMD_SCRAPY_START_EXCHANGE}
     volumes:
-      - ../../../recomender-service:/recomender-service
+      - ../../recomender-service:/app/recomender-service
+      - ../../rabbitmq:/app/rabbitmq
     depends_on:
       - broker
       - db
@@ -273,14 +284,14 @@ services:
   mediamtx-service:
     build:
       dockerfile: Dockerfile
-      context: ../../../mediamtx-service
+      context: ../../mediamtx-service
     container_name: mediamtx-service
     profiles:
       - media
     ports:
       - 3001:3001
     volumes:
-      - ../../../mediamtx-service:/app
+      - ../../mediamtx-service:/app
     environment:
       - HYDRA_PUBLIC_URL=http://hydra:4444
       - TIME_SEC_WAIT_RTMP_CONECTION=60

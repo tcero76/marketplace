@@ -55,7 +55,7 @@ func main() {
 	defer ch.Close()
 	fmt.Println("📡 Escuchando eventos en la red...")
 	queue, err := ch.QueueDeclare(
-		"solana_event_queue",
+		os.Getenv("EVT_PAYMENT_PERSISTENCE_QUEUE"), // name
 		true,  // durable
 		false, // auto-delete
 		false, // exclusive
@@ -67,7 +67,7 @@ func main() {
 	}
 	sendToRabbitMQ := func(message string) {
 		err := ch.Publish(
-			"",         // exchange
+			os.Getenv("EVT_PAYMENT_COMPLETED_EXCHANGE"), // exchange
 			queue.Name, // routing key (cola)
 			false,      // mandatory
 			false,      // immediate

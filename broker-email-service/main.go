@@ -12,7 +12,7 @@ import (
 )
 
 func main() {
-	msgs, conn, ch := consumer.GetMsgs(os.Getenv("RABBITMQ_USER_DB_UPDATER_QUEUE"))
+	msgs, conn, ch := consumer.GetMsgs(os.Getenv("EVT_USER_REGISTERED_EMAIL_QUEUE"))
 	defer conn.Close()
 	defer ch.Close()
 	log.Println("Esperando mensajes...")

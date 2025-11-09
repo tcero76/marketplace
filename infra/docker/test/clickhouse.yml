@@ -1,12 +1,12 @@
 services:
   clickhouse:
-    image: bitnamilegacy/clickhouse:${CLICKHOUSE_VERSION}
+    image: clickhouse:${CLICKHOUSE_VERSION}
     container_name: clickhouse
     profiles: ["clickhouse"]
     tty: true
     stdin_open: true
     volumes:
-      # - ${CLICKHOUSE_VOLUME}/data:/bitnami/clickhouse/data
+      - ${CLICKHOUSE_VOLUME}/data:/var/lib/clickhouse/
       - ../../clickhouse/houseplant/init.sh:/docker-entrypoint-initdb.d/init.sh
     ports:
       - 8123:8123
