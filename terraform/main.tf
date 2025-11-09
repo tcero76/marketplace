@@ -21,71 +21,30 @@ resource "tls_private_key" "swarm_internal" {
   rsa_bits  = 4096
 }
 
-resource "digitalocean_volume" "postgres_data" {
-  name   = "swarm-postgres-data"
-  region = var.region
-  size   = 10
-}
-
-# Manager
-resource "digitalocean_droplet" "swarm_manager" {
-  name      = "swarm-manager"
-  vpc_uuid  = data.digitalocean_vpc.default.id
-  region    = var.region
-  size      = var.size
-  image     = var.image
+module "manager" {
+  source = "./modules/manager"
+  region          = var.region
+  size            = var.size
+  image           = var.image
+  ssh_private_key = var.ssh_private_key
+  overlay_network = var.overlay_network
+  internal_pubkey = tls_private_key.swarm_internal.public_key_openssh
+  vpc = data.digitalocean_vpc.default.id
   ssh_keys  = [data.digitalocean_ssh_key.default.id]
-
-  provisioner "file" {
-    source      = "${path.module}/scripts/deploy_stack.sh"
-    destination = "/root/deploy_stack.sh"
-  }
-
-  provisioner "remote-exec" {
-    inline = [
-      "chmod +x /root/deploy_stack.sh"
-    ]
-  }
-
-  connection {
-    type        = "ssh"
-    user        = "root"
-    host        = self.ipv4_address
-    private_key = file(var.ssh_private_key)
-  }
-
-  user_data = templatefile("${path.module}/scripts/install_docker.sh.tmpl", {
-    manager_ip = ""
-    is_manager = true
-    internal_pubkey = tls_private_key.swarm_internal.public_key_openssh
-    internal_privkey = ""
-    network = var.overlay_network
-  })
 }
 
-resource "digitalocean_volume_attachment" "postgres_data_attachment" {
-  droplet_id = digitalocean_droplet.swarm_manager.id
-  volume_id  = digitalocean_volume.postgres_data.id
-}
-
-# Workers
-resource "digitalocean_droplet" "swarm_worker" {
-  count     = var.worker_count
-  name      = "swarm-worker-${count.index}"
-  vpc_uuid  = data.digitalocean_vpc.default.id
-  region    = var.region
-  size      = var.size
-  image     = var.image
+module "worker" {
+  source = "./modules/worker"
+  region          = var.region
+  size            = var.size
+  image           = var.image
+  worker_count    = var.worker_count
+  ssh_private_key = var.ssh_private_key
+  manager_ip      = module.manager.manager_ip
+  internal_privkey = tls_private_key.swarm_internal.private_key_pem
   ssh_keys  = [data.digitalocean_ssh_key.default.id]
-
-  depends_on = [digitalocean_droplet.swarm_manager]
-  user_data = templatefile("${path.module}/scripts/install_docker.sh.tmpl", {
-    manager_ip = digitalocean_droplet.swarm_manager.ipv4_address
-    is_manager = false
-    internal_privkey = tls_private_key.swarm_internal.private_key_pem
-    internal_pubkey = ""
-    network = ""
-  })
+  vpc = data.digitalocean_vpc.default.id
+  depends = module.manager.swarm_manager
 }
 
 # # -----------------------------

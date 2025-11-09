@@ -1,3 +1,3 @@
 output "manager_public_ip" {
-  value = digitalocean_droplet.swarm_manager.ipv4_address
+  value = module.manager.manager_ip
 }

@@ -1,0 +1,10 @@
+variable "region" {}
+variable "size" {}
+variable "image" {}
+variable "worker_count" {}
+variable "ssh_private_key" {}
+variable "manager_ip" {}
+variable "internal_privkey" {}
+variable "ssh_keys" {}
+variable "vpc" {}
+variable "depends" {}
