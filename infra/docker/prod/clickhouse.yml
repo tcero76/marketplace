@@ -1,9 +1,8 @@
 services:
   clickhouse:
-    image: clickhouse:${CLICKHOUSE_VERSION}
+    image: tcero76/clickhouse:${CLICKHOUSE_VERSION}
     volumes:
       - ${CLICKHOUSE_VOLUME}/data:/var/lib/clickhouse/
-      - ${CLICKHOUSE_VOLUME}/migrations:/docker-entrypoint-initdb.d
     ports:
       - 8123:8123
       - 9000:9000
@@ -23,6 +22,17 @@ services:
           - node.hostname == swarm-manager
       restart_policy:
         condition: on-failure
+  houseplant:
+    image: tcero76/houseplant:${HOUSEPLANT_VERSION}
+    working_dir: /
+    secrets:
+      - clickhouse_password
+    environment:
+      CLICKHOUSE_HOST: clickhouse
+      CLICKHOUSE_PORT: 9000
+      CLICKHOUSE_PASSWORD_FILE: /run/secrets/clickhouse_password
+      CLICKHOUSE_PASSWORD: ${CLICKHOUSE_PASSWORD}
+      CLICKHOUSE_DB: default
 secrets:
   clickhouse_password:
     external: true

@@ -1,13 +1,15 @@
 services:
   clickhouse:
-    image: clickhouse:${CLICKHOUSE_VERSION}
+    image: tcero76/clickhouse:${CLICKHOUSE_VERSION}
+    build:
+      context: ../../clickhouse/image/
+      dockerfile: Dockerfile
     container_name: clickhouse
     profiles: ["clickhouse"]
     tty: true
     stdin_open: true
     volumes:
       - ${CLICKHOUSE_VOLUME}/data:/var/lib/clickhouse/
-      - ../../clickhouse/houseplant/init.sh:/docker-entrypoint-initdb.d/init.sh
     ports:
       - 8123:8123
       - 9000:9000
