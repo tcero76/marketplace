@@ -51,13 +51,13 @@ env:
   PATRONI_TIMESCALEDB_VERSION: 17
   HOUSEPLANT_VERSION: 0.0.0
   # Volumes
-  CLICKHOUSE_VOLUME: /mnt/data/clickhouse/
-  POSTGRES_VOLUME: /mnt/data/timescaleDB/
-  RABBITMQ_VOLUME: /mnt/data/rabbitmq/
-  REDIS_VOLUME: /mnt/data/redis/
-  GRAFANA_VOLUME: /mnt/data/grafana/
-  PROMETHEUS_VOLUME: /mnt/data/prometheus/
-  MEDIAMTX_VOLUME: /mnt/data/mediamtx/
+  CLICKHOUSE_VOLUME: /mnt/data/clickhouse
+  POSTGRES_VOLUME: /mnt/data/timescaleDB
+  RABBITMQ_VOLUME: /mnt/data/rabbitmq
+  REDIS_VOLUME: /mnt/data/redis
+  GRAFANA_VOLUME: /mnt/data/grafana
+  PROMETHEUS_VOLUME: /mnt/data/prometheus
+  MEDIAMTX_VOLUME: /mnt/data/mediamtx
   # jobs
   TOTAL_POSTS: 5
   CRON_HOUR: 23
