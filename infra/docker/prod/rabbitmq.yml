@@ -1,7 +1,6 @@
 services:  
   broker:
     image: rabbitmq:${RABBITMQ_VERSION}
-    container_name: broker
     ports:
       - 5672:5672
       - 15672:15672
