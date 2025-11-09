@@ -1,80 +1,72 @@
 version: '3.8'
 services:
-  flyway:
-    image: flyway/flyway
-    container_name: flyway
-    profiles:
-      - migrate
-    command: -url=jdbc:postgresql://${POSTGRES_HOST}:5432/${POSTGRES_DB} -user=${POSTGRES_USER} -password=${POSTGRES_PASSWORD} -schemas=marketplace,scrap -locations=filesystem:/flyway/sql migrate
-    volumes:
-      - ./database/migrations:/flyway/sql
-    networks:
-      - ${NETWORK_APPLICATION}
-    depends_on:
-      - pg-0
-  pg-0:
-    image: bitnami/postgresql-repmgr:14
-    container_name: pg-0
-    profiles:
-      - base
-    ports:
-      - 5432
-    volumes:
-      - ./database/pg_0_data:/bitnami/postgresql
-    environment:
-      - POSTGRESQL_POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
-      - POSTGRESQL_USERNAME=${POSTGRES_USER}
-      - POSTGRESQL_PASSWORD=${POSTGRES_PASSWORD}
-      - POSTGRESQL_DATABASE=${POSTGRES_DB}
-      - REPMGR_PASSWORD=repmgrpassword
-      - REPMGR_PRIMARY_HOST=pg-0
-      - REPMGR_PARTNER_NODES=pg-0,pg-1
-      - REPMGR_NODE_NAME=pg-0
-      - REPMGR_NODE_NETWORK_NAME=pg-0
-    networks:
-      - ${NETWORK_APPLICATION}
-  pg-1:
-    image: bitnami/postgresql-repmgr:14
-    container_name: pg-1
-    profiles:
-      - base
-    ports:
-      - 5432
-    volumes:
-      - ./database/pg_1_data:/bitnami/postgresql
-    environment:
-      - POSTGRESQL_POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
-      - POSTGRESQL_USERNAME=${POSTGRES_USER}
-      - POSTGRESQL_PASSWORD=${POSTGRES_PASSWORD}
-      - POSTGRESQL_DATABASE=${POSTGRES_DB}
-      - REPMGR_PASSWORD=repmgrpassword
-      - REPMGR_PRIMARY_HOST=pg-0
-      - REPMGR_PARTNER_NODES=pg-0,pg-1
-      - REPMGR_NODE_NAME=pg-1
-      - REPMGR_NODE_NETWORK_NAME=pg-1
-    networks:
-      - ${NETWORK_APPLICATION}
-  pgpool:
-    image: bitnami/pgpool:4
-    container_name: pgpool
-    hostname: db
-    profiles:
-      - base
-    ports:
-      - 5432:5432
-    environment:
-      - PGPOOL_BACKEND_NODES=0:pg-0:5432,1:pg-1:5432
-      - PGPOOL_SR_CHECK_USER=${POSTGRES_USER}
-      - PGPOOL_SR_CHECK_PASSWORD=${POSTGRES_PASSWORD}
-      - PGPOOL_ENABLE_LDAP=no
-      - PGPOOL_POSTGRES_USERNAME=postgres
-      - PGPOOL_POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
-      - PGPOOL_ADMIN_USERNAME=admin
-      - PGPOOL_ADMIN_PASSWORD=adminpassword
-    healthcheck:
-      test: ["CMD", "/opt/bitnami/scripts/pgpool/healthcheck.sh"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-    networks:
-      - ${NETWORK_APPLICATION}
+    etcd1: &etcd
+        image: tcero76/patroni.timescaledb:${PATRONI_TIMESCALEDB_VERSION:-17}
+        networks: [ demo ]
+        environment:
+            ETCD_LISTEN_PEER_URLS: http://0.0.0.0:2380
+            ETCD_LISTEN_CLIENT_URLS: http://0.0.0.0:2379
+            ETCD_INITIAL_CLUSTER: etcd1=http://etcd1:2380,etcd2=http://etcd2:2380,etcd3=http://etcd3:2380
+            ETCD_INITIAL_CLUSTER_STATE: new
+            ETCD_INITIAL_CLUSTER_TOKEN: tutorial
+            ETCD_UNSUPPORTED_ARCH: arm64
+        container_name: demo-etcd1
+        hostname: etcd1
+        command: etcd --name etcd1 --initial-advertise-peer-urls http://etcd1:2380
+
+    etcd2:
+        <<: *etcd
+        container_name: demo-etcd2
+        hostname: etcd2
+        command: etcd --name etcd2 --initial-advertise-peer-urls http://etcd2:2380
+
+    etcd3:
+        <<: *etcd
+        container_name: demo-etcd3
+        hostname: etcd3
+        command: etcd --name etcd3 --initial-advertise-peer-urls http://etcd3:2380
+
+    haproxy:
+        image: tcero76/patroni.timescaledb:${PATRONI_TIMESCALEDB_VERSION:-17}
+        networks: [ demo ]
+        env_file: docker/patroni.env
+        hostname: haproxy
+        container_name: demo-haproxy
+        ports:
+            - "5000:5000"
+            - "5001:5001"
+        command: haproxy
+        environment: &haproxy_env
+            ETCDCTL_ENDPOINTS: http://etcd1:2379,http://etcd2:2379,http://etcd3:2379
+            PATRONI_ETCD3_HOSTS: "'etcd1:2379','etcd2:2379','etcd3:2379'"
+            PATRONI_SCOPE: demo
+
+    patroni1:
+        image: tcero76/patroni.timescaledb:${PATRONI_TIMESCALEDB_VERSION:-17}
+        networks: [ demo ]
+        env_file: docker/patroni.env
+        hostname: patroni1
+        container_name: demo-patroni1
+        environment:
+            <<: *haproxy_env
+            PATRONI_NAME: patroni1
+
+    patroni2:
+        image: tcero76/patroni.timescaledb:${PATRONI_TIMESCALEDB_VERSION:-17}
+        networks: [ demo ]
+        env_file: docker/patroni.env
+        hostname: patroni2
+        container_name: demo-patroni2
+        environment:
+            <<: *haproxy_env
+            PATRONI_NAME: patroni2
+
+    patroni3:
+        image: tcero76/patroni.timescaledb:${PATRONI_TIMESCALEDB_VERSION:-17}
+        networks: [ demo ]
+        env_file: docker/patroni.env
+        hostname: patroni3
+        container_name: demo-patroni3
+        environment:
+            <<: *haproxy_env
+            PATRONI_NAME: patroni3

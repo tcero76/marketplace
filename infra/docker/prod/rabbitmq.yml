@@ -24,9 +24,6 @@ services:
       #     memory: 512M
   broker-job:
     image: tcero76/rabbitmq-init
-    build:
-      dockerfile: Dockerfile
-      context: ../../rabbitmq/scripts/
     entrypoint: [ "sh", "/init_rabbitmq.sh" ]
     environment:
       HOST: broker
