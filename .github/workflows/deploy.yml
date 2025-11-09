@@ -68,10 +68,18 @@ env:
   RECOMENDER_QUEUE: recomender_queue
   SCRAPY_QUEUE: scrapy_queue
   RABBITMQ_QUEUE: chat_event_queue
+  EVT_PAYMENT_COMPLETED_EXCHANGE: evt_payment_completed_exchange
+  EVT_PAYMENT_PERSISTENCE_QUEUE: evt_payment_persistence_queue
+  CMD_CHAT_MESSAGE_SEND_EXCHANGE: cmd_chat_message_send_exchange
+  CMD_CHAT_MESSAGE_DELIVERY_QUEUE: cmd_chat_message_delivery_queue
   RABBITMQ_CHAT_CACHE_UPDATER_QUEUE: chat_cache_updater_queue
   CMD_CHAT_MESSAGE_PERSISTENCE_QUEUE: cmd_chat_message_persistence_queue
   EVT_USER_REGISTERED_EMAIL_QUEUE: evt_user_registered_email_queue
   EVT_USER_REGISTERED_EXCHANGE: evt_user_registered_exchange
+  CMD_RECOMMENDER_CALCULATE_QUEUE: cmd_recommender_calculate_queue
+  CMD_RECOMMENDER_CALCULATE_EXCHANGE: cmd_recommender_calculate_exchange
+  CMD_SCRAPY_START_QUEUE: cmd_scrapy_start_queue
+  CMD_SCRAPY_START_EXCHANGE: cmd_scrapy_start_exchange
   # redis
   REDIS_HOST: cache
   #clickhouse
