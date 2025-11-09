@@ -189,15 +189,15 @@ jobs:
       - name: Crear secrets en Docker Swarm
         continue-on-error: true
         run: |
-          ssh -o StrictHostKeyChecking=no root@${{ secrets.MANAGER_IP }} "
+          ssh -o StrictHostKeyChecking=no root@$MANAGER_IP "
             echo '${{ secrets.POSTGRES_PASSWORD }}' | docker secret create postgres_password - \
               && echo '✅ Secret postgres_password creado' \
               || echo 'ℹ️ Secret postgres_password ya existe, continuando...'
           "
-          ssh -o StrictHostKeyChecking=no root@${{ secrets.MANAGER_IP }} "
+          ssh -o StrictHostKeyChecking=no root@$MANAGER_IP "
             echo '${{ secrets.CLICKHOUSE_PASSWORD }}' | docker secret create clickhouse_password - \
-              && echo '✅ Secret postgres_password creado' \
-              || echo 'ℹ️ Secret postgres_password ya existe, continuando...'
+              && echo '✅ Secret clickhouse_password creado' \
+              || echo 'ℹ️ Secret clickhouse_password ya existe, continuando...'
           "
 
   # PATRONI_ADMIN_PASSWORD: admin
@@ -211,13 +211,13 @@ jobs:
 
       - name: Copy docker-compose.yml to manager
         run: |
-          ssh -o StrictHostKeyChecking=no root@${{ secrets.MANAGER_IP }} "
+          ssh -o StrictHostKeyChecking=no root@$MANAGER_IP "
             mkdir -p docker
           "
           scp -o StrictHostKeyChecking=no infra/docker/imagenes.yml \
-            root@${{ secrets.MANAGER_IP }}:/root/docker/imagenes.yml
+            root@$MANAGER_IP:/root/docker/imagenes.yml
           scp -o StrictHostKeyChecking=no infra/docker/prod/* \
-            root@${{ secrets.MANAGER_IP }}:/root/docker/
+            root@$MANAGER_IP:/root/docker/
 
       - name: Deploy stack on Swarm manager
         run: ssh -o StrictHostKeyChecking=no root@${{ secrets.MANAGER_IP }} "/root/deploy_stack.sh"
