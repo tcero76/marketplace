@@ -6,82 +6,90 @@ on:
       - "v*.*.*"
   workflow_dispatch:
 env:
-  # prod, dev, test
-  PROFILE: ${{ secrets.PROFILE }}
+  PROFILE: prod
   # Application
-  PORT_EXTERNAL: ${{ secrets.PORT_EXTERNAL }} 
-  HOST_EXTERNAL: ${{ secrets.MANAGER_IP }} 
-  HOST_URL: ${{ secrets.HOST_URL }} 
-  HOST_WS: ${{ secrets.HOST_WS }} 
-  NETWORK_APPLICATION: ${{ secrets.NETWORK_APPLICATION }} 
-  TAG: ${{ secrets.TAG }} 
-  DIGITALOCEAN_TOKEN: ${{ secrets.DIGITALOCEAN_TOKEN }} 
-  COMPOSE_PROFILES: ${{ secrets.COMPOSE_PROFILES }} 
-  COMPOSE_FILE: ${{ secrets.COMPOSE_FILE }} 
-  PROGRAMID: ${{ secrets.PROGRAMID }} 
-  TOTAL_POSTS: ${{ secrets.TOTAL_POSTS }} 
-  CRON_HOUR: ${{ secrets.CRON_HOUR }} 
-  CRON_MINUTE: ${{ secrets.CRON_MINUTE }} 
-  USERNAME_INSTA: ${{ secrets.USERNAME_INSTA }} 
-  PASSWORD_INSTA: ${{ secrets.PASSWORD_INSTA }} 
-  #OAuth versions
-  POSTGRES_VERSION: ${{ secrets.POSTGRES_VERSION }} 
-  HYDRA_VERSION: ${{ secrets.HYDRA_VERSION }} 
-  OATHKEEPER_VERSION: ${{ secrets.OATHKEEPER_VERSION }} 
-  NODE_VERSION: ${{ secrets.NODE_VERSION }} 
-  RABBITMQ_VERSION: ${{ secrets.RABBITMQ_VERSION }} 
-  MEDIAMTX_VERSION: ${{ secrets.MEDIAMTX_VERSION }} 
-  REDIS_VERSION: ${{ secrets.REDIS_VERSION }} 
-  ELASTICSEARCH_VERSION: ${{ secrets.ELASTICSEARCH_VERSION }} 
-  KIBANA_VERSION: ${{ secrets.KIBANA_VERSION }} 
-  LOGSTASH_VERSION: ${{ secrets.LOGSTASH_VERSION }} 
-  CLICKHOUSE_VERSION: ${{ secrets.CLICKHOUSE_VERSION }}
-  TIMESCALEDB_VERSION: ${{ secrets.TIMESCALEDB_VERSION }}
-  #OAuth broker
-  BROKER: ${{ secrets.BROKER }} 
-  #OAuth queueu
-  RECOMENDER_QUEUE: ${{ secrets.RECOMENDER_QUEUE }} 
-  SCRAPY_QUEUE: ${{ secrets.SCRAPY_QUEUE }} 
-  RABBITMQ_QUEUE: ${{ secrets.RABBITMQ_QUEUE }} 
-  RABBITMQ_CHAT_CACHE_UPDATER_QUEUE: ${{ secrets.RABBITMQ_CHAT_CACHE_UPDATER_QUEUE }} 
-  RABBITMQ_CHAT_DB_UPDATER_QUEUE: ${{ secrets.RABBITMQ_CHAT_DB_UPDATER_QUEUE }} 
-  RABBITMQ_USER_DB_UPDATER_QUEUE: ${{ secrets.RABBITMQ_USER_DB_UPDATER_QUEUE }} 
-  RABBITMQ_USER_DB_UPDATER_EXCHANGE: ${{ secrets.RABBITMQ_USER_DB_UPDATER_EXCHANGE }} 
-  #OAuth redis
-  REDIS_HOST: ${{ secrets.REDIS_HOST }} 
-  #OAuth clickhouse
-  CLICKHOUSE_USER: ${{ secrets.CLICKHOUSE_USER }} 
-  CLICKHOUSE_PASSWORD: ${{ secrets.CLICKHOUSE_PASSWORD }} 
-  #OAuth postgres
-  POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }} 
-  POSTGRES_USER: ${{ secrets.POSTGRES_USER }} 
-  POSTGRES_DB: ${{ secrets.POSTGRES_DB }} 
-  POSTGRES_PORT: ${{ secrets.POSTGRES_PORT }} 
-  POSTGRES_HOST: ${{ secrets.POSTGRES_HOST }} 
-  #OAuth google
-  GOOGLE_OAUTH2_CLIENT_ID: ${{ secrets.GOOGLE_OAUTH2_CLIENT_ID }} 
-  GOOGLE_OAUTH2_CLIENT_SECRET: ${{ secrets.GOOGLE_OAUTH2_CLIENT_SECRET }} 
-  GOOGLE_OAUTH2_REDIRECT_URI: ${{ secrets.GOOGLE_OAUTH2_REDIRECT_URI }} 
-  #OAuth Hydra
-  CLIENT_ID: ${{ secrets.CLIENT_ID }} 
-  CLIENT_SECRET: ${{ secrets.CLIENT_SECRET }} 
-  # email
-  SMTP_HOST: ${{ secrets.SMTP_HOST }} 
-  SMTP_PORT: ${{ secrets.SMTP_PORT }} 
-  SMTP_USER: ${{ secrets.SMTP_USER }} 
-  SMTP_PASS: ${{ secrets.SMTP_PASS }} 
-  # docker
-  DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }} 
-  DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }} 
-  # volumes
-  CLICKHOUSE_VOLUME: /mnt/data/clickhouse
-  POSTGRES_VOLUME: /mnt/data/timescaleDB
-  RABBITMQ_VOLUME: /mnt/data/rabbitmq
-  REDIS_VOLUME: /mnt/data/redis
-  GRAFANA_VOLUME: /mnt/data/grafana
-  PROMETHEUS_VOLUME: /mnt/data/prometheus
-  MEDIAMTX_VOLUME: /mnt/data/mediamtx
+  PORT_EXTERNAL: 8080
+  HOST_EXTERNAL: localhost
+  HOST_URL: http://${HOST_EXTERNAL}:${PORT_EXTERNAL}
+  HOST_WS: ws://${HOST_EXTERNAL}:${PORT_EXTERNAL}
+  NETWORK_APPLICATION: application
+  TF_VAR_overlay_network: application
+  TAG: V0.0.0
+  #secrets
+  # CLICKHOUSE_PASSWORD: ${{ secrets.CLICKHOUSE_PASSWORD}}
+  # POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD}}
+  # POSTGRES_CDC_PASSWORD: ${{ secrets.POSTGRES_CDC_PASSWORD}}
+  # CLIENT_ID: ${{ secrets.CLIENT_ID}}
+  # CLIENT_SECRET: ${{ secrets.CLIENT_SECRET}}
+  # GOOGLE_OAUTH2_CLIENT_ID: ${{ secrets.GOOGLE_OAUTH2_CLIENT_ID}}
+  # GOOGLE_OAUTH2_CLIENT_SECRET: ${{ secrets.GOOGLE_OAUTH2_CLIENT_SECRET}}
+  # SMTP_PASS: ${{ secrets.SMTP_PASS}}
+  # DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD}}
+  # DIGITALOCEAN_TOKEN: ${{ secrets.DIGITALOCEAN_TOKEN}}
+  # DO_SPACES_SECRET: ${{ secrets.DO_SPACES_SECRET}}
+  # DO_SPACES_KEY: ${{ secrets.DO_SPACES_KEY}}
+  # PASSWORD_INSTA: ${{ secrets.PASSWORD_INSTA}}
+  # PROGRAMID: ${{ secrets.PROGRAMID}}
+  PATRONI_RESTAPI_USERNAME: admin
+  PATRONI_SUPERUSER_USERNAME: postgres
+  PATRONI_REPLICATION_USERNAME: replicator
+  PATRONI_REPLICATION_PASSWORD: replicate
+  PATRONI_admin_OPTIONS: createdb,createrole
 
+  # Versions
+  HYDRA_VERSION: v2.3.0
+  OATHKEEPER_VERSION: v0.40.9
+  NODE_VERSION: 24.0.1
+  RABBITMQ_VERSION: 4.0-management
+  MEDIAMTX_VERSION: 1.12.2
+  REDIS_VERSION: 8.0.0
+  ELASTICSEARCH_VERSION: 8.12.0
+  KIBANA_VERSION: 8.12.0
+  LOGSTASH_VERSION: 8.12.0
+  CLICKHOUSE_VERSION: 25.6.4
+  TIMESCALEDB_VERSION: 2.20.1-pg17
+  PATRONI_TIMESCALEDB_VERSION: 17
+  HOUSEPLANT_VERSION: 0.0.0
+  # Volumes
+  CLICKHOUSE_VOLUME: clickhouse/
+  POSTGRES_VOLUME: timescaleDB/
+  RABBITMQ_VOLUME: rabbitmq/
+  REDIS_VOLUME: redis/
+  GRAFANA_VOLUME: grafana/
+  PROMETHEUS_VOLUME: prometheus/
+  MEDIAMTX_VOLUME: mediamtx/
+  # jobs
+  TOTAL_POSTS: 5
+  CRON_HOUR: 23
+  CRON_MINUTE: 12
+  USERNAME_INSTA: arodnazs@hotmail.com
+  #colas
+  BROKER: amqp://guest:guest@broker:5672
+  RECOMENDER_QUEUE: recomender_queue
+  SCRAPY_QUEUE: scrapy_queue
+  RABBITMQ_QUEUE: chat_event_queue
+  RABBITMQ_CHAT_CACHE_UPDATER_QUEUE: chat_cache_updater_queue
+  CMD_CHAT_MESSAGE_PERSISTENCE_QUEUE: cmd_chat_message_persistence_queue
+  EVT_USER_REGISTERED_EMAIL_QUEUE: evt_user_registered_email_queue
+  EVT_USER_REGISTERED_EXCHANGE: evt_user_registered_exchange
+  # redis
+  REDIS_HOST: cache
+  #clickhouse
+  CLICKHOUSE_USER: tcero
+  # postgres
+  POSTGRES_USER: tcero
+  POSTGRES_DB: marketplace
+  POSTGRES_PORT: 5432
+  POSTGRES_HOST: db
+  #OAuth google
+  GOOGLE_OAUTH2_REDIRECT_URI: http://localhost:8080/bff/callback
+  # email
+  SMTP_HOST: smtp.gmail.com
+  SMTP_PORT: 587
+  SMTP_USER: leonardo.lastra@gmail.com
+  # docker
+  DOCKER_USERNAME: tcero76
+  MANAGER_IP: 0.0.0.0
 jobs:
   terraform:
     name: Terraform Apply
@@ -159,24 +167,23 @@ jobs:
 
       - name: Crear archivo .env
         run: |
-          ssh -o StrictHostKeyChecking=no root@${{ secrets.MANAGER_IP }} "bash -c 'cat > /root/.env <<EOF
-          POSTGRES_USER=${{ secrets.POSTGRES_USER }}
-          POSTGRES_HOST=${{ secrets.POSTGRES_HOST}}
-          POSTGRES_PORT=${{ secrets.POSTGRES_PORT}}
-          POSTGRES_DB=${{ secrets.POSTGRES_DB }}
-          POSTGRES_VOLUME=${{ secrets.POSTGRES_VOLUME }}
+          ssh -o StrictHostKeyChecking=no root@$MANAGER_IP "bash -c 'cat > /root/.env <<EOF
+          POSTGRES_USER=$POSTGRES_USER
+          POSTGRES_HOST=$POSTGRES_HOST
+          POSTGRES_PORT=$POSTGRES_PORT
+          POSTGRES_DB=$POSTGRES_DB
+          POSTGRES_VOLUME=$POSTGRES_VOLUME
           CLICKHOUSE_VOLUME=$CLICKHOUSE_VOLUME
-          CLICKHOUSE_USER=${{ secrets.CLICKHOUSE_USER }}
-          CLICKHOUSE_PASSWORD=${{ secrets.CLICKHOUSE_PASSWORD }}
+          CLICKHOUSE_USER=$CLICKHOUSE_USER
           RABBITMQ_VERSION=$RABBITMQ_VERSION
           RABBITMQ_VOLUME=$RABBITMQ_VOLUME
-          HYDRA_VERSION=${{ secrets.HYDRA_VERSION }}
-          REDIS_VERSION=${{ secrets.REDIS_VERSION }}
-          CLICKHOUSE_VERSION=${{ secrets.CLICKHOUSE_VERSION }}
-
-          HOST_EXTERNAL=${{ secrets.MANAGER_IP }}
-          PORT_EXTERNAL=${{ secrets.PORT_EXTERNAL }}
-          NETWORK_APPLICATION=${{ secrets.NETWORK_APPLICATION }}
+          HYDRA_VERSION=$HYDRA_VERSION
+          REDIS_VERSION=$REDIS_VERSION
+          CLICKHOUSE_VERSION=$CLICKHOUSE_VERSION
+          HOUSEPLANT_VERSION=${HOUSEPLANT_VERSION}
+          HOST_EXTERNAL=$MANAGER_IP
+          PORT_EXTERNAL=$PORT_EXTERNAL
+          NETWORK_APPLICATION=$NETWORK_APPLICATION
           EOF'"
 
       - name: Crear secrets en Docker Swarm
@@ -187,6 +194,19 @@ jobs:
               && echo '✅ Secret postgres_password creado' \
               || echo 'ℹ️ Secret postgres_password ya existe, continuando...'
           "
+          ssh -o StrictHostKeyChecking=no root@${{ secrets.MANAGER_IP }} "
+            echo '${{ secrets.CLICKHOUSE_PASSWORD }}' | docker secret create clickhouse_password - \
+              && echo '✅ Secret postgres_password creado' \
+              || echo 'ℹ️ Secret postgres_password ya existe, continuando...'
+          "
+
+  # PATRONI_ADMIN_PASSWORD: admin
+  # PATRONI_SUPERUSER_PASSWORD: postgres
+  # PATRONI_RESTAPI_PASSWORD: admin
+
+
+
+
         shell: bash
 
       - name: Copy docker-compose.yml to manager
