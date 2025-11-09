@@ -1,0 +1,34 @@
+version: "20251031022724"
+name: create_recomendation_table
+table: recomendaciones
+
+development: &development
+  up: |
+    CREATE TABLE  IF NOT EXISTS recomendaciones
+    (
+      `user_id` UUID,
+      `item_id` UInt64,
+      `score` Float32,
+      `timestamp` DateTime
+    )
+    ENGINE = MergeTree
+    ORDER BY (user_id, item_id)
+  down: |
+    DROP TABLE recomendaciones
+
+test:
+  <<: *development
+
+production:
+  up: |
+   CREATE TABLE  IF NOT EXISTS recomendaciones
+    (
+      `user_id` UUID,
+      `item_id` UInt64,
+      `score` Float32,
+      `timestamp` DateTime
+    )
+    ENGINE = MergeTree
+    ORDER BY (user_id, item_id)
+  down: |
+    DROP TABLE recomendaciones
