@@ -220,7 +220,7 @@ jobs:
             root@$MANAGER_IP:/root/docker/
 
       - name: Deploy stack on Swarm manager
-        run: ssh -o StrictHostKeyChecking=no root@${{ secrets.MANAGER_IP }} "/root/deploy_stack.sh"
+        run: ssh -o StrictHostKeyChecking=no root@$MANAGER_IP "/root/deploy_stack.sh"
 
 
 
