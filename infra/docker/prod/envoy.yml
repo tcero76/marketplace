@@ -1,13 +1,6 @@
 services:
   envoy:
-    build:
-      dockerfile: Dockerfile
-      context: ./config/envoy
-    container_name: envoy
-    profiles:
-      - front
-    tty: true
-    stdin_open: true
+    image: tcero76/envoy:0.0.0
     environment:
      - ENVOY_HOST=0.0.0.0
      - ENVOY_PORT=$PORT_EXTERNAL
