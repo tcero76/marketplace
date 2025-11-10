@@ -89,6 +89,11 @@ env:
   POSTGRES_DB: marketplace
   POSTGRES_PORT: 5432
   POSTGRES_HOST: db
+  PATRONI_RESTAPI_USERNAME=admin
+  PATRONI_SUPERUSER_USERNAME=postgres
+  PATRONI_REPLICATION_USERNAME=replicator
+  PATRONI_admin_PASSWORD=admin
+  PATRONI_admin_OPTIONS=createdb,createrole
   #OAuth google
   GOOGLE_OAUTH2_REDIRECT_URI: http://localhost:8080/bff/callback
   # email
@@ -221,14 +226,21 @@ jobs:
               && echo '✅ Secret clickhouse_password creado' \
               || echo 'ℹ️ Secret clickhouse_password ya existe, continuando...'
           "
-
-  # PATRONI_ADMIN_PASSWORD: admin
-  # PATRONI_SUPERUSER_PASSWORD: postgres
-  # PATRONI_RESTAPI_PASSWORD: admin
-
-
-
-
+          ssh -o StrictHostKeyChecking=no root@$MANAGER_IP "
+            echo '${{ secrets.PATRONI_ADMIN_PASSWORD }}' | docker secret create patroni_admin_password - \
+              && echo '✅ Secret patroni_admin_password creado' \
+              || echo 'ℹ️ Secret patroni_admin_password ya existe, continuando...'
+          "
+          ssh -o StrictHostKeyChecking=no root@$MANAGER_IP "
+            echo '${{ secrets.PATRONI_SUPERUSER_PASSWORD }}' | docker secret create patroni_superuser_password - \
+              && echo '✅ Secret patroni_superuser_password creado' \
+              || echo 'ℹ️ Secret patroni_superuser_password ya existe, continuando...'
+          "
+          ssh -o StrictHostKeyChecking=no root@$MANAGER_IP "
+            echo '${{ secrets.PATRONI_RESTAPI_PASSWORD }}' | docker secret create patroni_restapi_password - \
+              && echo '✅ Secret patroni_restapi_password creado' \
+              || echo 'ℹ️ Secret patroni_restapi_password ya existe, continuando...'
+          "
         shell: bash
 
       - name: Copy docker-compose.yml to manager
