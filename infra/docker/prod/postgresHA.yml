@@ -2,7 +2,8 @@ version: '3.8'
 services:
     etcd1: &etcd
         image: tcero76/patroni.timescaledb:${PATRONI_TIMESCALEDB_VERSION:-17}
-        networks: [ demo ]
+        networks:
+        - ${NETWORK_APPLICATION:-application}
         environment:
             ETCD_LISTEN_PEER_URLS: http://0.0.0.0:2380
             ETCD_LISTEN_CLIENT_URLS: http://0.0.0.0:2379
@@ -10,28 +11,34 @@ services:
             ETCD_INITIAL_CLUSTER_STATE: new
             ETCD_INITIAL_CLUSTER_TOKEN: tutorial
             ETCD_UNSUPPORTED_ARCH: arm64
-        container_name: demo-etcd1
+        deploy:
+        mode: replicated
+        replicas: 1
+        placement:
+            constraints:
+            - node.hostname == swarm-manager
+        restart_policy:
+            condition: on-failure
         hostname: etcd1
         command: etcd --name etcd1 --initial-advertise-peer-urls http://etcd1:2380
 
     etcd2:
         <<: *etcd
-        container_name: demo-etcd2
         hostname: etcd2
         command: etcd --name etcd2 --initial-advertise-peer-urls http://etcd2:2380
 
     etcd3:
         <<: *etcd
-        container_name: demo-etcd3
         hostname: etcd3
         command: etcd --name etcd3 --initial-advertise-peer-urls http://etcd3:2380
 
     haproxy:
         image: tcero76/patroni.timescaledb:${PATRONI_TIMESCALEDB_VERSION:-17}
-        networks: [ demo ]
-        env_file: docker/patroni.env
+        networks:
+        - ${NETWORK_APPLICATION:-application}
+        env_file: /root/.env
         hostname: haproxy
-        container_name: demo-haproxy
+        container_name: haproxy
         ports:
             - "5000:5000"
             - "5001:5001"
@@ -43,30 +50,54 @@ services:
 
     patroni1:
         image: tcero76/patroni.timescaledb:${PATRONI_TIMESCALEDB_VERSION:-17}
-        networks: [ demo ]
-        env_file: docker/patroni.env
+        networks:
+        - ${NETWORK_APPLICATION:-application}
+        env_file: /root/.env
         hostname: patroni1
-        container_name: demo-patroni1
+        container_name: patroni1
+        secrets:
+        - patroni_admin_password
+        - patroni_superuser_password
+        - patroni_restapi_password
         environment:
             <<: *haproxy_env
             PATRONI_NAME: patroni1
+            PATRONI_ADMIN_PASSWORD_FILE: ${PATRONI_ADMIN_PASSWORD_FILE}
+            PATRONI_SUPERUSER_PASSWORD_FILE: ${PATRONI_SUPERUSER_PASSWORD_FILE}
+            PATRONI_RESTAPI_PASSWORD_FILE: ${PATRONI_RESTAPI_PASSWORD_FILE}
 
     patroni2:
         image: tcero76/patroni.timescaledb:${PATRONI_TIMESCALEDB_VERSION:-17}
-        networks: [ demo ]
-        env_file: docker/patroni.env
+        networks:
+        - ${NETWORK_APPLICATION:-application}
+        env_file: /root/.env
         hostname: patroni2
-        container_name: demo-patroni2
+        container_name: patroni2
+        secrets:
+        - patroni_admin_password
+        - patroni_superuser_password
+        - patroni_restapi_password
         environment:
             <<: *haproxy_env
             PATRONI_NAME: patroni2
-
     patroni3:
         image: tcero76/patroni.timescaledb:${PATRONI_TIMESCALEDB_VERSION:-17}
-        networks: [ demo ]
-        env_file: docker/patroni.env
+        networks:
+        - ${NETWORK_APPLICATION:-application}
+        env_file: /root/.env
         hostname: patroni3
-        container_name: demo-patroni3
+        container_name: patroni3
+        secrets:
+        - patroni_admin_password
+        - patroni_superuser_password
+        - patroni_restapi_password
         environment:
             <<: *haproxy_env
             PATRONI_NAME: patroni3
+secrets:
+    patroni_admin_password:
+        external: true
+    patroni_superuser_password:
+        external: true
+    patroni_restapi_password:
+        external: true
