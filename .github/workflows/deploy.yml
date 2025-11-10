@@ -89,11 +89,6 @@ env:
   POSTGRES_DB: marketplace
   POSTGRES_PORT: 5432
   POSTGRES_HOST: db
-  PATRONI_RESTAPI_USERNAME=admin
-  PATRONI_SUPERUSER_USERNAME=postgres
-  PATRONI_REPLICATION_USERNAME=replicator
-  PATRONI_admin_PASSWORD=admin
-  PATRONI_admin_OPTIONS=createdb,createrole
   #OAuth google
   GOOGLE_OAUTH2_REDIRECT_URI: http://localhost:8080/bff/callback
   # email
@@ -102,7 +97,7 @@ env:
   SMTP_USER: leonardo.lastra@gmail.com
   # docker
   DOCKER_USERNAME: tcero76
-  MANAGER_IP: 159.89.180.152
+  MANAGER_IP: 
 jobs:
   terraform:
     name: Terraform Apply
