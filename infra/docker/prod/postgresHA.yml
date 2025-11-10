@@ -12,13 +12,15 @@ services:
             ETCD_INITIAL_CLUSTER_TOKEN: tutorial
             ETCD_UNSUPPORTED_ARCH: arm64
         deploy:
-        mode: replicated
-        replicas: 1
-        placement:
-            constraints:
-            - node.hostname == swarm-manager
-        restart_policy:
-            condition: on-failure
+            mode: replicated
+            replicas: 1
+            placement:
+                constraints:
+                - node.hostname == swarm-worker-0
+            restart_policy:
+                condition: on-failure
+                restart_policy:
+                    condition: on-failure
         hostname: etcd1
         command: etcd --name etcd1 --initial-advertise-peer-urls http://etcd1:2380
 
@@ -38,11 +40,20 @@ services:
         - ${NETWORK_APPLICATION:-application}
         env_file: /root/.env
         hostname: haproxy
-        container_name: haproxy
         ports:
             - "5000:5000"
             - "5001:5001"
         command: haproxy
+        deploy:
+            mode: replicated
+            replicas: 1
+            placement:
+                constraints:
+                - node.hostname == swarm-worker-0
+            restart_policy:
+                condition: on-failure
+                restart_policy:
+                    condition: on-failure
         environment: &haproxy_env
             ETCDCTL_ENDPOINTS: http://etcd1:2379,http://etcd2:2379,http://etcd3:2379
             PATRONI_ETCD3_HOSTS: "'etcd1:2379','etcd2:2379','etcd3:2379'"
@@ -54,7 +65,16 @@ services:
         - ${NETWORK_APPLICATION:-application}
         env_file: /root/.env
         hostname: patroni1
-        container_name: patroni1
+        deploy:
+            mode: replicated
+            replicas: 1
+            placement:
+                constraints:
+                - node.hostname == swarm-worker-0
+            restart_policy:
+                condition: on-failure
+                restart_policy:
+                    condition: on-failure
         secrets:
         - patroni_admin_password
         - patroni_superuser_password
@@ -72,7 +92,16 @@ services:
         - ${NETWORK_APPLICATION:-application}
         env_file: /root/.env
         hostname: patroni2
-        container_name: patroni2
+        deploy:
+            mode: replicated
+            replicas: 1
+            placement:
+                constraints:
+                - node.hostname == swarm-worker-0
+            restart_policy:
+                condition: on-failure
+                restart_policy:
+                    condition: on-failure
         secrets:
         - patroni_admin_password
         - patroni_superuser_password
@@ -85,8 +114,16 @@ services:
         networks:
         - ${NETWORK_APPLICATION:-application}
         env_file: /root/.env
-        hostname: patroni3
-        container_name: patroni3
+        deploy:
+            mode: replicated
+            replicas: 1
+            placement:
+                constraints:
+                - node.hostname == swarm-worker-0
+            restart_policy:
+                condition: on-failure
+                restart_policy:
+                    condition: on-failure
         secrets:
         - patroni_admin_password
         - patroni_superuser_password
