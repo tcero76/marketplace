@@ -1,4 +1,3 @@
-version: '3.8'
 services:
     etcd1: &etcd
         image: tcero76/patroni.timescaledb:${PATRONI_TIMESCALEDB_VERSION:-17}
