@@ -75,9 +75,9 @@ services:
         environment:
             <<: *haproxy_env
             PATRONI_NAME: patroni1
-            PATRONI_ADMIN_PASSWORD_FILE: ${PATRONI_ADMIN_PASSWORD_FILE}
-            PATRONI_SUPERUSER_PASSWORD_FILE: ${PATRONI_SUPERUSER_PASSWORD_FILE}
-            PATRONI_RESTAPI_PASSWORD_FILE: ${PATRONI_RESTAPI_PASSWORD_FILE}
+            PATRONI_ADMIN_PASSWORD_FILE: /run/secrets/patroni_admin_password
+            PATRONI_SUPERUSER_PASSWORD_FILE: /run/secrets/patroni_admin_password
+            PATRONI_RESTAPI_PASSWORD_FILE: /run/secrets/patroni_restapi_password
 
     patroni2:
         image: tcero76/patroni.timescaledb:${PATRONI_TIMESCALEDB_VERSION:-17}
