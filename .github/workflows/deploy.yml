@@ -30,10 +30,12 @@ env:
   # DO_SPACES_KEY: ${{ secrets.DO_SPACES_KEY}}
   # PASSWORD_INSTA: ${{ secrets.PASSWORD_INSTA}}
   # PROGRAMID: ${{ secrets.PROGRAMID}}
+  PATRONI_ADMIN_HOST: haproxy
+  PATRONI_ADMIN_DB: marketplace
+  PATRONI_ADMIN_PORT: marketplace
   PATRONI_RESTAPI_USERNAME: admin
-  PATRONI_SUPERUSER_USERNAME: postgres
+  PATRONI_SUPERUSER_USERNAME: tcero
   PATRONI_REPLICATION_USERNAME: replicator
-  PATRONI_REPLICATION_PASSWORD: replicate
   PATRONI_admin_OPTIONS: createdb,createrole
 
   # Versions
@@ -99,7 +101,7 @@ env:
   SMTP_USER: leonardo.lastra@gmail.com
   # docker
   DOCKER_USERNAME: tcero76
-  MANAGER_IP: 167.172.29.3
+  MANAGER_IP: 104.236.3.3
 jobs:
   terraform:
     name: Terraform Apply
@@ -208,6 +210,9 @@ jobs:
           CMD_RECOMMENDER_CALCULATE_EXCHANGE=${CMD_RECOMMENDER_CALCULATE_EXCHANGE}
           CMD_SCRAPY_START_QUEUE=${CMD_SCRAPY_START_QUEUE}
           CMD_SCRAPY_START_EXCHANGE=${CMD_SCRAPY_START_EXCHANGE}
+          PATRONI_ADMIN_HOST=${PATRONI_ADMIN_HOST}
+          PATRONI_ADMIN_DB=${PATRONI_ADMIN_DB}
+          PATRONI_ADMIN_PORT=${PATRONI_ADMIN_PORT}
           EOF'"
 
       - name: Crear secrets en Docker Swarm
@@ -237,6 +242,11 @@ jobs:
             echo '${{ secrets.PATRONI_RESTAPI_PASSWORD }}' | docker secret create patroni_restapi_password - \
               && echo '✅ Secret patroni_restapi_password creado' \
               || echo 'ℹ️ Secret patroni_restapi_password ya existe, continuando...'
+          "
+          ssh -o StrictHostKeyChecking=no root@$MANAGER_IP "
+            echo '${{ secrets.PATRONI_REPLICATION_PASSWORD }}' | docker secret create patroni_replication_password - \
+              && echo '✅ Secret patroni_replication_password creado' \
+              || echo 'ℹ️ Secret patroni_replication_password ya existe, continuando...'
           "
         shell: bash
 
