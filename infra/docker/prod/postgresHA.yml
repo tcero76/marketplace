@@ -78,7 +78,7 @@ services:
             PATRONI_admin_PASSWORD_FILE: /run/secrets/patroni_admin_password
             PATRONI_SUPERUSER_PASSWORD_FILE: /run/secrets/patroni_admin_password
             PATRONI_RESTAPI_PASSWORD_FILE: /run/secrets/patroni_restapi_password
-
+            PATRONI_admin_OPTIONS: createdb,createrole
     patroni2:
         image: tcero76/patroni.timescaledb:${PATRONI_TIMESCALEDB_VERSION:-17}
         networks:
@@ -103,6 +103,7 @@ services:
             PATRONI_admin_PASSWORD_FILE: /run/secrets/patroni_admin_password
             PATRONI_SUPERUSER_PASSWORD_FILE: /run/secrets/patroni_admin_password
             PATRONI_RESTAPI_PASSWORD_FILE: /run/secrets/patroni_restapi_password
+            PATRONI_admin_OPTIONS: createdb,createrole
     patroni3:
         image: tcero76/patroni.timescaledb:${PATRONI_TIMESCALEDB_VERSION:-17}
         networks:
@@ -126,6 +127,7 @@ services:
             PATRONI_admin_PASSWORD_FILE: /run/secrets/patroni_admin_password
             PATRONI_SUPERUSER_PASSWORD_FILE: /run/secrets/patroni_admin_password
             PATRONI_RESTAPI_PASSWORD_FILE: /run/secrets/patroni_restapi_password
+            PATRONI_admin_OPTIONS: createdb,createrole
     flyway:
         image: tcero76/flyway
         environment:
