@@ -101,7 +101,7 @@ env:
   SMTP_USER: leonardo.lastra@gmail.com
   # docker
   DOCKER_USERNAME: tcero76
-  MANAGER_IP: 209.97.145.44
+  MANAGER_IP: 167.71.100.234
 jobs:
   terraform:
     name: Terraform Apply
