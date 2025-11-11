@@ -100,6 +100,9 @@ services:
         environment:
             <<: *haproxy_env
             PATRONI_NAME: patroni2
+            PATRONI_ADMIN_PASSWORD_FILE: /run/secrets/patroni_admin_password
+            PATRONI_SUPERUSER_PASSWORD_FILE: /run/secrets/patroni_admin_password
+            PATRONI_RESTAPI_PASSWORD_FILE: /run/secrets/patroni_restapi_password
     patroni3:
         image: tcero76/patroni.timescaledb:${PATRONI_TIMESCALEDB_VERSION:-17}
         networks:
@@ -120,6 +123,9 @@ services:
         environment:
             <<: *haproxy_env
             PATRONI_NAME: patroni3
+            PATRONI_ADMIN_PASSWORD_FILE: /run/secrets/patroni_admin_password
+            PATRONI_SUPERUSER_PASSWORD_FILE: /run/secrets/patroni_admin_password
+            PATRONI_RESTAPI_PASSWORD_FILE: /run/secrets/patroni_restapi_password
     flyway:
         image: tcero76/flyway
         environment:
