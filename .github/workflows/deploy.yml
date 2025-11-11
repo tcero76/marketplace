@@ -32,7 +32,7 @@ env:
   # PROGRAMID: ${{ secrets.PROGRAMID}}
   PATRONI_ADMIN_HOST: haproxy
   PATRONI_ADMIN_DB: marketplace
-  PATRONI_ADMIN_PORT: marketplace
+  PATRONI_ADMIN_PORT: 5000
   PATRONI_RESTAPI_USERNAME: admin
   PATRONI_SUPERUSER_USERNAME: tcero
   PATRONI_REPLICATION_USERNAME: replicator
@@ -101,7 +101,7 @@ env:
   SMTP_USER: leonardo.lastra@gmail.com
   # docker
   DOCKER_USERNAME: tcero76
-  MANAGER_IP: 104.236.3.3
+  MANAGER_IP: 209.97.145.44
 jobs:
   terraform:
     name: Terraform Apply
