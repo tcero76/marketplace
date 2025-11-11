@@ -22,15 +22,13 @@ services:
     image: tcero76/flyway
     build:
       dockerfile: Dockerfile
-      context: ../../../postgres/migrations/
+      context: ../../postgres/migrations/
     environment:
      POSTGRES_USER: ${POSTGRES_USER}
      POSTGRES_DB: ${POSTGRES_DB}
      POSTGRES_HOST: ${POSTGRES_HOST}
      POSTGRES_PORT: ${POSTGRES_PORT}
      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-    volumes:
-      - /home/leonardo/marketplace/infra/docker/test/postgres_password:/run/secrets/postgres_password
     profiles: ["postgres"]
     # command: -url=jdbc:postgresql://${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB} -user=${POSTGRES_USER} -password=${POSTGRES_PASSWORD} -schemas=marketplace,scrap -locations=filesystem:/flyway/sql migrate
     networks:
