@@ -123,11 +123,11 @@ services:
     flyway:
         image: tcero76/flyway
         environment:
-            POSTGRES_USER: ${POSTGRES_USER}
-            POSTGRES_DB: ${POSTGRES_DB}
-            POSTGRES_HOST: ${POSTGRES_HOST}
+            POSTGRES_USER: ${PATRONI_SUPERUSER_USERNAME}
+            POSTGRES_DB: ${PATRONI_ADMIN_DB}
+            POSTGRES_HOST: ${PATRONI_ADMIN_HOST}
             POSTGRES_PASSWORD_FILE: /run/secrets/patroni_admin_password
-            POSTGRES_PORT: 5000
+            POSTGRES_PORT: ${PATRONI_ADMIN_PORT}
         secrets:
         - patroni_admin_password
         deploy:
