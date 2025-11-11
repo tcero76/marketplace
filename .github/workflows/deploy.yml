@@ -213,6 +213,13 @@ jobs:
           PATRONI_ADMIN_HOST=${PATRONI_ADMIN_HOST}
           PATRONI_ADMIN_DB=${PATRONI_ADMIN_DB}
           PATRONI_ADMIN_PORT=${PATRONI_ADMIN_PORT}
+          PATRONI_RESTAPI_USERNAME=admin
+          PATRONI_SUPERUSER_USERNAME=postgres
+          PATRONI_REPLICATION_USERNAME=replicator
+          PATRONI_admin_OPTIONS=createdb,createrole
+          PATRONI_admin_PASSWORD_FILE=/run/secrets/patroni_admin_password
+          PATRONI_SUPERUSER_PASSWORD_FILE=/run/secrets/patroni_admin_password
+          PATRONI_RESTAPI_PASSWORD_FILE=/run/secrets/patroni_restapi_password
           EOF'"
 
       - name: Crear secrets en Docker Swarm
