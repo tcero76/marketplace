@@ -101,7 +101,7 @@ env:
   SMTP_USER: leonardo.lastra@gmail.com
   # docker
   DOCKER_USERNAME: tcero76
-  MANAGER_IP: 167.71.100.234
+  MANAGER_IP: 134.209.36.202
 jobs:
   terraform:
     name: Terraform Apply
@@ -214,10 +214,10 @@ jobs:
           PATRONI_ADMIN_DB=${PATRONI_ADMIN_DB}
           PATRONI_ADMIN_PORT=${PATRONI_ADMIN_PORT}
           PATRONI_RESTAPI_USERNAME=${PATRONI_RESTAPI_USERNAME}
-          PATRONI_SUPERUSER_USERNAME=${PATRONI_SUPERUSER_USERNAME}
           PATRONI_REPLICATION_USERNAME=${PATRONI_REPLICATION_USERNAME}
           PATRONI_admin_OPTIONS=${PATRONI_admin_OPTIONS}
           PATRONI_admin_PASSWORD_FILE=/run/secrets/patroni_admin_password
+          PATRONI_SUPERUSER_USERNAME=${PATRONI_SUPERUSER_USERNAME}
           PATRONI_SUPERUSER_PASSWORD_FILE=/run/secrets/patroni_admin_password
           PATRONI_RESTAPI_PASSWORD_FILE=/run/secrets/patroni_restapi_password
           EOF'"
