@@ -70,7 +70,6 @@ create_queue_if_missing ${CMD_CHAT_MESSAGE_DELIVERY_QUEUE} "/" '{"x-queue-type":
 create_queue_if_missing ${EVT_PAYMENT_PERSISTENCE_QUEUE} "/" '{"x-queue-type":"classic"}'
 create_queue_if_missing ${CMD_CHAT_MESSAGE_PERSISTENCE_QUEUE} "/" '{"x-queue-type":"classic"}'
 create_queue_if_missing ${EVT_USER_REGISTERED_EMAIL_QUEUE} "/" '{"x-queue-type":"classic"}'
-create_queue_if_missing ${RABBITMQ_CHAT_CACHE_UPDATER_QUEUE} "/" '{"x-queue-type":"classic"}'
 
 # Crear exchanges
 create_exchange_if_missing ${EVT_PAYMENT_COMPLETED_EXCHANGE} "fanout" "/"
