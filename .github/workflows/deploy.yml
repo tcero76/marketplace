@@ -9,7 +9,6 @@ env:
   PROFILE: prod
   # Application
   PORT_EXTERNAL: 8080
-  HOST_EXTERNAL: localhost
   HOST_URL: http://${HOST_EXTERNAL}:${PORT_EXTERNAL}
   HOST_WS: ws://${HOST_EXTERNAL}:${PORT_EXTERNAL}
   NETWORK_APPLICATION: application
@@ -89,8 +88,8 @@ env:
   # postgres
   POSTGRES_USER: tcero
   POSTGRES_DB: marketplace
-  POSTGRES_PORT: 5432
-  POSTGRES_HOST: db
+  POSTGRES_PORT: 5000
+  POSTGRES_HOST: haproxy
   # patroni
 
   #OAuth google
@@ -101,7 +100,7 @@ env:
   SMTP_USER: leonardo.lastra@gmail.com
   # docker
   DOCKER_USERNAME: tcero76
-  MANAGER_IP: 104.131.178.81
+  MANAGER_IP: 68.183.148.74
 jobs:
   terraform:
     name: Terraform Apply
@@ -220,6 +219,10 @@ jobs:
           PATRONI_SUPERUSER_USERNAME=${PATRONI_SUPERUSER_USERNAME}
           PATRONI_SUPERUSER_PASSWORD_FILE=/run/secrets/patroni_admin_password
           PATRONI_RESTAPI_PASSWORD_FILE=/run/secrets/patroni_restapi_password
+          POSTGRES_USER=${POSTGRES_USER}
+          POSTGRES_DB=${POSTGRES_DB}
+          POSTGRES_PORT=${POSTGRES_PORT}
+          POSTGRES_HOST=${POSTGRES_HOST}
           EOF'"
 
       - name: Crear secrets en Docker Swarm
@@ -254,6 +257,16 @@ jobs:
             echo '${{ secrets.PATRONI_REPLICATION_PASSWORD }}' | docker secret create patroni_replication_password - \
               && echo '✅ Secret patroni_replication_password creado' \
               || echo 'ℹ️ Secret patroni_replication_password ya existe, continuando...'
+          "
+          ssh -o StrictHostKeyChecking=no root@$MANAGER_IP "
+            echo '${{ secrets.CLIENT_SECRET }}' | docker secret create client_secret - \
+              && echo '✅ Secret client_secret creado' \
+              || echo 'ℹ️ Secret client_secret ya existe, continuando...'
+          "
+          ssh -o StrictHostKeyChecking=no root@$MANAGER_IP "
+            echo '${{ secrets.GOOGLE_OAUTH2_CLIENT_SECRET }}' | docker secret create google_oauth2_client_secret - \
+              && echo '✅ Secret google_oauth2_client_secret creado' \
+              || echo 'ℹ️ Secret google_oauth2_client_secret ya existe, continuando...'
           "
         shell: bash
 
