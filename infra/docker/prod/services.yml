@@ -1,9 +1,6 @@
 services:
   bff-service:
-    image: tcero76/bff-service:${TAG}
-    build:
-      dockerfile: Dockerfile
-      context: ../../../bff-service
+    image: tcero76/bff-service:v0.0.0
     working_dir: /bff-service
     volumes:
       - ../../../bff-service:/bff-service
@@ -11,11 +8,6 @@ services:
       - ../../../clickhouse:/clickhouse
       - ../../../rabbitmq:/rabbitmq
       - ../../../redis:/redis
-    profiles:
-      - bff
-    container_name: bff
-    stdin_open: true
-    tty: true
     environment:
       - DNS=postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:5432/${POSTGRES_DB}?sslmode=disable&options=-c%20search_path%3Dmarketplace
       - PORT=3000
@@ -37,264 +29,258 @@ services:
       - REDIS_HOST=${REDIS_HOST}
     networks:
       - ${NETWORK_APPLICATION}
-    depends_on:
-      - db
-      - cache
-      - broker
-      - envoy
-      - clickhouse
-  cache-updater-service:
-    image: tcero76/cache-updater-service:${TAG}
-    build:
-      dockerfile: Dockerfile
-      context: ../../../cache-updater
-    working_dir: /app
-    profiles:
-      - back
-    container_name: cacheUpdater
-    stdin_open: true
-    tty: true
-    environment:
-      - REDIS_HOST=${REDIS_HOST}
-      - BROKER=${BROKER}
-      - RABBITMQ_CHAT_CACHE_UPDATER_QUEUE=${RABBITMQ_CHAT_CACHE_UPDATER_QUEUE}
-    networks:
-      - ${NETWORK_APPLICATION}
-    volumes:
-      - ../../../cache-updater:/app
-    depends_on:
-      - cache
-      - broker
-  broker-email-service:
-    image: tcero76/broker-email-service:${TAG}
-    build:
-      dockerfile: Dockerfile
-      context: ../../../broker-email-service
-    working_dir: /broker-email-service
-    profiles:
-      - back
-    container_name: brokerEmail
-    stdin_open: true
-    tty: true
-    environment:
-      - EVT_USER_REGISTERED_EMAIL_QUEUE=${EVT_USER_REGISTERED_EMAIL_QUEUE}
-      - BROKER=${BROKER}
-      - SMTP_HOST=${SMTP_HOST}
-      - SMTP_PORT=${SMTP_PORT}
-      - SMTP_USER=${SMTP_USER}
-      - SMTP_PASS=${SMTP_PASS}
-    networks:
-      - ${NETWORK_APPLICATION}
-    volumes:
-      - ../../../broker-email-service:/broker-email-service
-      - ../../../rabbitmq:/rabbitmq
-    depends_on:
-      broker:
-        condition: service_healthy
-  db-updater-service:
-    image: tcero76/db-updater-service:${TAG}
-    build:
-      dockerfile: Dockerfile
-      context: ../../../db-updater
-    working_dir: /app  
-    profiles:
-      - back
-    container_name: dbUpdater
-    stdin_open: true
-    tty: true
-    environment:
-      - DATABASE_URL=postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:5432/${POSTGRES_DB}?sslmode=disable&options=-c%20search_path%3Dmarketplace
-      - BROKER=${BROKER}
-      - CMD_CHAT_MESSAGE_PERSISTENCE_QUEUE=${CMD_CHAT_MESSAGE_PERSISTENCE_QUEUE}
-    networks:
-      - ${NETWORK_APPLICATION}
-    volumes:
-      - ../../../db-updater:/app
-    depends_on:
-      - db
-      - broker
-  db-broker-service:
-    image: tcero76/db-broker-service:${TAG}
-    build:
-      dockerfile: Dockerfile
-      context: ../../../db-broker-service
-    working_dir: /app  
-    profiles:
-      - back
-    container_name: DbBroker
-    stdin_open: true
-    tty: true
-    environment:
-      - DATABASE_URL=postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:5432/${POSTGRES_DB}?sslmode=disable&options=-c%20search_path%3Dmarketplace
-      - EVT_USER_REGISTERED_EMAIL_QUEUE=${EVT_USER_REGISTERED_EMAIL_QUEUE}
-      - EVT_USER_REGISTERED_EXCHANGE=${EVT_USER_REGISTERED_EXCHANGE}
-      - BROKER=${BROKER}
-    networks:
-      - ${NETWORK_APPLICATION}
-    volumes:
-      - ../../../db-broker-service:/app
-      - ../../../postgres:/postgres
-    depends_on:
-      - db
-      - broker
-  ws-service:
-    image: tcero76/ws-service:${TAG}
-    build:
-      dockerfile: Dockerfile
-      context: ../../../ws-service
-    container_name: ws
-    profiles:
-      - ws
-    tty: true
-    stdin_open: true
-    environment:
-      - MIX_ENV=dev
-      - RABBITMQ_HOST=broker
-    ports:
-      - 4000:4000
-    volumes:
-      - ../../../ws-service:/ws-service
-    depends_on:
-      - broker
-    networks:
-      - ${NETWORK_APPLICATION}
-  front:
-    image: node:${NODE_VERSION}
-    container_name: front
-    profiles:
-      - front
-    working_dir: /app
-    entrypoint: npm run dev
-    tty: true
-    stdin_open: true
-    environment:
-      - VITE_HOST=${HOST_URL}
-      - VITE_WS=${HOST_WS}
-      - VITE_CLIENT_ID=${CLIENT_ID}
-      - VITE_PROFILE=${PROFILE}
-    ports:
-     - 5173:5173
-    volumes:
-      - ../../../front:/app
-    networks:
-      - ${NETWORK_APPLICATION}
-    depends_on:
-      - envoy
-  solana-service:
-    image: tcero76/solana-service:${TAG}
-    build:
-      dockerfile: Dockerfile
-      context: ../../solana-service
-    profiles:
-      - solana
-    working_dir: /app/
-    restart: always
-    entrypoint: [ "air"]
-    container_name: solana-service
-    tty: true
-    stdin_open: true
-    environment:
-      - PROGRAMID=${PROGRAMID}
-      - BROKER=${BROKER}
-    volumes:
-      - ../../solana-service:/app
-    networks:
-      - ${NETWORK_APPLICATION}
-  scrap-service:
-    image: tcero76/scrap-service:${TAG}
-    build:
-      dockerfile: Dockerfile
-      context: ../../../scrap-service
-    working_dir: /app/
-    profiles:
-      - scrap
-    command: [ "celery", "-A", "main", "worker", "--loglevel=debug", "-Q", "${SCRAPY_QUEUE}" ]
-    container_name: scrap-worker
-    tty: true
-    stdin_open: true
-    environment:
-      - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}
-      - BROKER=${BROKER}
-      - PORT=8000
-      - TOTAL_POSTS=${TOTAL_POSTS}
-      - USERNAME_INSTA=${USERNAME_INSTA}
-      - PASSWORD_INSTA=${PASSWORD_INSTA}
-      - SCRAPY_QUEUE=${SCRAPY_QUEUE}
-    volumes:
-      - ../../../scrap-service:/app
-    depends_on:
-      - broker
-    networks:
-      - ${NETWORK_APPLICATION}
-  beat-service:
-    image: tcero76/beat-service:${TAG}
-    build:
-      dockerfile: Dockerfile
-      context: ../../../beat-service
-    working_dir: /beat-service/
-    profiles:
-      - scrap
-    container_name: beat
-    entrypoint: [ "celery", "-A", "main", "beat", "--loglevel=debug"]
-    tty: true
-    stdin_open: true
-    environment:
-      - BROKER=${BROKER}
-      - CRON_HOUR=${CRON_HOUR}
-      - CRON_MINUTE=${CRON_MINUTE}
-      - RECOMENDER_QUEUE=${RECOMENDER_QUEUE}
-      - SCRAPY_QUEUE=${SCRAPY_QUEUE}
-    volumes:
-      - ../../../beat-service:/beat-service
-    depends_on:
-      - broker
-      - scrap-service
-    networks:
-      - ${NETWORK_APPLICATION}
-  recomender-service:
-    image: tcero76/recomender-service:${TAG}
-    build:
-      dockerfile: Dockerfile
-      context: ../../../recomender-service
-    working_dir: /recomender-service/
-    profiles:
-      - scrap
-    command: [ "celery", "-A", "main", "worker","--loglevel=debug", "-Q", "${RECOMENDER_QUEUE}" ]
-    container_name: recomender
-    tty: true
-    stdin_open: true
-    environment:
-      - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}
-      - BROKER=${BROKER}
-      - PORT=8000
-      - RECOMENDER_QUEUE=${RECOMENDER_QUEUE}
-      - TOTAL_POSTS=${TOTAL_POSTS}
-      - CACHE=redis://cache:6379/0
-      - CLICKHOUSE_USER=${CLICKHOUSE_USER}
-      - CLICKHOUSE_PASSWORD=${CLICKHOUSE_PASSWORD}
-    volumes:
-      - ../../../recomender-service:/recomender-service
-    depends_on:
-      - broker
-      - db
-      - cache
-    networks:
-      - ${NETWORK_APPLICATION}
-  mediamtx-service:
-    image: tcero76/mediamtx-service:${TAG}
-    build:
-      dockerfile: Dockerfile
-      context: ../../../mediamtx-service
-    container_name: mediamtx-service
-    profiles:
-      - media
-    ports:
-      - 3001:3001
-    volumes:
-      - ../../../mediamtx-service:/app
-    environment:
-      - HYDRA_PUBLIC_URL=http://hydra:4444
-      - TIME_SEC_WAIT_RTMP_CONECTION=60
-      - PORT=3001
-    networks:
-      - ${NETWORK_APPLICATION}
+  # cache-updater-service:
+  #   image: tcero76/cache-updater-service:${TAG}
+  #   build:
+  #     dockerfile: Dockerfile
+  #     context: ../../../cache-updater
+  #   working_dir: /app
+  #   profiles:
+  #     - back
+  #   container_name: cacheUpdater
+  #   stdin_open: true
+  #   tty: true
+  #   environment:
+  #     - REDIS_HOST=${REDIS_HOST}
+  #     - BROKER=${BROKER}
+  #     - RABBITMQ_CHAT_CACHE_UPDATER_QUEUE=${RABBITMQ_CHAT_CACHE_UPDATER_QUEUE}
+  #   networks:
+  #     - ${NETWORK_APPLICATION}
+  #   volumes:
+  #     - ../../../cache-updater:/app
+  #   depends_on:
+  #     - cache
+  #     - broker
+  # broker-email-service:
+  #   image: tcero76/broker-email-service:${TAG}
+  #   build:
+  #     dockerfile: Dockerfile
+  #     context: ../../../broker-email-service
+  #   working_dir: /broker-email-service
+  #   profiles:
+  #     - back
+  #   container_name: brokerEmail
+  #   stdin_open: true
+  #   tty: true
+  #   environment:
+  #     - EVT_USER_REGISTERED_EMAIL_QUEUE=${EVT_USER_REGISTERED_EMAIL_QUEUE}
+  #     - BROKER=${BROKER}
+  #     - SMTP_HOST=${SMTP_HOST}
+  #     - SMTP_PORT=${SMTP_PORT}
+  #     - SMTP_USER=${SMTP_USER}
+  #     - SMTP_PASS=${SMTP_PASS}
+  #   networks:
+  #     - ${NETWORK_APPLICATION}
+  #   volumes:
+  #     - ../../../broker-email-service:/broker-email-service
+  #     - ../../../rabbitmq:/rabbitmq
+  #   depends_on:
+  #     broker:
+  #       condition: service_healthy
+  # db-updater-service:
+  #   image: tcero76/db-updater-service:${TAG}
+  #   build:
+  #     dockerfile: Dockerfile
+  #     context: ../../../db-updater
+  #   working_dir: /app  
+  #   profiles:
+  #     - back
+  #   container_name: dbUpdater
+  #   stdin_open: true
+  #   tty: true
+  #   environment:
+  #     - DATABASE_URL=postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:5432/${POSTGRES_DB}?sslmode=disable&options=-c%20search_path%3Dmarketplace
+  #     - BROKER=${BROKER}
+  #     - CMD_CHAT_MESSAGE_PERSISTENCE_QUEUE=${CMD_CHAT_MESSAGE_PERSISTENCE_QUEUE}
+  #   networks:
+  #     - ${NETWORK_APPLICATION}
+  #   volumes:
+  #     - ../../../db-updater:/app
+  #   depends_on:
+  #     - db
+  #     - broker
+  # db-broker-service:
+  #   image: tcero76/db-broker-service:${TAG}
+  #   build:
+  #     dockerfile: Dockerfile
+  #     context: ../../../db-broker-service
+  #   working_dir: /app  
+  #   profiles:
+  #     - back
+  #   container_name: DbBroker
+  #   stdin_open: true
+  #   tty: true
+  #   environment:
+  #     - DATABASE_URL=postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:5432/${POSTGRES_DB}?sslmode=disable&options=-c%20search_path%3Dmarketplace
+  #     - EVT_USER_REGISTERED_EMAIL_QUEUE=${EVT_USER_REGISTERED_EMAIL_QUEUE}
+  #     - EVT_USER_REGISTERED_EXCHANGE=${EVT_USER_REGISTERED_EXCHANGE}
+  #     - BROKER=${BROKER}
+  #   networks:
+  #     - ${NETWORK_APPLICATION}
+  #   volumes:
+  #     - ../../../db-broker-service:/app
+  #     - ../../../postgres:/postgres
+  #   depends_on:
+  #     - db
+  #     - broker
+  # ws-service:
+  #   image: tcero76/ws-service:${TAG}
+  #   build:
+  #     dockerfile: Dockerfile
+  #     context: ../../../ws-service
+  #   container_name: ws
+  #   profiles:
+  #     - ws
+  #   tty: true
+  #   stdin_open: true
+  #   environment:
+  #     - MIX_ENV=dev
+  #     - RABBITMQ_HOST=broker
+  #   ports:
+  #     - 4000:4000
+  #   volumes:
+  #     - ../../../ws-service:/ws-service
+  #   depends_on:
+  #     - broker
+  #   networks:
+  #     - ${NETWORK_APPLICATION}
+  # front:
+  #   image: node:${NODE_VERSION}
+  #   container_name: front
+  #   profiles:
+  #     - front
+  #   working_dir: /app
+  #   entrypoint: npm run dev
+  #   tty: true
+  #   stdin_open: true
+  #   environment:
+  #     - VITE_HOST=${HOST_URL}
+  #     - VITE_WS=${HOST_WS}
+  #     - VITE_CLIENT_ID=${CLIENT_ID}
+  #     - VITE_PROFILE=${PROFILE}
+  #   ports:
+  #    - 5173:5173
+  #   volumes:
+  #     - ../../../front:/app
+  #   networks:
+  #     - ${NETWORK_APPLICATION}
+  #   depends_on:
+  #     - envoy
+  # solana-service:
+  #   image: tcero76/solana-service:${TAG}
+  #   build:
+  #     dockerfile: Dockerfile
+  #     context: ../../solana-service
+  #   profiles:
+  #     - solana
+  #   working_dir: /app/
+  #   restart: always
+  #   entrypoint: [ "air"]
+  #   container_name: solana-service
+  #   tty: true
+  #   stdin_open: true
+  #   environment:
+  #     - PROGRAMID=${PROGRAMID}
+  #     - BROKER=${BROKER}
+  #   volumes:
+  #     - ../../solana-service:/app
+  #   networks:
+  #     - ${NETWORK_APPLICATION}
+  # scrap-service:
+  #   image: tcero76/scrap-service:${TAG}
+  #   build:
+  #     dockerfile: Dockerfile
+  #     context: ../../../scrap-service
+  #   working_dir: /app/
+  #   profiles:
+  #     - scrap
+  #   command: [ "celery", "-A", "main", "worker", "--loglevel=debug", "-Q", "${SCRAPY_QUEUE}" ]
+  #   container_name: scrap-worker
+  #   tty: true
+  #   stdin_open: true
+  #   environment:
+  #     - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}
+  #     - BROKER=${BROKER}
+  #     - PORT=8000
+  #     - TOTAL_POSTS=${TOTAL_POSTS}
+  #     - USERNAME_INSTA=${USERNAME_INSTA}
+  #     - PASSWORD_INSTA=${PASSWORD_INSTA}
+  #     - SCRAPY_QUEUE=${SCRAPY_QUEUE}
+  #   volumes:
+  #     - ../../../scrap-service:/app
+  #   depends_on:
+  #     - broker
+  #   networks:
+  #     - ${NETWORK_APPLICATION}
+  # beat-service:
+  #   image: tcero76/beat-service:${TAG}
+  #   build:
+  #     dockerfile: Dockerfile
+  #     context: ../../../beat-service
+  #   working_dir: /beat-service/
+  #   profiles:
+  #     - scrap
+  #   container_name: beat
+  #   entrypoint: [ "celery", "-A", "main", "beat", "--loglevel=debug"]
+  #   tty: true
+  #   stdin_open: true
+  #   environment:
+  #     - BROKER=${BROKER}
+  #     - CRON_HOUR=${CRON_HOUR}
+  #     - CRON_MINUTE=${CRON_MINUTE}
+  #     - RECOMENDER_QUEUE=${RECOMENDER_QUEUE}
+  #     - SCRAPY_QUEUE=${SCRAPY_QUEUE}
+  #   volumes:
+  #     - ../../../beat-service:/beat-service
+  #   depends_on:
+  #     - broker
+  #     - scrap-service
+  #   networks:
+  #     - ${NETWORK_APPLICATION}
+  # recomender-service:
+  #   image: tcero76/recomender-service:${TAG}
+  #   build:
+  #     dockerfile: Dockerfile
+  #     context: ../../../recomender-service
+  #   working_dir: /recomender-service/
+  #   profiles:
+  #     - scrap
+  #   command: [ "celery", "-A", "main", "worker","--loglevel=debug", "-Q", "${RECOMENDER_QUEUE}" ]
+  #   container_name: recomender
+  #   tty: true
+  #   stdin_open: true
+  #   environment:
+  #     - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}
+  #     - BROKER=${BROKER}
+  #     - PORT=8000
+  #     - RECOMENDER_QUEUE=${RECOMENDER_QUEUE}
+  #     - TOTAL_POSTS=${TOTAL_POSTS}
+  #     - CACHE=redis://cache:6379/0
+  #     - CLICKHOUSE_USER=${CLICKHOUSE_USER}
+  #     - CLICKHOUSE_PASSWORD=${CLICKHOUSE_PASSWORD}
+  #   volumes:
+  #     - ../../../recomender-service:/recomender-service
+  #   depends_on:
+  #     - broker
+  #     - db
+  #     - cache
+  #   networks:
+  #     - ${NETWORK_APPLICATION}
+  # mediamtx-service:
+  #   image: tcero76/mediamtx-service:${TAG}
+  #   build:
+  #     dockerfile: Dockerfile
+  #     context: ../../../mediamtx-service
+  #   container_name: mediamtx-service
+  #   profiles:
+  #     - media
+  #   ports:
+  #     - 3001:3001
+  #   volumes:
+  #     - ../../../mediamtx-service:/app
+  #   environment:
+  #     - HYDRA_PUBLIC_URL=http://hydra:4444
+  #     - TIME_SEC_WAIT_RTMP_CONECTION=60
+  #     - PORT=3001
+  #   networks:
+  #     - ${NETWORK_APPLICATION}
