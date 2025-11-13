@@ -2,6 +2,7 @@ services:
   bff-service:
     image: tcero76/bff-service:v0.0.0
     working_dir: /bff-service
+    commando: ["main"]
     volumes:
       - ../../../bff-service:/bff-service
       - ../../../postgres:/postgres
@@ -9,7 +10,7 @@ services:
       - ../../../rabbitmq:/rabbitmq
       - ../../../redis:/redis
     environment:
-      - DNS=postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:5432/${POSTGRES_DB}?sslmode=disable&options=-c%20search_path%3Dmarketplace
+      - DNS=postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}?sslmode=disable&options=-c%20search_path%3Dmarketplace
       - PORT=3000
       - PORT_EXTERNAL=${PORT_EXTERNAL}
       - HOST_EXTERNAL=${HOST_EXTERNAL}
