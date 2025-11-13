@@ -9,7 +9,6 @@ import (
 
 	"github.com/tcero76/marketplace/bff-service/oauth2"
 	"github.com/tcero76/marketplace/bff-service/oauth2/cor"
-	clickServices "github.com/tcero76/marketplace/clickhouse/services"
 	modelServices "github.com/tcero76/marketplace/postgres/services"
 	redisServices "github.com/tcero76/marketplace/redis/services"
 
@@ -46,7 +45,7 @@ func main() {
 	googleAuth := cor.NewGoogleAuth(googleClient, userServices)
 	loginHandler, consentHandler, callbackHandler := oauth2.InitOauth2Handlers(authCacheService, userServices, internalAuth, googleAuth)
 
-	recomendationService := clickServices.NewRecomendationService()
+	// recomendationService := clickServices.NewRecomendationService()
 	e := echo.New()
 
 	e.Use(config.RedisSessionMiddleware(authCacheService))
@@ -61,7 +60,7 @@ func main() {
 
 	protegido := e.Group("/usuario")
 	protegido.Use(oauth2.JWTMiddleware())
-	protegido.GET("/getRecommendations", controller.GetRecommendations(recomendationService))
+	// protegido.GET("/getRecommendations", controller.GetRecommendations(recomendationService))
 	protegido.GET("/getModelo", controller.GetModelo(modeloService))
 	protegido.GET("/getModelos", controller.GetModelos(modeloService))
 	protegido.POST("/searchPosts", controller.GetSearch(searchService))
