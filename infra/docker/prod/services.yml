@@ -2,13 +2,7 @@ services:
   bff-service:
     image: tcero76/bff-service:v0.0.0
     working_dir: /bff-service
-    commando: ["main"]
-    volumes:
-      - ../../../bff-service:/bff-service
-      - ../../../postgres:/postgres
-      - ../../../clickhouse:/clickhouse
-      - ../../../rabbitmq:/rabbitmq
-      - ../../../redis:/redis
+    command: ["main"]
     environment:
       - DNS=postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}?sslmode=disable&options=-c%20search_path%3Dmarketplace
       - PORT=3000
@@ -28,8 +22,15 @@ services:
       - GOOGLE_OAUTH2_REDIRECT_URI=${GOOGLE_OAUTH2_REDIRECT_URI}
       - PROFILE=${PROFILE}
       - REDIS_HOST=${REDIS_HOST}
+      - GOOGLE_OAUTH2_CLIENT_SECRET_FILE=/run/secrets/google_oauth2_client_secret
+      - CLIENT_SECRET_FILE=/run/secrets/client_secret
+      - POSTGRES_PASSWORD_FILE=/run/secrets/postgres_password
     networks:
       - ${NETWORK_APPLICATION}
+    secrets:
+      - google_oauth2_client_secret
+      - client_secret
+      - postgres_password
     deploy:
       mode: replicated
       replicas: 1
@@ -293,3 +294,11 @@ services:
   #     - PORT=3001
   #   networks:
   #     - ${NETWORK_APPLICATION}
+
+secrets:
+  google_oauth2_client_secret:
+    external: true
+  client_secret:
+    external: true
+  postgres_password:
+    external: true
