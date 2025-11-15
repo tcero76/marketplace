@@ -14,7 +14,3 @@ export type SearchPosts = {
     modelo:string
     rank:number
   }
-
-  export type HeaderProps = {
-    onSearch: (search: SearchType) => void;
-  };

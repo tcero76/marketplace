@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { Recomendations } from '../../types';
+import { Recomendations, SearchType } from '../../types';
 import getUserApi  from "../../http/HttpFactory"
 import { AxiosResponse } from 'axios';
 import { useAuthSelector } from '../../store/hooks';
@@ -11,7 +11,7 @@ import { useUIContext } from '../../context/UIContext';
 export default function App() {
   const container = useRef<VirtuosoHandle>(null);
   const location = useLocation();
-  const search = location.state as { mention: string; text: string } | null;
+  const search = location.state as SearchType;
   const state = useAuthSelector((state) => state.auth);
   const [recomendations, setRecomendations] = useState<Recomendations[][]>([]);
   const uiContext = useUIContext()

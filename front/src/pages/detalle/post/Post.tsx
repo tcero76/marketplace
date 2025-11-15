@@ -3,7 +3,7 @@ import { PostProps } from '../../../types';
 import Button from '../../../components/buttons/Button';
 import { useAuthSelector } from '../../../store/hooks';
 
-const btnIconOnly = {
+const btnIconOnly: React.CSSProperties = {
     padding: '8px', 
     width: '40px',
     height: '40px',

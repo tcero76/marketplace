@@ -6,11 +6,11 @@ import { Posteo, type TextEditorProps,
 
 const initialTextEditorState: TextFormatType = {
   cleanInput:() => null,
-  setPosteo:(_:string) => null
+  setInput:() => null
 }
 const initialPosteo: Posteo = { menciones: [], texto: '', id:'', userId: '' };
 
-  const TextEditor = forwardRef<TextEditorType,TextEditorProps>(({onChangePosteo, ...props},ref:ForwardedRef<TextEditorType>) => {
+const TextEditor = forwardRef<TextEditorType,TextEditorProps>(({onChangePosteo, ...props},ref:ForwardedRef<TextEditorType>) => {
   const textFormatRef = useRef<TextFormatType>(initialTextEditorState);
   const posteoRef = useRef<Posteo>(initialPosteo);
   useImperativeHandle(ref,()=>({

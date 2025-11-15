@@ -35,3 +35,8 @@ export type AuthorizationType = {
       loginChallenge:string
       state:string
   }
+
+  export type CredencialType = {
+    user:string
+    password:string
+  }

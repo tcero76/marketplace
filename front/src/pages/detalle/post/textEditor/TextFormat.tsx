@@ -8,8 +8,8 @@ import {
 
 const storeCaretPosition = (editor:HTMLDivElement):number => {
     const selection = window.getSelection();
-    if (!selection) return;
-    if (!selection.rangeCount) return;
+    if (!selection) return 0;
+    if (!selection.rangeCount) return 0;
     const range = selection.getRangeAt(0);
     const preCaretRange = range.cloneRange();
     preCaretRange.selectNodeContents(editor);
@@ -24,7 +24,7 @@ const restoreCaretPosition = (element:HTMLDivElement, offset:number) => {
     const walker = document.createTreeWalker(element, NodeFilter.SHOW_TEXT, null);
     while (walker.nextNode()) {
       const node = walker.currentNode;
-      const length = node.nodeValue.length;
+      const { length } = node.nodeValue ?? { length: 0};
       if (currentOffset + length >= offset) {
         currentNode = node;
         break;

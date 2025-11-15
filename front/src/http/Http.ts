@@ -1,7 +1,7 @@
 
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import axios, { AxiosInstance, AxiosResponse } from "axios"
-import { SearchType, type AuthorizationType,
+import { CredencialType, SearchType, type AuthorizationType,
   type AuthType,
   type FetchLoginChallengeType,
   type LoginPayloadType,
@@ -22,8 +22,8 @@ export default class Http implements IHttpApi {
       baseURL: `${import.meta.env.VITE_HOST}/bff`, // tu BFF
     });
     let isRefreshing = false;
-    let refreshSubscribers = [];
-    function subscribeTokenRefresh(cb) {
+    let refreshSubscribers:((newToken:string) => void)[] = [];
+    function subscribeTokenRefresh(cb:(newToken:string) => void) {
       refreshSubscribers.push(cb);
     }
     function onRefreshed(newToken:string) {
@@ -56,7 +56,7 @@ export default class Http implements IHttpApi {
             }
           }
           return new Promise((resolve) => {
-            subscribeTokenRefresh((newToken) => {
+            subscribeTokenRefresh((newToken:string) => {
               originalRequest.headers.Authorization = `Bearer ${newToken}`;
               resolve(api(originalRequest));
             });
@@ -192,14 +192,17 @@ export default class Http implements IHttpApi {
     }
     return this._api.get(url)
   }
-  signUp(user:string,password:string):Promise<AxiosResponse<string>> {
-    return axios.post(`${import.meta.env.VITE_HOST}/bff/signup`, 
-      { email:user, password },
-      {
-        headers: {
-          'Content-Type': 'application/json'
+
+  signUp = createAsyncThunk<AxiosResponse<string>, CredencialType, object>('signUp',
+    async  ({ user, password }: CredencialType) => {
+      return await axios.post(`${import.meta.env.VITE_HOST}/bff/signup`, 
+        { email:user, password },
+        {
+          headers: {
+            'Content-Type': 'application/json'
+          }
         }
-      }
-    );
-  }
+      );
+    }
+  )
 }

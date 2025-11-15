@@ -5,7 +5,8 @@ import { AuthType, type LoginPayloadType,
     AuthorizationType,
     LoginResponseType,
     Posteo,
-    type SearchType
+    type SearchType,
+    CredencialType
 } from '../types';
 import { AsyncThunk } from '@reduxjs/toolkit';
 
@@ -22,5 +23,5 @@ export interface IHttpApi {
     getModelos():Promise<AxiosResponse<string[]>>
     sendPost(posteo:Posteo):Promise<AxiosResponse<string>> 
     getPosteos(modelo?:string):Promise<AxiosResponse<Posteo[]>>
-    signUp(user:string,password:string):Promise<AxiosResponse<string>>
-}
+    signUp:AsyncThunk<AxiosResponse<string>,CredencialType,object>
+} 

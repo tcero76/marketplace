@@ -8,7 +8,7 @@ import getUserApi from '../../http/HttpFactory'
 import { Modelo } from '../../types'
 
 
-const initModelo:Modelo = { descripcion: '', modelo: '', id: 0, fecharegistro: new Date(), idJob: 0, idModelos: 0, url: ''}
+const initModelo:Modelo = { descripcion: '', modelo: '', id: 0, fecharegistro: new Date(), idJob: 0, idModelos: 0 }
 const Detalle = () => {
   const [ modeloState, setModeloState ] = useState<Modelo>(initModelo);
   const { modelo } = useParams<{ modelo: string }>();
@@ -22,7 +22,7 @@ const Detalle = () => {
     <div className="container py-4">
       <h1>{modeloState.modelo}</h1>
       <p>{modeloState.descripcion}</p>
-    {/* <div className="row mb-3">
+    <div className="row mb-3">
       <div className="col bg-primary text-white p-3 rounded">
         <VideoPlayer/>
       </div>
@@ -34,7 +34,7 @@ const Detalle = () => {
       <div className="col bg-warning p-3 rounded">
         <Pago/>
       </div>
-    </div> */}
+    </div>
     <div className="row">
       <div className="col p-3 rounded">
         <CreatePost/>

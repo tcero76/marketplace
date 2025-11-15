@@ -27,7 +27,7 @@ const LoginModal: React.FC = () => {
     }
     const onClickAuth = (e:MouseEvent<HTMLAnchorElement, globalThis.MouseEvent>) => {
         e.preventDefault();
-        dispatch(redirectLogin("internal"));
+        dispatch(redirectLogin());
     }
     const onClickAuthGoogle = (e:MouseEvent<HTMLAnchorElement, globalThis.MouseEvent>) => {
         e.preventDefault();
@@ -35,7 +35,7 @@ const LoginModal: React.FC = () => {
     }
     const onClickSignUp = (e:MouseEvent<HTMLButtonElement, globalThis.MouseEvent>) => {
         e.preventDefault();
-        dispatch(getUserApi().signUp(user, password));
+        dispatch(getUserApi().signUp({user, password}));
     }
     return (
         <div className="toast-container position-fixed top-0 end-0 p-3">

@@ -3,7 +3,7 @@ import { SpinnerRef } from '../../types';
 
 type SpinnerProps = {}  
 
-const Spinner = forwardRef<SpinnerRef,SpinnerProps>((props, ref:ForwardedRef<SpinnerRef>) => {
+const Spinner = forwardRef<SpinnerRef,SpinnerProps>((_props, ref:ForwardedRef<SpinnerRef>) => {
   const [visible, setVisible] = useState<boolean>(false);
   const spinnerRef = useRef<HTMLDivElement>(null);
   useImperativeHandle(ref, () => ({

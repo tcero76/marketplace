@@ -7,9 +7,8 @@ import getUserApi  from '../../http/HttpFactory.ts';
 import name from '../../assets/name.svg';
 import Icon from '../../components/icons/Icon.tsx';
 import { Dropdown } from 'bootstrap';
-import { type HeaderProps } from '../../types/index.ts';
 
-const Header = ({onSearch}:HeaderProps) => {
+const Header = () => {
     const location = useLocation();
     const dispatch = useAuthDispatch()
     const dropdownRef = useRef<HTMLLIElement>(null);
@@ -43,8 +42,8 @@ const Header = ({onSearch}:HeaderProps) => {
                             <div className="position-relative" style={{ width: '50px', height: '50px' }}>
                                 { state.isAuthenticated &&
                                     <button className="btn dropdown-toggle rounded-circle" data-bs-toggle="dropdown"
-                                    style={{backgroundImage: `url("${state.avatar}")`, backgroundSize: 'cover', backgroundPosition: 'center'}}
-                                    aria-expanded="false" onClick={onClickDropdown}>
+                                        style={{backgroundImage: `url("${state.avatar}")`, backgroundSize: 'cover', backgroundPosition: 'center'}}
+                                        aria-expanded="false" onClick={onClickDropdown}>
                                     </button>
                                 }
                             </div>

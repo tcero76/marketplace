@@ -23,7 +23,7 @@ export const VideoPlayer:React.FC<HlsPlayerProps> = ({
             const hls = new Hls();
             hls.loadSource(src);
             hls.attachMedia(video);
-            hls.on(Hls.Events.ERROR, (event, data) => {
+            hls.on(Hls.Events.ERROR, (_event, data) => {
                 console.error('HLS error:', data);
               });
             return () =>  hls.destroy()

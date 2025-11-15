@@ -1,16 +1,14 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect } from 'react'
 import { Outlet } from 'react-router';
 import Header from './Header/Header';
 import Footer from './Footer';
 import { useAuthDispatch } from '../store/hooks';
 import LoginModal from './LoginModal.tsx';
-import { SearchType } from '../types/index.ts';
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import getUserApi from '../http/HttpFactory.ts';
 
 const Layout = () => {
   const dispatch = useAuthDispatch()
-  const [search, setSearch] = useState<SearchType>({text:[], mention:""});
   useEffect(() => {
     const url = new URL(window.location.href);
     const accessToken = url.searchParams.get("accessToken");
@@ -22,10 +20,10 @@ const Layout = () => {
     dispatch(getUserApi().getAuthenticated());
   }, [])
   return (<div className="d-flex flex-column vh-100">
-              <Header onSearch={setSearch} />
+              <Header/>
               <LoginModal/>
               <div className="flex-grow-1 overflow-hidden">
-                  <Outlet context={search}/>
+                  <Outlet/>
               </div>
               <Footer/>
           </div>)
