@@ -5,4 +5,6 @@ COPY entrypoint.sh /entrypoint.sh
 RUN apt-get update
 RUN apt-get install -y gettext
 
+COPY envoy.yaml /tmpl/envoy.yaml
+
 ENTRYPOINT [ "/entrypoint.sh" ]

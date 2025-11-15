@@ -3,7 +3,7 @@ services:
     image: tcero76/envoy:0.0.0
     build:
       dockerfile: Dockerfile
-      context: ./test/config/envoy
+      context: ../../envoy/
     container_name: envoy
     profiles:
       - front
@@ -14,7 +14,5 @@ services:
      - ENVOY_PORT=$PORT_EXTERNAL
     ports:
       - $PORT_EXTERNAL:$PORT_EXTERNAL
-    volumes:
-      - ./test/config/envoy/envoy.yaml:/tmpl/envoy.yaml
     networks:
       - ${NETWORK_APPLICATION}
