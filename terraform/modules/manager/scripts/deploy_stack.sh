@@ -18,6 +18,7 @@ docker stack deploy \
   -c /root/docker/rabbitmq.yml \
   -c /root/docker/common.yml \
   -c /root/docker/envoy.yml \
+  -c /root/docker/services.yml \
   mystack \
   --with-registry-auth
 
