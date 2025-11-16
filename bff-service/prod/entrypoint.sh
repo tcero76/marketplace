@@ -3,7 +3,7 @@ set -eu  # ‘-e’ para salir en error, ‘-u’ para variables no definidas
 
 load_secret() {
   local var_name="$1"
-  local secret_file="/run/secrets/$var_name"
+  local secret_file="${var_name}_FILE"
 
   if [ -f "$secret_file" ]; then
     export "$var_name"="$(cat "$secret_file" | tr -d '\r\n')"
