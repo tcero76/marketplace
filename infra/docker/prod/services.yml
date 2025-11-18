@@ -39,6 +39,18 @@ services:
           - node.hostname == swarm-manager
       restart_policy:
         condition: on-failure
+
+  front:
+    image: tcero76/front:v0.0.0
+    working_dir: /app
+    environment:
+      - VITE_HOST=${HOST_URL}
+      - VITE_WS=${HOST_WS}
+      - VITE_CLIENT_ID=${CLIENT_ID}
+      - VITE_PROFILE=${PROFILE}
+    networks:
+      - ${NETWORK_APPLICATION}
+
   # cache-updater-service:
   #   image: tcero76/cache-updater-service:${TAG}
   #   build:
@@ -154,28 +166,6 @@ services:
   #     - broker
   #   networks:
   #     - ${NETWORK_APPLICATION}
-  # front:
-  #   image: node:${NODE_VERSION}
-  #   container_name: front
-  #   profiles:
-  #     - front
-  #   working_dir: /app
-  #   entrypoint: npm run dev
-  #   tty: true
-  #   stdin_open: true
-  #   environment:
-  #     - VITE_HOST=${HOST_URL}
-  #     - VITE_WS=${HOST_WS}
-  #     - VITE_CLIENT_ID=${CLIENT_ID}
-  #     - VITE_PROFILE=${PROFILE}
-  #   ports:
-  #    - 5173:5173
-  #   volumes:
-  #     - ../../../front:/app
-  #   networks:
-  #     - ${NETWORK_APPLICATION}
-  #   depends_on:
-  #     - envoy
   # solana-service:
   #   image: tcero76/solana-service:${TAG}
   #   build:
