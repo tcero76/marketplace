@@ -50,6 +50,14 @@ services:
       - VITE_PROFILE=${PROFILE}
     networks:
       - ${NETWORK_APPLICATION}
+    deploy:
+      mode: replicated
+      replicas: 1
+      placement:
+        constraints:
+          - node.hostname == swarm-manager
+      restart_policy:
+        condition: on-failure
 
   # cache-updater-service:
   #   image: tcero76/cache-updater-service:${TAG}
