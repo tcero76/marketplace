@@ -4,7 +4,6 @@ services:
     working_dir: /bff-service
     command: ["/app/main"]
     environment:
-      - DNS=postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}?sslmode=disable&options=-c%20search_path%3Dmarketplace
       - PORT=3000
       - PORT_EXTERNAL=${PORT_EXTERNAL}
       - HOST_EXTERNAL=${HOST_EXTERNAL}
@@ -20,11 +19,15 @@ services:
       - GOOGLE_OAUTH2_CLIENT_ID=${GOOGLE_OAUTH2_CLIENT_ID}
       - GOOGLE_OAUTH2_CLIENT_SECRET=${GOOGLE_OAUTH2_CLIENT_SECRET}
       - GOOGLE_OAUTH2_REDIRECT_URI=${GOOGLE_OAUTH2_REDIRECT_URI}
-      - PROFILE=${PROFILE}
+      - PROFILE=${PROFILE}z 
       - REDIS_HOST=${REDIS_HOST}
       - GOOGLE_OAUTH2_CLIENT_SECRET_FILE=/run/secrets/google_oauth2_client_secret
       - CLIENT_SECRET_FILE=/run/secrets/client_secret
       - POSTGRES_PASSWORD_FILE=/run/secrets/patroni_admin_password
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_HOST=${POSTGRES_HOST}
+      - POSTGRES_PORT=${POSTGRES_PORT}
+      - POSTGRES_DB=${POSTGRES_DB}
     networks:
       - ${NETWORK_APPLICATION}
     secrets:
@@ -61,13 +64,20 @@ services:
     image: tcero76/scrap-service:${TAG}
     working_dir: /app/
     command: [ "celery", "-A", "main", "worker", "--loglevel=debug", "-Q", "${SCRAPY_QUEUE}" ]
+    secrets:
+      - patroni_admin_password
+      - password_insta
     environment:
-      - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_HOST=${POSTGRES_HOST}
+      - POSTGRES_PORT=${POSTGRES_PORT}
+      - POSTGRES_DB=${POSTGRES_DB}
+      - POSTGRES_PASSWORD_FILE=/run/secrets/patroni_admin_password
       - BROKER=${BROKER}
       - PORT=8000
       - TOTAL_POSTS=${TOTAL_POSTS}
       - USERNAME_INSTA=${USERNAME_INSTA}
-      - PASSWORD_INSTA=${PASSWORD_INSTA}
+      - PASSWORD_INSTA_FILE=/run/secrets/password_insta
       - SCRAPY_QUEUE=${SCRAPY_QUEUE}
     networks:
       - ${NETWORK_APPLICATION}

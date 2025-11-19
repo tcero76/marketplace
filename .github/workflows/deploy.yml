@@ -227,6 +227,13 @@ jobs:
           CLIENT_SECRET=${CLIENT_SECRET}
           GOOGLE_OAUTH2_CLIENT_ID=${GOOGLE_OAUTH2_CLIENT_ID}
           GOOGLE_OAUTH2_CLIENT_SECRET=${GOOGLE_OAUTH2_CLIENT_SECRET}
+          TAG=${TAG}
+          CRON_HOUR=${CRON_HOUR}
+          CRON_MINUTE=${CRON_MINUTE}
+          RECOMENDER_QUEUE=${RECOMENDER_QUEUE}
+          SCRAPY_QUEUE=${SCRAPY_QUEUE}
+          TOTAL_POSTS=${TOTAL_POSTS}
+          USERNAME_INSTA=${USERNAME_INSTA}
           EOF'"
 
       - name: Crear secrets en Docker Swarm
@@ -272,6 +279,12 @@ jobs:
               && echo '✅ Secret google_oauth2_client_secret creado' \
               || echo 'ℹ️ Secret google_oauth2_client_secret ya existe, continuando...'
           "
+          ssh -o StrictHostKeyChecking=no root@$MANAGER_IP "
+            echo '${{ secrets.PASSWORD_INSTA }}' | docker secret create password_insta - \
+              && echo '✅ Secret password_insta creado' \
+              || echo 'ℹ️ Secret password_insta ya existe, continuando...'
+          "
+          
         shell: bash
 
       - name: Copy docker-compose.yml to manager

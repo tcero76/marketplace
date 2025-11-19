@@ -29,4 +29,7 @@ COPY --chown=app:app beat-service/ .
 USER app
 ENV PYTHONPATH="/app"
 
-CMD ["python", "main.py"]
+COPY entrypoint.sh /entrypoint.sh
+
+ENTRYPOINT ["/entrypoint.sh"]
+

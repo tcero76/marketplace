@@ -26,4 +26,6 @@ USER app
 HEALTHCHECK --interval=30s --timeout=5s --start-period=10s \
   CMD python -c "import sys,requests; sys.exit(0 if True else 1)" || exit 1
 
-ENTRYPOINT [ "celery", "-A", "main", "beat", "--loglevel=debug"]
+COPY entrypoint.sh /entrypoint.sh
+
+ENTRYPOINT ["/entrypoint.sh"]

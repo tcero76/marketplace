@@ -13,9 +13,6 @@ load_secret() {
   fi
 }
 
-load_secret CLIENT_SECRET
-load_secret GOOGLE_OAUTH2_CLIENT_SECRET
 load_secret POSTGRES_PASSWORD
-export DNS="postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}?sslmode=disable&options=-c%20search_path%3Dmarketplace"
 
 exec "$@"
