@@ -1,6 +1,6 @@
 services:
   bff-service:
-    image: tcero76/bff-service:v0.0.0
+    image: tcero76/bff-service:${TAG}
     working_dir: /bff-service
     command: ["/app/main"]
     environment:
@@ -39,9 +39,8 @@ services:
           - node.hostname == swarm-manager
       restart_policy:
         condition: on-failure
-
   front:
-    image: tcero76/front:v0.0.0
+    image: tcero76/front:${TAG}
     working_dir: /app
     environment:
       - VITE_HOST=${HOST_URL}
@@ -58,7 +57,31 @@ services:
           - node.hostname == swarm-manager
       restart_policy:
         condition: on-failure
-
+  scrap-service:
+    image: tcero76/scrap-service:${TAG}
+    working_dir: /app/
+    command: [ "celery", "-A", "main", "worker", "--loglevel=debug", "-Q", "${SCRAPY_QUEUE}" ]
+    environment:
+      - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}
+      - BROKER=${BROKER}
+      - PORT=8000
+      - TOTAL_POSTS=${TOTAL_POSTS}
+      - USERNAME_INSTA=${USERNAME_INSTA}
+      - PASSWORD_INSTA=${PASSWORD_INSTA}
+      - SCRAPY_QUEUE=${SCRAPY_QUEUE}
+    networks:
+      - ${NETWORK_APPLICATION}
+  beat-service:
+    image: tcero76/beat-service:${TAG}
+    working_dir: /beat-service/
+    environment:
+      - BROKER=${BROKER}
+      - CRON_HOUR=${CRON_HOUR}
+      - CRON_MINUTE=${CRON_MINUTE}
+      - RECOMENDER_QUEUE=${RECOMENDER_QUEUE}
+      - SCRAPY_QUEUE=${SCRAPY_QUEUE}
+    networks:
+      - ${NETWORK_APPLICATION}
   # cache-updater-service:
   #   image: tcero76/cache-updater-service:${TAG}
   #   build:
@@ -192,57 +215,6 @@ services:
   #     - BROKER=${BROKER}
   #   volumes:
   #     - ../../solana-service:/app
-  #   networks:
-  #     - ${NETWORK_APPLICATION}
-  # scrap-service:
-  #   image: tcero76/scrap-service:${TAG}
-  #   build:
-  #     dockerfile: Dockerfile
-  #     context: ../../../scrap-service
-  #   working_dir: /app/
-  #   profiles:
-  #     - scrap
-  #   command: [ "celery", "-A", "main", "worker", "--loglevel=debug", "-Q", "${SCRAPY_QUEUE}" ]
-  #   container_name: scrap-worker
-  #   tty: true
-  #   stdin_open: true
-  #   environment:
-  #     - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}
-  #     - BROKER=${BROKER}
-  #     - PORT=8000
-  #     - TOTAL_POSTS=${TOTAL_POSTS}
-  #     - USERNAME_INSTA=${USERNAME_INSTA}
-  #     - PASSWORD_INSTA=${PASSWORD_INSTA}
-  #     - SCRAPY_QUEUE=${SCRAPY_QUEUE}
-  #   volumes:
-  #     - ../../../scrap-service:/app
-  #   depends_on:
-  #     - broker
-  #   networks:
-  #     - ${NETWORK_APPLICATION}
-  # beat-service:
-  #   image: tcero76/beat-service:${TAG}
-  #   build:
-  #     dockerfile: Dockerfile
-  #     context: ../../../beat-service
-  #   working_dir: /beat-service/
-  #   profiles:
-  #     - scrap
-  #   container_name: beat
-  #   entrypoint: [ "celery", "-A", "main", "beat", "--loglevel=debug"]
-  #   tty: true
-  #   stdin_open: true
-  #   environment:
-  #     - BROKER=${BROKER}
-  #     - CRON_HOUR=${CRON_HOUR}
-  #     - CRON_MINUTE=${CRON_MINUTE}
-  #     - RECOMENDER_QUEUE=${RECOMENDER_QUEUE}
-  #     - SCRAPY_QUEUE=${SCRAPY_QUEUE}
-  #   volumes:
-  #     - ../../../beat-service:/beat-service
-  #   depends_on:
-  #     - broker
-  #     - scrap-service
   #   networks:
   #     - ${NETWORK_APPLICATION}
   # recomender-service:
