@@ -13,6 +13,4 @@ load_secret() {
   fi
 }
 
-load_secret POSTGRES_PASSWORD
-
 exec "$@"
