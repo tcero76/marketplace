@@ -13,7 +13,7 @@ env:
   HOST_WS: ws://${HOST_EXTERNAL}:${PORT_EXTERNAL}
   NETWORK_APPLICATION: application
   TF_VAR_overlay_network: application
-  TAG: V0.0.0
+  TAG: v0.0.0
   #secrets
   # CLICKHOUSE_PASSWORD: ${{ secrets.CLICKHOUSE_PASSWORD}}
   # POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD}}
@@ -100,7 +100,7 @@ env:
   SMTP_USER: leonardo.lastra@gmail.com
   # docker
   DOCKER_USERNAME: tcero76
-  MANAGER_IP: 138.197.20.193
+  MANAGER_IP: 159.65.248.112
 jobs:
   terraform:
     name: Terraform Apply
