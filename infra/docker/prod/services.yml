@@ -83,7 +83,7 @@ services:
       - ${NETWORK_APPLICATION}
   beat-service:
     image: tcero76/beat-service:${TAG}
-    working_dir: /beat-service/
+    command: ["python", "/app/beat-service/main.py"]
     environment:
       - BROKER=${BROKER}
       - CRON_HOUR=${CRON_HOUR}
