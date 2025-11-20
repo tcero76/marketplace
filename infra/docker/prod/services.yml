@@ -83,7 +83,7 @@ services:
       - ${NETWORK_APPLICATION}
   beat-service:
     image: tcero76/beat-service:${TAG}
-    command: ["python", "/beat-service/main.py"]
+    entrypoint: [ "celery", "-A", "main", "beat", "--loglevel=debug"]
     environment:
       - BROKER=${BROKER}
       - CRON_HOUR=${CRON_HOUR}
