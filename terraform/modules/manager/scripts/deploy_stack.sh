@@ -19,6 +19,7 @@ docker stack deploy \
   -c /root/docker/common.yml \
   -c /root/docker/envoy.yml \
   -c /root/docker/services.yml \
+  -c /root/docker/redis.yml \
   mystack \
   --with-registry-auth
 
