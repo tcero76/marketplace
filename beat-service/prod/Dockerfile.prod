@@ -26,7 +26,7 @@ RUN useradd -m -r app
 WORKDIR /app/beat-service
 
 COPY --chown=app:app beat-service/ .
-COPY --chown=app:app rabbitmq/ .
+COPY --chown=app:app rabbitmq/ /app/rabbitmq/
 
 USER app
 ENV PYTHONPATH="/app"
