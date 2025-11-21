@@ -1,15 +1,15 @@
 services:
   cache:
     image: redis:${REDIS_VERSION}
-    ports:
-      - 6379:6379
     networks:
       - ${NETWORK_APPLICATION:-application}
+    volumes:
+      - redis_data:/data
     deploy:
       mode: replicated
       replicas: 1
       placement:
         constraints:
-          - node.hostname == swarm-worker-0
+          - node.hostname == swarm-manager
       restart_policy:
         condition: on-failure

@@ -63,7 +63,7 @@ services:
   scrap-service:
     image: tcero76/scrap-service:${TAG}
     working_dir: /app/
-    command: [ "celery", "-A", "main", "worker", "--loglevel=debug", "-Q", "${SCRAPY_QUEUE}" ]
+    command: [ "celery", "-A", "main", "worker", "--loglevel=debug"]
     secrets:
       - patroni_admin_password
       - password_insta
@@ -78,7 +78,8 @@ services:
       - TOTAL_POSTS=${TOTAL_POSTS}
       - USERNAME_INSTA=${USERNAME_INSTA}
       - PASSWORD_INSTA_FILE=/run/secrets/password_insta
-      - SCRAPY_QUEUE=${SCRAPY_QUEUE}
+      - CMD_SCRAPY_START_QUEUE=${CMD_SCRAPY_START_QUEUE}
+      - CMD_SCRAPY_START_EXCHANGE=${CMD_SCRAPY_START_EXCHANGE}
     networks:
       - ${NETWORK_APPLICATION}
   beat-service:

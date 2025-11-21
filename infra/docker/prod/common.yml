@@ -4,3 +4,10 @@ networks:
     driver: overlay
     attachable: true
     external: true
+volumes:
+  redis_data:
+    name: redis_data
+    driver_opts:
+      type: none
+      device: ${REDIS_VOLUME}/data
+      o: bind
