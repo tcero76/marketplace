@@ -4,7 +4,7 @@ ENV PYTHONUNBUFFERED=1
 RUN groupadd -r app && useradd -r -g app -m app
 
 WORKDIR /app
-COPY scrap-service/requirements.txt /app/requirements.txt
+COPY scrap-service/requirements.txt /app/scrap-service/requirements.txt
 
 RUN apt-get update && apt-get install -y \
     libpq-dev \
@@ -16,16 +16,17 @@ RUN python3 -m venv /venv
 ENV PATH="/venv/bin:$PATH"
 
 RUN pip install --upgrade pip && \
-    pip install --no-cache-dir -r /app/requirements.txt
+    pip install --no-cache-dir -r /app/scrap-service/requirements.txt
 
 
-COPY --chown=app:app scrap-service/ /app
+COPY --chown=app:app scrap-service/ /app/scrap-service/
+COPY --chown=app:app rabbitmq/ /app/rabbitmq/
 
 USER app
 
 HEALTHCHECK --interval=30s --timeout=5s --start-period=10s \
   CMD python -c "import sys,requests; sys.exit(0 if True else 1)" || exit 1
 
-COPY entrypoint.sh /entrypoint.sh
+COPY scrap-service/prod/entrypoint.sh /entrypoint.sh
 
 ENTRYPOINT ["/entrypoint.sh"]

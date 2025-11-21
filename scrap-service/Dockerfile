@@ -9,8 +9,9 @@ RUN pip install -r requirements.txt
 RUN python -m playwright install --with-deps
 RUN echo "from twisted.internet import selectreactor; selectreactor.install()" > /usr/local/lib/python3.9/site-packages/auto_reactor.py
 
-COPY . .
+COPY --chown=app:app scrap-service/ .
+COPY --chown=app:app rabbitmq/ /app/rabbitmq/
 
 ENV PYTHONPATH="/app:${PYTHONPATH}"
 
-CMD ["python", "main.py"]
+CMD [ "celery", "-A", "main", "worker", "--loglevel=debug"]
