@@ -67,8 +67,6 @@ env:
   #colas
   BROKER: amqp://guest:guest@broker:5672
   RECOMENDER_QUEUE: recomender_queue
-  SCRAPY_QUEUE: scrapy_queue
-  RABBITMQ_QUEUE: chat_event_queue
   EVT_PAYMENT_COMPLETED_EXCHANGE: evt_payment_completed_exchange
   EVT_PAYMENT_PERSISTENCE_QUEUE: evt_payment_persistence_queue
   CMD_CHAT_MESSAGE_SEND_EXCHANGE: cmd_chat_message_send_exchange
@@ -100,7 +98,7 @@ env:
   SMTP_USER: leonardo.lastra@gmail.com
   # docker
   DOCKER_USERNAME: tcero76
-  MANAGER_IP: 165.227.115.232
+  MANAGER_IP: 157.245.10.100
 jobs:
   terraform:
     name: Terraform Apply
@@ -230,8 +228,8 @@ jobs:
           TAG=${TAG}
           CRON_HOUR=${CRON_HOUR}
           CRON_MINUTE=${CRON_MINUTE}
-          RECOMENDER_QUEUE=${RECOMENDER_QUEUE}
-          SCRAPY_QUEUE=${SCRAPY_QUEUE}
+          CMD_SCRAPY_START_QUEUE=${CMD_SCRAPY_START_QUEUE}
+          CMD_SCRAPY_START_EXCHANGE=${CMD_SCRAPY_START_EXCHANGE}
           TOTAL_POSTS=${TOTAL_POSTS}
           USERNAME_INSTA=${USERNAME_INSTA}
           EOF'"
