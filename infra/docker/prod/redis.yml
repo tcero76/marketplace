@@ -4,7 +4,7 @@ services:
     networks:
       - ${NETWORK_APPLICATION:-application}
     volumes:
-      - redis_data:/data
+      - ${REDIS_VOLUME}/data:/data
     deploy:
       mode: replicated
       replicas: 1
