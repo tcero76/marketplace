@@ -285,3 +285,5 @@ secrets:
     external: true
   password_insta:
     external: true
+  patroni_admin_password:
+    external: true
