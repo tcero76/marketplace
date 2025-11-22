@@ -98,7 +98,7 @@ env:
   SMTP_USER: leonardo.lastra@gmail.com
   # docker
   DOCKER_USERNAME: tcero76
-  MANAGER_IP: 165.227.73.104
+  MANAGER_IP: 68.183.150.80
 jobs:
   terraform:
     name: Terraform Apply
@@ -233,6 +233,7 @@ jobs:
           TOTAL_POSTS=${TOTAL_POSTS}
           USERNAME_INSTA=${USERNAME_INSTA}
           REDIS_HOST=${REDIS_HOST}
+          REDIS_VOLUME=${REDIS_VOLUME}
           EOF'"
 
       - name: Crear secrets en Docker Swarm
