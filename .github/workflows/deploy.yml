@@ -8,7 +8,7 @@ on:
 env:
   PROFILE: prod
   # Application
-  PORT_EXTERNAL: 8080
+  PORT_EXTERNAL: 80
   HOST_URL: http://${HOST_EXTERNAL}:${PORT_EXTERNAL}
   HOST_WS: ws://${HOST_EXTERNAL}:${PORT_EXTERNAL}
   NETWORK_APPLICATION: application
@@ -98,7 +98,7 @@ env:
   SMTP_USER: leonardo.lastra@gmail.com
   # docker
   DOCKER_USERNAME: tcero76
-  MANAGER_IP: 68.183.150.80
+  MANAGER_IP: 209.97.147.17
 jobs:
   terraform:
     name: Terraform Apply
