@@ -43,6 +43,11 @@ def run_modelo(_=None):
     subprocess.run(["scrapy", "crawl", "modelo"])
 
 @app.task
+def run_modelos(_=None):
+    print(f"Inicia run_modelo")
+    subprocess.run(["scrapy", "crawl", "modelos"])
+
+@app.task
 def ejecutar_funcion_postgres(_=None):
     print(f"Inicia ejecutar_funcion_postgres")
     url = os.getenv("DATABASE_URL")
@@ -71,7 +76,7 @@ def run_modelo_spider():
         threading.Thread(target=start_metrics_server, daemon=True).start()
         metrics_thread_started = True
     chain(
-        run_insta.s().set(queue=SCRAPY_QUEUE),
+        # run_insta.s().set(queue=SCRAPY_QUEUE),
         obtener_cookies.s().set(queue=SCRAPY_QUEUE),
         run_modelo.s().set(queue=SCRAPY_QUEUE),
         ejecutar_funcion_postgres.s().set(queue=SCRAPY_QUEUE)

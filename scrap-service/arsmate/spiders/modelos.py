@@ -12,13 +12,14 @@ class ModelosSpider(scrapy.Spider):
     }
 
     def start_requests(self):
-        url = "https://arsmate.com"
+        url = "https://arsmate.com/explore"
         with open("./arsmate_cookies.json") as f:
             self.cookies = json.load(f)
         print(self.cookies)
         yield scrapy.Request(url=url, headers=self.headers, cookies=self.cookies, callback=self.parseTotalPosts)
 
     def parseTotalPosts(self, response):
+        total = 0
         base_url = "https://arsmate.com/ajax/explore"
         print(base_url)
         match = re.search(r"var\s+totalPosts\s*=\s*(\d+)", response.text)
@@ -30,8 +31,7 @@ class ModelosSpider(scrapy.Spider):
         step = 5
         for skip in range(0, total, step):
             url = f"{base_url}?skip={skip}&total={total}"
-            request = response.follow(url=url, headers=self.headers, callback=self.parse)
-            yield request
+            yield response.follow(url=url, headers=self.headers, callback=self.parse, priority=-skip)
 
     def parse(self, response):
         for div in response.css("div.card.mb-3.card-updates"):

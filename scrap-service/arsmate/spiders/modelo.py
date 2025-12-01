@@ -22,9 +22,9 @@ class ModeloSpider(scrapy.Spider):
             conn = psycopg2.connect(url)
             cursor = conn.cursor()
             cursor.execute("""
-                SELECT modelo 
-                FROM scrap.modelos_instagram 
-                WHERE id_job = (SELECT MAX(id_job) FROM scrap.modelos_instagram);
+                select u.modelo from (SELECT modelo 
+                    FROM scrap.explore e
+                    WHERE e.id_job = (SELECT MAX(e.id_job) FROM scrap.explore e)) as u group by u.modelo;
             """)
             datos = cursor.fetchall()
             print(f"Se encontraron {len(datos)} modelos")

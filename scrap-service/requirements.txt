@@ -7,4 +7,4 @@ amqp==5.3.1
 prometheus_client
 psutil
 scrapy-playwright
-playwright
+playwright==1.50.0
