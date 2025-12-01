@@ -46,8 +46,8 @@ services:
     image: tcero76/front:${TAG}
     working_dir: /app
     environment:
-      - VITE_HOST=${HOST_URL}
-      - VITE_WS=${HOST_WS}
+      - VITE_HOST=http://${HOST_EXTERNAL}:${PORT_EXTERNAL}
+      - VITE_WS=ws://${HOST_EXTERNAL}:${PORT_EXTERNAL}
       - VITE_CLIENT_ID=${CLIENT_ID}
       - VITE_PROFILE=${PROFILE}
     networks:

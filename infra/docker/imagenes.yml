@@ -12,7 +12,7 @@ services:
   ws-service:
     image: tcero76/ws-service:${TAG}
   front:
-    image: node:${NODE_VERSION}
+    image: tcero76/front:${TAG}
   solana-service:
     image: tcero76/solana-service:${TAG}
   scrap-service:
