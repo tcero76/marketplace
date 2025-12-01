@@ -159,8 +159,8 @@ jobs:
 
       - name: Build and push images
         run: |
-          docker compose build bff-service
-          docker compose push bff-service
+          docker compose --project-directory "$GITHUB_WORKSPACE" build bff-service
+          docker compose --project-directory "$GITHUB_WORKSPACE" push bff-service
 
   swarm:
     name: Update Docker Swarm Services
