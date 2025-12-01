@@ -153,10 +153,13 @@ jobs:
         id: vars
         run: echo "VERSION=${GITHUB_REF_NAME}" >> $GITHUB_ENV
 
+      - name: Generate flattened Compose file
+        run: docker compose config > docker-compose.generated.yml
+
       - name: Build and push images
         run: |
-          docker compose build --no-cache
-          docker compose push
+          docker compose -f docker-compose.generated.yml build bff-service
+          docker compose -f docker-compose.generated.yml push bff-service
 
   swarm:
     name: Update Docker Swarm Services
