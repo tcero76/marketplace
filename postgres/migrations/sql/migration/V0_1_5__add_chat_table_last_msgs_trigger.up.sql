@@ -1,6 +1,6 @@
-CREATE SCHEMA chat;
+CREATE SCHEMA IF NOT EXISTS chat;
 
-CREATE TABLE chat.chats (
+CREATE TABLE IF NOT EXISTS chat.chats (
   id SERIAL PRIMARY KEY,
   user_origin UUID NOT NULL,
   user_destination UUID NOT NULL,
@@ -9,7 +9,7 @@ CREATE TABLE chat.chats (
   created_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
-CREATE TABLE chat.last_chats (
+CREATE TABLE IF NOT EXISTS chat.last_chats (
   id SERIAL PRIMARY KEY,
   user_origin UUID NOT NULL,
   user_destination UUID NOT NULL,

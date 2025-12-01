@@ -1,0 +1,1 @@
+insert into marketplace.users(user_id, nombre, password, roles) values('123e4567-e89b-12d3-a456-426614174000', 'leonardo', 'Waves6_','streamer');

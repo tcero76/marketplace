@@ -1,0 +1,1 @@
+ALTER TABLE marketplace.users ADD COLUMN IF NOT EXISTS ID_provider VARCHAR(255) NULL;
