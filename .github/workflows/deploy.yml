@@ -155,7 +155,8 @@ jobs:
 
       - name: Build and push images
         run: |
-          docker compose build bff-service --push
+          docker compose build bff-service
+          docker compose push bff-service
 
   swarm:
     name: Update Docker Swarm Services
