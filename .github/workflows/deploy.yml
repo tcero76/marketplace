@@ -9,11 +9,11 @@ env:
   PROFILE: prod
   # Application
   PORT_EXTERNAL: 80
-  HOST_URL: http://${HOST_EXTERNAL}:${PORT_EXTERNAL}
-  HOST_WS: ws://${HOST_EXTERNAL}:${PORT_EXTERNAL}
   NETWORK_APPLICATION: application
   TF_VAR_overlay_network: application
   TAG: v0.0.0
+  COMPOSE_FILE: infra/docker/imagenes.yml:infra/docker/prod/services.yml:infra/docker/prod/monitoring.yml:infra/docker/prod/postgres.yml:infra/docker/prod/clickhouse.yml:infra/docker/prod/hydra.yml:infra/docker/prod/envoy.yml:infra/docker/prod/rabbitmq.yml:infra/docker/prod/mediamtx.yml:infra/docker/prod/redis.yml:infra/docker/prod/elastic.yml:infra/docker/prod/common.yml
+
   #secrets
   # CLICKHOUSE_PASSWORD: ${{ secrets.CLICKHOUSE_PASSWORD}}
   # POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD}}
@@ -131,7 +131,6 @@ jobs:
   docker:
     name: Build and Push Docker Images
     runs-on: ubuntu-latest
-    if: false
     steps:
       - name: Checkout repo
         uses: actions/checkout@v3
@@ -154,17 +153,14 @@ jobs:
         id: vars
         run: echo "VERSION=${GITHUB_REF_NAME}" >> $GITHUB_ENV
 
-      - name: Generate flattened Compose file
-        run: docker compose config > docker-compose.generated.yml
-
       - name: Build and push images
         run: |
-          docker compose -f docker-compose.generated.yml build
-          docker compose -f docker-compose.generated.yml push
+          docker compose build bff-service --push
 
   swarm:
     name: Update Docker Swarm Services
     runs-on: ubuntu-latest
+    if: false
     steps:
       - name: Checkout repo
         uses: actions/checkout@v3
