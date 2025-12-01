@@ -157,6 +157,11 @@ jobs:
       - name: Print COMPOSE_FILE
         run: echo "$COMPOSE_FILE"
 
+      - name: show merged compose config
+        run: |
+          echo "Using COMPOSE_FILE: $COMPOSE_FILE"
+          docker compose --project-directory "$GITHUB_WORKSPACE" config
+
       - name: Build and push images
         run: |
           docker compose --project-directory "$GITHUB_WORKSPACE" build bff-service
