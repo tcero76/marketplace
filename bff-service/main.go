@@ -68,6 +68,6 @@ func main() {
 	protegido.GET("/getPosteos", controller.GetPosteos(postService))
 	e.GET("/getPosts", controller.GetPosts(postService))
 
-	log.Info("Servidor iniciado en el puerto: ", os.Getenv("PORT"))
+	log.Info("Servidor iniciado en el puerto 2: ", os.Getenv("PORT"))
 	e.Start(":" + os.Getenv("PORT"))
 }
