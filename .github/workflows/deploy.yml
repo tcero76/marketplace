@@ -154,12 +154,13 @@ jobs:
         id: vars
         run: echo "VERSION=${GITHUB_REF_NAME}" >> $GITHUB_ENV
 
-      - name: Set COMPOSE_FILE for multi-file compose
-        run: echo "COMPOSE_FILE=${COMPOSE_FILE}" >> $GITHUB_ENV
+      - name: Print COMPOSE_FILE
+        run: echo "$COMPOSE_FILE"
 
       - name: Build and push images
         run: |
-          docker compose build bff-service --push
+          docker compose build bff-service
+          docker compose push bff-service
 
   swarm:
     name: Update Docker Swarm Services
