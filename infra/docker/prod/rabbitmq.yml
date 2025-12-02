@@ -23,6 +23,7 @@ services:
       #   reservations:
       #     memory: 512M
   rabbitmq-init:
+    image: tcero76/rabbitmq-init:${TAG}
     entrypoint: [ "sh", "/init_rabbitmq.sh" ]
     environment:
       HOST: broker
