@@ -58,6 +58,6 @@ services:
       dockerfile: Dockerfile
   envoy:
     build:
-      dockerfile: ./envoy/Dockerfile
-      context: .
+      dockerfile: Dockerfile
+      context: ./infra/docker/config/envoy/
       target: ${PROFILE}
