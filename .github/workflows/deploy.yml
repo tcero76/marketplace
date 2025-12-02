@@ -165,6 +165,7 @@ jobs:
 
       - name: Build and push images
         run: |
+          export COMPOSE_FILE=infra/docker/build.yml:infra/docker/imagenes.yml
           docker compose --project-directory "$GITHUB_WORKSPACE" build bff-service
           docker compose --project-directory "$GITHUB_WORKSPACE" push bff-service
 
