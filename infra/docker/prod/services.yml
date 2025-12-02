@@ -62,7 +62,7 @@ services:
         condition: on-failure
   scrap-service:
     image: tcero76/scrap-service:${TAG}
-    working_dir: /app/
+    working_dir: /app/scrap-service
     command: [ "celery", "-A", "main", "worker", "--loglevel=debug"]
     secrets:
       - patroni_admin_password

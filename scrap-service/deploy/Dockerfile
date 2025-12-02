@@ -47,6 +47,8 @@ FROM mcr.microsoft.com/playwright/python:v1.50.0-noble AS base
   USER root
   COPY scrap-service/deploy/entrypoint.sh /entrypoint.sh
   RUN chmod +x /entrypoint.sh
+
+  ENV PYTHONPATH="/app"
   
   USER app
   ENTRYPOINT ["/entrypoint.sh"]
