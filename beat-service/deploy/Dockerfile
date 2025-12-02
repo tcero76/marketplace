@@ -36,13 +36,15 @@
     USER app
     
     WORKDIR /app/beat-service
+
+    RUN chmod -R app:app /app/beat-service/
     
     COPY --chown=app:app beat-service/ /app/beat-service/
     COPY --chown=app:app rabbitmq/ /app/rabbitmq/
 
     ENV PYTHONPATH="/app"
     
-    COPY beat-service/deploy/entrypoint.sh /entrypoint.sh
+    COPY --chown=app:app beat-service/deploy/entrypoint.sh /entrypoint.sh
     
     ENTRYPOINT ["/entrypoint.sh"]
     
