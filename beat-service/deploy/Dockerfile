@@ -39,7 +39,7 @@
 
     USER root
     RUN chown -R app:app /app/beat-service/
-    RUN mkdir -p /tmp/celery && chown -R app:app /tmp/celery
+    RUN mkdir -p /tmp/celery && chmod 1777 /tmp && chmod -R 777 /tmp/celery
 
     USER app
     
