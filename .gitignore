@@ -17,6 +17,7 @@ infra/.env
 beat/celerybeat-schedule
 scrap-service/arsmate_cookies.json
 beat/celerybeat-schedule
+beat-service/celerybeat-schedule
 scrap-service/arsmate_cookies.json
 
 beat/celerybeat-schedule
