@@ -85,7 +85,6 @@ services:
   beat-service:
     image: tcero76/beat-service:${TAG}
     working_dir: /app/beat-service
-    entrypoint: [ "celery", "-A", "main", "beat", " --schedule=/app/beat-service/celerybeat-schedule", "--loglevel=debug"]
     environment:
       - BROKER=${BROKER}
       - CRON_HOUR=${CRON_HOUR}

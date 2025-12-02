@@ -1,4 +1,8 @@
 #!/bin/sh
-set -eu  # ‘-e’ para salir en error, ‘-u’ para variables no definidas
+set -eu
 
-exec "$@"
+mkdir -p /tmp/celery
+chmod 700 /tmp/celery
+
+exec celery -A main beat --loglevel=debug \
+     --schedule=/tmp/celery/celerybeat-schedule
