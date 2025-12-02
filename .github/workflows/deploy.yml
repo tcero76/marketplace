@@ -154,11 +154,12 @@ jobs:
         id: vars
         run: echo "VERSION=${GITHUB_REF_NAME}" >> $GITHUB_ENV
 
-      - name: Print COMPOSE_FILE
-        run: echo "$COMPOSE_FILE"
+      # - name: Print COMPOSE_FILE
+      #   run: echo "$COMPOSE_FILE"
 
       - name: show merged compose config
         run: |
+          export COMPOSE_FILE=infra/docker/build.yml:infra/docker/imagenes.yml
           echo "Using COMPOSE_FILE: $COMPOSE_FILE"
           docker compose --project-directory "$GITHUB_WORKSPACE" config
 
