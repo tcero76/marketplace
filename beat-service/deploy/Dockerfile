@@ -37,10 +37,10 @@
     
     WORKDIR /app/beat-service
     
-    COPY --chown=app:app beat-service/ .
+    COPY --chown=app:app beat-service/ /app/beat-service/
     COPY --chown=app:app rabbitmq/ /app/rabbitmq/
 
-    ENV PYTHONPATH="/app/beat-service"
+    ENV PYTHONPATH="/app"
     
     COPY beat-service/deploy/entrypoint.sh /entrypoint.sh
     
