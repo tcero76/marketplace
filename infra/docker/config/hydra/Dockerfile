@@ -1,4 +1,4 @@
-ARG HYDRA_VERSION
+ARG HYDRA_VERSION AS prod
 FROM oryd/hydra:${HYDRA_VERSION:-latest}
 
 COPY ./hydra/entrypoint.sh /entrypoint.sh

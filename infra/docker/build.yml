@@ -65,3 +65,8 @@ services:
     build:
       dockerfile: Dockerfile
       context: infra/docker/config/rabbitmq/
+  hydra:
+    build:
+      dockerfile: Dockerfile
+      context: infra/docker/config/hydra/
+      target: ${PROFILE}

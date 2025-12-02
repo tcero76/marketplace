@@ -26,4 +26,6 @@ services:
   envoy:
     image: tcero76/envoy:${TAG}
   rabbitmq-init:
-    image: tcero76/rabbitmq-init
+    image: tcero76/rabbitmq-init:${TAG}
+  hydra:
+    image: tcero76/hydra:${TAG}
