@@ -99,7 +99,7 @@ env:
   SMTP_USER: leonardo.lastra@gmail.com
   # docker
   DOCKER_USERNAME: tcero76
-  MANAGER_IP: 209.97.147.17
+  MANAGER_IP: 68.183.145.66
 jobs:
   terraform:
     name: Terraform Apply
@@ -171,6 +171,7 @@ jobs:
   swarm:
     name: Update Docker Swarm Services
     runs-on: ubuntu-latest
+    needs: docker
     steps:
       - name: Checkout repo
         uses: actions/checkout@v3
