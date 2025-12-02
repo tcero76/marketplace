@@ -29,6 +29,11 @@ services:
       dockerfile: deploy/Dockerfile
       context: ./front
       target: ${PROFILE}
+      args:
+        VITE_HOST: "http://${HOST_EXTERNAL}:${PORT_EXTERNAL}"
+        VITE_WS: "ws://${HOST_EXTERNAL}:${PORT_EXTERNAL}"
+        VITE_CLIENT_ID: "${CLIENT_ID}"
+        VITE_PROFILE: "${PROFILE}"
   solana-service:
     build:
       dockerfile: Dockerfile
