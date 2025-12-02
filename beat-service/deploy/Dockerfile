@@ -37,7 +37,9 @@
     
     WORKDIR /app/beat-service
 
+    USER root
     RUN chown -R app:app /app/beat-service/
+    USER app
     
     COPY --chown=app:app beat-service/ /app/beat-service/
     COPY --chown=app:app rabbitmq/ /app/rabbitmq/
