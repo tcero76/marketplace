@@ -26,8 +26,8 @@ services:
       context: ../../ws-service
   front:
     build:
-      dockerfile: front/deploy/Dockerfile.prod
-      context: .
+      dockerfile: deploy/Dockerfile
+      context: ./front
       target: ${PROFILE}
   solana-service:
     build:

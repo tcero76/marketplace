@@ -1,11 +1,11 @@
 FROM node:24.0.1 AS base
 WORKDIR /app
-COPY front/package*.json ./
+COPY package*.json .
 RUN npm install
 
 FROM base AS dev
 WORKDIR /app
-COPY front/ .
+COPY . .
 EXPOSE 5173
 CMD ["npm", "run", "dev", "--", "--host"]
 
@@ -16,6 +16,6 @@ RUN npm run build
 
 FROM nginx:stable-alpine AS prod
 COPY --from=build /app/dist /usr/share/nginx/html
-COPY front/prod/nginx.conf /etc/nginx/conf.d/default.conf
+COPY deploy/nginx.conf /etc/nginx/conf.d/default.conf
 EXPOSE 80
 CMD ["nginx", "-g", "daemon off;"]
