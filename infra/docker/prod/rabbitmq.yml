@@ -22,8 +22,7 @@ services:
       #     memory: 1G
       #   reservations:
       #     memory: 512M
-  broker-job:
-    image: tcero76/rabbitmq-init
+  rabbitmq-init:
     entrypoint: [ "sh", "/init_rabbitmq.sh" ]
     environment:
       HOST: broker
