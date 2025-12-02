@@ -1,6 +1,3 @@
-# --------------------------------------
-# STAGE 1 - Base (venv + system deps)
-# --------------------------------------
     FROM python:3.9-slim AS base
 
     RUN apt-get update && apt-get install -y --no-install-recommends \

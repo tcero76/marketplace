@@ -166,8 +166,7 @@ jobs:
       - name: Build and push images
         run: |
           export COMPOSE_FILE=infra/docker/build.yml:infra/docker/imagenes.yml
-          docker compose --project-directory "$GITHUB_WORKSPACE" build scrap-service
-          docker compose --project-directory "$GITHUB_WORKSPACE" push scrap-service
+          docker compose --project-directory "$GITHUB_WORKSPACE" build beat-service --push
 
   swarm:
     name: Update Docker Swarm Services
