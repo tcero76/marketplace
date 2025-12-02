@@ -42,7 +42,7 @@
     
     ENV PYTHONPATH="/app"
     
-    COPY beat-service/prod/entrypoint.sh /entrypoint.sh
+    COPY beat-service/deploy/entrypoint.sh /entrypoint.sh
     
     ENTRYPOINT ["/entrypoint.sh"]
     
