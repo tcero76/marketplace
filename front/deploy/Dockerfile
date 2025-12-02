@@ -11,7 +11,7 @@ CMD ["npm", "run", "dev", "--", "--host"]
 
 FROM base AS build
 WORKDIR /app
-COPY front/ .
+COPY . .
 RUN npm run build
 
 FROM nginx:stable-alpine AS prod
