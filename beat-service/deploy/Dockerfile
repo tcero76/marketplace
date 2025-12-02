@@ -39,6 +39,8 @@
 
     USER root
     RUN chown -R app:app /app/beat-service/
+    RUN mkdir -p /tmp/celery && chown -R app:app /tmp/celery
+
     USER app
     
     COPY --chown=app:app beat-service/ /app/beat-service/
