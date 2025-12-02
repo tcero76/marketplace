@@ -37,7 +37,7 @@
     
     WORKDIR /app/beat-service
 
-    RUN chmod -R app:app /app/beat-service/
+    RUN chown -R app:app /app/beat-service/
     
     COPY --chown=app:app beat-service/ /app/beat-service/
     COPY --chown=app:app rabbitmq/ /app/rabbitmq/
