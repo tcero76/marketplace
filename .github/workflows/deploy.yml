@@ -166,12 +166,11 @@ jobs:
       - name: Build and push images
         run: |
           export COMPOSE_FILE=infra/docker/build.yml:infra/docker/imagenes.yml
-          docker compose --project-directory "$GITHUB_WORKSPACE" build rabbitmq-init --push
+          docker compose --project-directory "$GITHUB_WORKSPACE" build rabbitmq-init bff-service scrap-service beat-service recomender-service envoy rabbitmq-init --push
 
   swarm:
     name: Update Docker Swarm Services
     runs-on: ubuntu-latest
-    if: false
     steps:
       - name: Checkout repo
         uses: actions/checkout@v3
