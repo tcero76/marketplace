@@ -2,7 +2,9 @@
 set -eu
 
 USER root
-RUN mkdir -p /tmp/celery && chown -R app:app /tmp/celery
+mkdir -p /tmp/celery
+chown app:app /tmp/celery
+chmod 700 /tmp/celery
 USER app
 
 chmod 700 /tmp/celery
