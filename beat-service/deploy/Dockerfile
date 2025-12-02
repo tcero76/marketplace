@@ -39,8 +39,8 @@
     
     COPY --chown=app:app beat-service/ .
     COPY --chown=app:app rabbitmq/ /app/rabbitmq/
-    
-    ENV PYTHONPATH="/app"
+
+    ENV PYTHONPATH="/app/beat-service"
     
     COPY beat-service/deploy/entrypoint.sh /entrypoint.sh
     
