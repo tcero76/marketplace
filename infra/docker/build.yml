@@ -61,3 +61,8 @@ services:
       dockerfile: Dockerfile
       context: ./infra/docker/config/envoy/
       target: ${PROFILE}
+  broker-job:
+    image: tcero76/rabbitmq-init
+    build:
+      dockerfile: Dockerfile
+      context: infra/docker/config/rabbitmq/
