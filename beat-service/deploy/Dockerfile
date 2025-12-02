@@ -44,7 +44,9 @@
 
     ENV PYTHONPATH="/app"
     
+    USER root
     COPY --chown=app:app beat-service/deploy/entrypoint.sh /entrypoint.sh
     
+    USER app
     ENTRYPOINT ["/entrypoint.sh"]
     
