@@ -1,0 +1,63 @@
+services:
+  bff-service:
+    build:
+      dockerfile: ./bff-service/deploy/Dockerfile
+      context: .
+      target: ${PROFILE}
+  cache-updater-service:
+    build:
+      dockerfile: ./cache-updater/Dockerfile
+      context: .
+  broker-email-service:
+    build:
+      dockerfile: Dockerfile
+      context: ../../broker-email-service
+  db-updater-service:
+    build:
+      dockerfile: Dockerfile
+      context: ../../db-updater
+  db-broker-service:
+    build:
+      dockerfile: Dockerfile
+      context: ../../db-broker-service
+  ws-service:
+    build:
+      dockerfile: Dockerfile
+      context: ../../ws-service
+  front:
+    build:
+      dockerfile: front/deploy/Dockerfile.prod
+      context: .
+      target: ${PROFILE}
+  solana-service:
+    build:
+      dockerfile: Dockerfile
+      context: ../../solana-service
+  scrap-service:
+    build:
+      dockerfile: ./scrap-service/deploy/Dockerfile
+      context: .
+      target: ${PROFILE}
+  beat-service:
+    build:
+      dockerfile: beat-service/deploy/Dockerfile
+      context: .
+      target: ${PROFILE}
+  recomender-service:
+    build:
+      dockerfile: recomender-service/deploy/Dockerfile
+      context: .
+      target: ${PROFILE}
+  mediamtx-service:
+    build:
+      dockerfile: Dockerfile
+      context: ../../mediamtx-service
+  clickhouse:
+    build:
+      context: ./clickhouse/image/
+      dockerfile: Dockerfile
+  envoy:
+    build:
+      dockerfile: ./envoy/Dockerfile
+      context: .
+      target: ${PROFILE}

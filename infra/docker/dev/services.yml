@@ -1,9 +1,5 @@
 services:
   bff-service:
-    build:
-      dockerfile: ./bff-service/deploy/Dockerfile
-      context: .
-      target: ${PROFILE}
     working_dir: /app/bff-service
     command: ["air"]
     volumes:
@@ -44,9 +40,6 @@ services:
       - cache
       - broker
   cache-updater-service:
-    build:
-      dockerfile: Dockerfile
-      context: ../../cache-updater
     working_dir: /app
     profiles:
       - back
@@ -65,9 +58,6 @@ services:
       - cache
       - broker
   broker-email-service:
-    build:
-      dockerfile: Dockerfile
-      context: ../../broker-email-service
     working_dir: /broker-email-service
     profiles:
       - back
@@ -90,9 +80,6 @@ services:
       broker:
         condition: service_healthy
   db-updater-service:
-    build:
-      dockerfile: Dockerfile
-      context: ../../db-updater
     working_dir: /app  
     profiles:
       - back
@@ -111,9 +98,6 @@ services:
       - db
       - broker
   db-broker-service:
-    build:
-      dockerfile: Dockerfile
-      context: ../../db-broker-service
     working_dir: /app  
     profiles:
       - back
@@ -134,9 +118,6 @@ services:
       - db
       - broker
   ws-service:
-    build:
-      dockerfile: Dockerfile
-      context: ../../ws-service
     container_name: ws
     profiles:
       - ws
@@ -156,10 +137,6 @@ services:
     networks:
       - ${NETWORK_APPLICATION}
   front:
-    build:
-      dockerfile: front/deploy/Dockerfile.prod
-      context: .
-      target: dev
     container_name: front
     profiles:
       - front
@@ -181,9 +158,6 @@ services:
     depends_on:
       - envoy
   solana-service:
-    build:
-      dockerfile: Dockerfile
-      context: ../../solana-service
     profiles:
       - solana
     working_dir: /app/
@@ -201,10 +175,6 @@ services:
     networks:
       - ${NETWORK_APPLICATION}
   scrap-service:
-    build:
-      dockerfile: ./scrap-service/deploy/Dockerfile
-      context: .
-      target: dev
     working_dir: /app/scrap-service/
     profiles:
       - scrap
@@ -229,10 +199,6 @@ services:
     networks:
       - ${NETWORK_APPLICATION}
   beat-service:
-    build:
-      dockerfile: beat-service/deploy/Dockerfile
-      context: .
-      target: dev
     working_dir: /app/beat-service/
     profiles:
       - scrap
@@ -256,10 +222,6 @@ services:
     networks:
       - ${NETWORK_APPLICATION}
   recomender-service:
-    build:
-      dockerfile: recomender-service/deploy/Dockerfile
-      context: .
-      target: dev
     working_dir: /app/recomender-service/
     profiles:
       - scrap
@@ -288,9 +250,6 @@ services:
     networks:
       - ${NETWORK_APPLICATION}
   mediamtx-service:
-    build:
-      dockerfile: Dockerfile
-      context: ../../mediamtx-service
     container_name: mediamtx-service
     profiles:
       - media

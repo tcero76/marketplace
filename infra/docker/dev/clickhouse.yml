@@ -1,9 +1,5 @@
 services:
   clickhouse:
-    image: tcero76/clickhouse:${CLICKHOUSE_VERSION}
-    build:
-      context: ../../clickhouse/image/
-      dockerfile: Dockerfile
     container_name: clickhouse
     profiles: ["clickhouse"]
     tty: true

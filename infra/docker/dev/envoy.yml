@@ -1,10 +1,5 @@
 services:
   envoy:
-    image: tcero76/envoy:0.0.0
-    build:
-      dockerfile: ./envoy/Dockerfile
-      context: .
-      target: dev
     container_name: envoy
     profiles:
       - front
