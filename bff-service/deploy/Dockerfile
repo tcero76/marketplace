@@ -27,7 +27,7 @@ COPY --from=builder /app/bff-service .
 
 USER root
 
-RUN mv /app/prod/entrypoint.sh /usr/local/bin/entrypoint.sh && \
+RUN mv /app/deploy/entrypoint.sh /usr/local/bin/entrypoint.sh && \
     chmod +x /usr/local/bin/entrypoint.sh
 
 USER appuser
