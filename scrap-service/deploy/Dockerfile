@@ -44,8 +44,10 @@ FROM mcr.microsoft.com/playwright/python:v1.50.0-noble AS base
   HEALTHCHECK --interval=30s --timeout=5s --start-period=10s \
     CMD python -c "import sys; sys.exit(0)"
   
+  USER root
   COPY scrap-service/deploy/entrypoint.sh /entrypoint.sh
   RUN chmod +x /entrypoint.sh
   
+  USER app
   ENTRYPOINT ["/entrypoint.sh"]
   
