@@ -44,7 +44,7 @@ func (h *BaseHandler) setEncodedCookie(c *echo.Context) error {
 	cookie.Value = encoded
 	cookie.Path = "/"
 	cookie.HttpOnly = true
-	cookie.Secure = true
+	cookie.Secure = false
 	cookie.SameSite = http.SameSiteLaxMode
 	(*c).SetCookie(cookie)
 	return nil
