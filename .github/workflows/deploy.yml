@@ -160,6 +160,7 @@ jobs:
       - name: show merged compose config
         run: |
           export COMPOSE_FILE=infra/docker/build.yml:infra/docker/imagenes.yml
+          export HOST_EXTERNAL=$MANAGER_IP
           echo "Using COMPOSE_FILE: $COMPOSE_FILE"
           docker compose --project-directory "$GITHUB_WORKSPACE" config
 
