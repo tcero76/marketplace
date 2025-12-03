@@ -29,7 +29,7 @@ services:
       - POSTGRES_PORT=${POSTGRES_PORT}
       - POSTGRES_DB=${POSTGRES_DB}
     networks:
-      - ${NETWORK_APPLICATION}
+      - ${NETWORK_APPLICATION:-application}
     secrets:
       - google_oauth2_client_secret
       - client_secret
@@ -46,7 +46,7 @@ services:
     image: tcero76/front:${TAG}
     working_dir: /app
     networks:
-      - ${NETWORK_APPLICATION}
+      - ${NETWORK_APPLICATION:-application}
     deploy:
       mode: replicated
       replicas: 1
@@ -76,7 +76,7 @@ services:
       - CMD_SCRAPY_START_QUEUE=${CMD_SCRAPY_START_QUEUE}
       - CMD_SCRAPY_START_EXCHANGE=${CMD_SCRAPY_START_EXCHANGE}
     networks:
-      - ${NETWORK_APPLICATION}
+      - ${NETWORK_APPLICATION:-application}
   beat-service:
     image: tcero76/beat-service:${TAG}
     working_dir: /app/beat-service
@@ -89,7 +89,7 @@ services:
       - RECOMENDER_QUEUE=${RECOMENDER_QUEUE}
       - SCRAPY_QUEUE=${SCRAPY_QUEUE}
     networks:
-      - ${NETWORK_APPLICATION}
+      - ${NETWORK_APPLICATION:-application}
   # cache-updater-service:
   #   image: tcero76/cache-updater-service:${TAG}
   #   build:
