@@ -1,6 +1,6 @@
 services:
   envoy:
-    image: tcero76/envoy:0.0.0
+    image: tcero76/envoy:${TAG}
     environment:
      - ENVOY_HOST=0.0.0.0
      - ENVOY_PORT=$PORT_EXTERNAL
