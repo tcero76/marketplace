@@ -13,6 +13,7 @@ import { CredencialType, SearchType, type AuthorizationType,
 import { IHttpApi } from './IHttpApi.ts';
 import { setAuthenticated } from '../store/AuthSlice.tsx';
 import { store } from '../store/store.tsx';
+import { v4 as uuidv4 } from 'uuid';
 
 export default class Http implements IHttpApi {
   private _api: AxiosInstance;
@@ -88,7 +89,7 @@ export default class Http implements IHttpApi {
   fetchLoginChallenge =  createAsyncThunk<FetchLoginChallengeType,void, object>(
     '/hydra/oauth2/auth',
     async ():Promise<FetchLoginChallengeType>  => {
-      const stateVerification = crypto.randomUUID();
+      const stateVerification = uuidv4();
       const resp = await axios.get(this.AuthUrl(stateVerification));
       const params = new URLSearchParams(new URL(resp.request.responseURL).search);
       const loginChallenge = params.get("login_challenge") ?? "";
@@ -179,7 +180,6 @@ export default class Http implements IHttpApi {
   }
 
   sendPost(posteo:Posteo):Promise<AxiosResponse<string>> {
-    console.log("🚀 ~ Http ~ sendPost ~ posteo:", posteo)
     return this._api
     .post(`${import.meta.env.VITE_HOST}/bff/usuario/createPost`,
       { ...posteo }
