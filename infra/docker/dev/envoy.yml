@@ -9,7 +9,7 @@ services:
      - ENVOY_HOST=0.0.0.0
      - ENVOY_PORT=$PORT_EXTERNAL
     volumes:
-      - ./envoy/envoy.dev.yaml:/tmpl/envoy.yaml
+      - ./infra/docker/config/envoy/envoy.dev.yaml:/tmpl/envoy.yaml
     ports:
       - $PORT_EXTERNAL:$PORT_EXTERNAL
     networks:
