@@ -13,6 +13,10 @@ type User struct {
 	IDProvider string    `gorm:"type:text"`
 }
 
+func (user User) TableName() string {
+	return "marketplace.users"
+}
+
 type Provider string
 
 const (
