@@ -33,7 +33,7 @@ services:
         VITE_HOST: "http://${HOST_EXTERNAL}:${PORT_EXTERNAL}"
         VITE_WS: "ws://${HOST_EXTERNAL}:${PORT_EXTERNAL}"
         VITE_CLIENT_ID: "${CLIENT_ID}"
-        VITE_PROFILE: "${PROFILE}"
+        VITE_MOCK: ${VITE_MOCK}
   solana-service:
     build:
       dockerfile: Dockerfile
