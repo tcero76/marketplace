@@ -99,7 +99,7 @@ env:
   SMTP_USER: leonardo.lastra@gmail.com
   # docker
   DOCKER_USERNAME: tcero76
-  MANAGER_IP: 159.65.191.166
+  MANAGER_IP: 45.55.255.17
 jobs:
   terraform:
     name: Terraform Apply
@@ -154,12 +154,10 @@ jobs:
         id: vars
         run: echo "VERSION=${GITHUB_REF_NAME}" >> $GITHUB_ENV
 
-      # - name: Print COMPOSE_FILE
-      #   run: echo "$COMPOSE_FILE"
-
       - name: show merged compose config
         run: |
           export COMPOSE_FILE=infra/docker/build.yml:infra/docker/imagenes.yml
+          export HOST_EXTERNAL=$MANAGER_IP
           docker compose --project-directory "$GITHUB_WORKSPACE" config
 
       - name: Build and push images
