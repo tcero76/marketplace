@@ -166,7 +166,7 @@ jobs:
         run: |
           export COMPOSE_FILE=infra/docker/build.yml:infra/docker/imagenes.yml
           export HOST_EXTERNAL=$MANAGER_IP
-          docker compose --project-directory "$GITHUB_WORKSPACE" build rabbitmq-init bff-service scrap-service beat-service recomender-service envoy rabbitmq-init --push
+          docker compose --project-directory "$GITHUB_WORKSPACE" build rabbitmq-init bff-service scrap-service beat-service recomender-service envoy rabbitmq-init front --push
 
   swarm:
     name: Update Docker Swarm Services
