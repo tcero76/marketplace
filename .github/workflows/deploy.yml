@@ -149,8 +149,8 @@ jobs:
           echo "front=false" >> $GITHUB_OUTPUT
           echo "bff=false" >> $GITHUB_OUTPUT
           # Obtener lista de archivos modificados
-          git log --oneline
           CHANGED=$(git diff --name-only HEAD^ HEAD)
+          echo "CHANGED es: $CHANGED"
 
           # Comparar por carpetas
           echo "$CHANGED" | grep "^front/" && echo "front=true" >> $GITHUB_OUTPUT
