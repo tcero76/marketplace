@@ -41,7 +41,7 @@ const LoginModal: React.FC = () => {
         <div className="toast-container position-fixed top-0 end-0 p-3">
             <div id="idToastLogin" className="toast rounded-4 shadow" role="alert" aria-live="assertive" aria-atomic="true" style={{ width: '100%', maxWidth: '500px' }} ref={refToast}>
                     <div className="toast-header" style={{ margin: '3rem 3rem 0rem 3rem', borderBottom: 'none' }}>
-                        <h1 className="me-auto">Sign up for free</h1>
+                        <h1 className="me-auto">Crea cuenta gratis</h1>
                         <button type="button" className="btn-close" aria-label="Close" onClick={onClickClose}></button>
                     </div>
                     <div className="toast-body" style={{ margin: '0rem 3rem 3rem 3rem' }}>
