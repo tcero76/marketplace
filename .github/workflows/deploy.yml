@@ -173,7 +173,7 @@ jobs:
 
       - name: Update tag in manifests
         run: |
-          sed -i "s|image: tcero76/bff-service:.*|image: tcero76/bff-service:${SHA}|g" infra/docker/imagenes.yml
+          sed -i "s|image: tcero76/bff-service:.*|image: tcero76/bff-service:${{ github.sha }}|g" infra/docker/imagenes.yml
 
       - uses: actions/checkout@v4
 
@@ -190,7 +190,7 @@ jobs:
         run: |
           git config user.name "github-actions"
           git config user.email "github-actions@github.com"
-          git commit -am "Update image to ${SHA}"
+          git commit -am "Update image to ${{ github.sha }}"
           git push
 
   build_front:
@@ -207,11 +207,11 @@ jobs:
 
       - name: Update tag in manifests
         run: |
-          sed -i "s|image: tcero76/front:.*|image: tcero76/front:${SHA}|g" infra/docker/imagenes.yml
+          sed -i "s|image: tcero76/front:.*|image: tcero76/front:${{ github.sha }}|g" infra/docker/imagenes.yml
 
       - name: After sed
         run: cat infra/docker/imagenes.yml
-        
+
       - name: Build front
         run: |
           export COMPOSE_FILE=infra/docker/build.yml:infra/docker/imagenes.yml
@@ -226,7 +226,7 @@ jobs:
         run: |
           git config user.name "github-actions"
           git config user.email "github-actions@github.com"
-          git commit -am "Update image to ${SHA}"
+          git commit -am "Update image to ${{ github.sha }}"
           git push
 
   # docker:
