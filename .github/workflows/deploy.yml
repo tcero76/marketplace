@@ -214,10 +214,11 @@ jobs:
         run: |
           export COMPOSE_FILE=infra/docker/build.yml:infra/docker/imagenes.yml
           export HOST_EXTERNAL=$MANAGER_IP
-          docker compose build \
+          docker compose \
             --project-directory ${PWD} \
             --project-name marketplace \
-            front --push
+            build \
+            front --no-cache --push
 
       - name: Commit new tag
         run: |
