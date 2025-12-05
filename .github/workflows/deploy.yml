@@ -368,12 +368,6 @@ jobs:
           scp -o StrictHostKeyChecking=no infra/docker/prod/* \
             root@$MANAGER_IP:/root/docker/
 
-  swarm:
-    name: Deploy stack on Swarm manager
-    needs: environment
-    if: always()
-    runs-on: ubuntu-22.04
-    steps:
       - name: deploy
         run: ssh -o StrictHostKeyChecking=no root@$MANAGER_IP "
             /root/deploy_stack.sh
