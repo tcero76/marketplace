@@ -233,7 +233,6 @@ jobs:
   environment:
     name: Update environment variables on Manager
     runs-on: ubuntu-22.04
-    needs: [build_front, build_bff]
     if: |
       (needs.build_front.result == 'success') ||
       (needs.build_bff.result == 'success')
