@@ -56,7 +56,7 @@ const LoginModal: React.FC = () => {
                             <input type="password" className="form-control rounded-3"
                                 value={password} onChange={e=>setPassword(e.target.value)}
                                 id="floatingPassword" placeholder="Password" />
-                            <label htmlFor="floatingPassword">Password</label>
+                            <label htmlFor="floatingPassword">Clave</label>
                         </div>
                         <button
                             className="w-100 mb-2 btn btn-lg rounded-3 btn-primary"
