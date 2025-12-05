@@ -209,6 +209,9 @@ jobs:
         run: |
           sed -i "s|image: tcero76/front:.*|image: tcero76/front:${SHA}|g" infra/docker/imagenes.yml
 
+      - name: After sed
+        run: cat infra/docker/imagenes.yml
+        
       - name: Build front
         run: |
           export COMPOSE_FILE=infra/docker/build.yml:infra/docker/imagenes.yml
