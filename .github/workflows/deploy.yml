@@ -170,16 +170,19 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
+      - name: Update tag in manifests
+        run: |
+          sed -i "s|image: tcero76/bff-service:.*|image: tcero76/bff-service:${SHA}|g" docker/imagenes.yml
+
       - uses: actions/checkout@v4
       - name: Build bff
         run: |
           export COMPOSE_FILE=infra/docker/build.yml:infra/docker/imagenes.yml
           export HOST_EXTERNAL=$MANAGER_IP
-          docker compose build -t tcero76/bff-service:${{ github.sha }} bff-service --push
-
-      - name: Update tag in manifests
-        run: |
-          sed -i "s|image: tcero76/bff-service:.*|image: tcero76/bff-service:${SHA}|g" docker/imagenes.yml
+          docker compose build \
+            --project-directory ${PWD} \
+            --project-name marketplace \
+            bff-service --push
 
       - name: Commit new tag
         run: |
