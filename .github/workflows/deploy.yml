@@ -194,6 +194,8 @@ jobs:
           git push
 
   build_front:
+    permissions:
+      contents: write
     needs: detect_changed_services
     if: needs.detect_changed_services.outputs.front == 'true'
     runs-on: ubuntu-22.04
