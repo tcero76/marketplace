@@ -175,7 +175,7 @@ jobs:
         run: |
           export COMPOSE_FILE=infra/docker/build.yml:infra/docker/imagenes.yml
           export HOST_EXTERNAL=$MANAGER_IP
-          docker build -t tcero76/bff-service:${{ github.sha }} bff-service --push
+          docker compose build -t tcero76/bff-service:${{ github.sha }} bff-service --push
 
       - name: Update tag in manifests
         run: |
@@ -204,7 +204,7 @@ jobs:
         run: |
           export COMPOSE_FILE=infra/docker/build.yml:infra/docker/imagenes.yml
           export HOST_EXTERNAL=$MANAGER_IP
-          docker build -t tcero76/front:${{ github.sha }} front --push
+          docker compose build -t tcero76/front:${{ github.sha }} front --push
 
       - name: Update tag in manifests
         run: |
