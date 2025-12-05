@@ -164,6 +164,7 @@ jobs:
     if: needs.detect_changed_services.outputs.bff == 'true'
     runs-on: ubuntu-22.04
     steps:
+      - uses: actions/checkout@v4
       - name: Log in to DockerHub
         uses: docker/login-action@v2
         with:
@@ -197,6 +198,7 @@ jobs:
     if: needs.detect_changed_services.outputs.front == 'true'
     runs-on: ubuntu-22.04
     steps:
+      - uses: actions/checkout@v4
       - name: Log in to DockerHub
         uses: docker/login-action@v2
         with:
