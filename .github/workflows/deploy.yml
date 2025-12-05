@@ -1,7 +1,12 @@
 name: Deploy Infrastructure & Services
 
 on:
+  pull_request:
+    branches:
+      - main
   push:
+    branches:
+      - main
     tags:
       - "v*.*.*"
   workflow_dispatch:
@@ -104,7 +109,7 @@ jobs:
   terraform:
     name: Terraform Apply
     if:  false
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     outputs:
       manager_ip: ${{ steps.get_ip.outputs.manager_ip }}
     steps:
@@ -129,47 +134,116 @@ jobs:
         id: get_ip
         run: echo "manager_ip=$(terraform -chdir=terraform output -raw manager_public_ip)" >> $GITHUB_OUTPUT
 
-  docker:
-    name: Build and Push Docker Images
-    runs-on: ubuntu-latest
+  detect_changed_services:
+    runs-on: ubuntu-22.04
+    outputs:
+      front: ${{ steps.detect.outputs.front }}
+      bff: ${{ steps.detect.outputs.bff }}
     steps:
-      - name: Checkout repo
-        uses: actions/checkout@v3
+      - uses: actions/checkout@v4
+      - id: detect
+        run: |
+          # Inicializar flags
+          echo "front=false" >> $GITHUB_OUTPUT
+          echo "bff=false" >> $GITHUB_OUTPUT
+          # Obtener lista de archivos modificados
+          CHANGED=$(git diff --name-only HEAD^ HEAD)
 
-      - name: Set up Docker metadata
-        id: meta
-        uses: docker/metadata-action@v5
-        with:
-          images: mydockerhubuser/api
-          tags: |
-            type=ref,event=tag
+          # Comparar por carpetas
+          echo "$CHANGED" | grep "^front/" && echo "front=true" >> $GITHUB_OUTPUT
+          echo "$CHANGED" | grep "^bff-service/" && echo "bff=true" >> $GITHUB_OUTPUT
 
+  build_bff:
+    permissions:
+      contents: write
+    needs: detect_changed_services
+    if: needs.detect_changed_services.outputs.bff == 'true'
+    runs-on: ubuntu-22.04
+    steps:
       - name: Log in to DockerHub
         uses: docker/login-action@v2
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
-      - name: Set image tag
-        id: vars
-        run: echo "VERSION=${GITHUB_REF_NAME}" >> $GITHUB_ENV
-
-      - name: show merged compose config
+      - uses: actions/checkout@v4
+      - name: Build bff
         run: |
           export COMPOSE_FILE=infra/docker/build.yml:infra/docker/imagenes.yml
           export HOST_EXTERNAL=$MANAGER_IP
-          docker compose --project-directory "$GITHUB_WORKSPACE" config
+          docker build -t tcero76/bff-service:${{ github.sha }} bff-service --push
 
-      - name: Build and push images
+      - name: Update tag in manifests
+        run: |
+          sed -i "s|image: tcero76/bff-service:.*|image: tcero76/bff-service:${SHA}|g" docker/imagenes.yml
+
+      - name: Commit new tag
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+          git commit -am "Update image to ${SHA}"
+          git push
+
+
+  build_front:
+    needs: detect_changed_services
+    if: needs.detect_changed_services.outputs.front == 'true'
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Log in to DockerHub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - uses: actions/checkout@v4
+      - name: Build front
         run: |
           export COMPOSE_FILE=infra/docker/build.yml:infra/docker/imagenes.yml
           export HOST_EXTERNAL=$MANAGER_IP
-          docker compose --project-directory "$GITHUB_WORKSPACE" build rabbitmq-init bff-service scrap-service beat-service recomender-service envoy rabbitmq-init front --push
+          docker build -t myrepo/front:${{ github.sha }} front --push
 
-  swarm:
-    name: Update Docker Swarm Services
-    runs-on: ubuntu-latest
-    needs: docker
+  # docker:
+  #   name: Build and Push Docker Images
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Checkout repo
+  #       uses: actions/checkout@v3
+
+  #     - name: Set up Docker metadata
+  #       id: meta
+  #       uses: docker/metadata-action@v5
+  #       with:
+  #         images: mydockerhubuser/api
+  #         tags: |
+  #           type=ref,event=tag
+
+  #     - name: Log in to DockerHub
+  #       uses: docker/login-action@v2
+  #       with:
+  #         username: ${{ secrets.DOCKER_USERNAME }}
+  #         password: ${{ secrets.DOCKER_PASSWORD }}
+
+  #     - name: Set image tag
+  #       id: vars
+  #       run: echo "VERSION=${GITHUB_REF_NAME}" >> $GITHUB_ENV
+
+  #     - name: show merged compose config
+  #       run: |
+  #         export COMPOSE_FILE=infra/docker/build.yml:infra/docker/imagenes.yml
+  #         export HOST_EXTERNAL=$MANAGER_IP
+  #         docker compose --project-directory "$GITHUB_WORKSPACE" config
+
+  #     - name: Build and push images
+  #       run: |
+  #         export COMPOSE_FILE=infra/docker/build.yml:infra/docker/imagenes.yml
+  #         export HOST_EXTERNAL=$MANAGER_IP
+  #         docker compose --project-directory "$GITHUB_WORKSPACE" build rabbitmq-init bff-service scrap-service beat-service recomender-service envoy rabbitmq-init front --push
+
+  environment:
+    name: Update environment variables on Manager
+    runs-on: ubuntu-22.04
+    needs: detect_changed_services
     steps:
       - name: Checkout repo
         uses: actions/checkout@v3
@@ -289,22 +363,29 @@ jobs:
               && echo '✅ Secret password_insta creado' \
               || echo 'ℹ️ Secret password_insta ya existe, continuando...'
           "
-          
         shell: bash
 
-      - name: Copy docker-compose.yml to manager
-        run: |
-          ssh -o StrictHostKeyChecking=no root@$MANAGER_IP "
-            mkdir -p docker
-          "
-          scp -o StrictHostKeyChecking=no infra/docker/imagenes.yml \
-            root@$MANAGER_IP:/root/docker/imagenes.yml
-          scp -o StrictHostKeyChecking=no infra/docker/prod/* \
-            root@$MANAGER_IP:/root/docker/
+      # - name: Copy docker-compose.yml to manager
+      #   run: |
+      #     ssh -o StrictHostKeyChecking=no root@$MANAGER_IP "
+      #       mkdir -p docker
+      #     "
+      #     scp -o StrictHostKeyChecking=no infra/docker/imagenes.yml \
+      #       root@$MANAGER_IP:/root/docker/imagenes.yml
+      #     scp -o StrictHostKeyChecking=no infra/docker/prod/* \
+      #       root@$MANAGER_IP:/root/docker/
 
-      - name: Deploy stack on Swarm manager
-        run: ssh -o StrictHostKeyChecking=no root@$MANAGER_IP "
-            /root/deploy_stack.sh
-          "
+  # swarm:
+  #   name: Deploy stack on Swarm manager
+  #   needs: [environment, build_front, build_bff]
+  #   if: |
+  #     needs.build_front.result == 'success' ||
+  #     needs.build_bff.result == 'success'
+  #   runs-on: ubuntu-22.04
+  #   steps:
+  #     - name: deploy
+  #       run: ssh -o StrictHostKeyChecking=no root@$MANAGER_IP "
+  #           /root/deploy_stack.sh
+  #         " 
 
 
