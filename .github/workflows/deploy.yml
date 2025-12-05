@@ -201,7 +201,18 @@ jobs:
         run: |
           export COMPOSE_FILE=infra/docker/build.yml:infra/docker/imagenes.yml
           export HOST_EXTERNAL=$MANAGER_IP
-          docker build -t myrepo/front:${{ github.sha }} front --push
+          docker build -t tcero76/front:${{ github.sha }} front --push
+
+      - name: Update tag in manifests
+        run: |
+          sed -i "s|image: tcero76/front:.*|image: tcero76/front:${SHA}|g" docker/imagenes.yml
+
+      - name: Commit new tag
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+          git commit -am "Update image to ${SHA}"
+          git push
 
   # docker:
   #   name: Build and Push Docker Images
@@ -240,130 +251,132 @@ jobs:
   #         export HOST_EXTERNAL=$MANAGER_IP
   #         docker compose --project-directory "$GITHUB_WORKSPACE" build rabbitmq-init bff-service scrap-service beat-service recomender-service envoy rabbitmq-init front --push
 
-  environment:
-    name: Update environment variables on Manager
-    runs-on: ubuntu-22.04
-    needs: detect_changed_services
-    steps:
-      - name: Checkout repo
-        uses: actions/checkout@v3
 
-      - name: Setup SSH
-        uses: webfactory/ssh-agent@v0.9.0
-        with:
-          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
-      - name: Crear archivo .env
-        run: |
-          ssh -o StrictHostKeyChecking=no root@$MANAGER_IP "bash -c 'cat > /root/.env <<EOF
-          POSTGRES_USER=$POSTGRES_USER
-          POSTGRES_HOST=$POSTGRES_HOST
-          POSTGRES_PORT=$POSTGRES_PORT
-          POSTGRES_DB=$POSTGRES_DB
-          POSTGRES_VOLUME=$POSTGRES_VOLUME
-          CLICKHOUSE_VOLUME=$CLICKHOUSE_VOLUME
-          CLICKHOUSE_USER=$CLICKHOUSE_USER
-          RABBITMQ_VERSION=$RABBITMQ_VERSION
-          RABBITMQ_VOLUME=$RABBITMQ_VOLUME
-          HYDRA_VERSION=$HYDRA_VERSION
-          REDIS_VERSION=$REDIS_VERSION
-          CLICKHOUSE_VERSION=$CLICKHOUSE_VERSION
-          HOUSEPLANT_VERSION=${HOUSEPLANT_VERSION}
-          HOST_EXTERNAL=$MANAGER_IP
-          PORT_EXTERNAL=$PORT_EXTERNAL
-          NETWORK_APPLICATION=$NETWORK_APPLICATION
-          BROKER=${BROKER}
-          RABBITMQ_QUEUE=${RABBITMQ_QUEUE}
-          EVT_PAYMENT_COMPLETED_EXCHANGE=${EVT_PAYMENT_COMPLETED_EXCHANGE}
-          EVT_PAYMENT_PERSISTENCE_QUEUE=${EVT_PAYMENT_PERSISTENCE_QUEUE}
-          EVT_USER_REGISTERED_EXCHANGE=${EVT_USER_REGISTERED_EXCHANGE}
-          EVT_USER_REGISTERED_EMAIL_QUEUE=${EVT_USER_REGISTERED_EMAIL_QUEUE}
-          CMD_CHAT_MESSAGE_SEND_EXCHANGE=${CMD_CHAT_MESSAGE_SEND_EXCHANGE}
-          CMD_CHAT_MESSAGE_DELIVERY_QUEUE=${CMD_CHAT_MESSAGE_DELIVERY_QUEUE}
-          CMD_CHAT_MESSAGE_PERSISTENCE_QUEUE=${CMD_CHAT_MESSAGE_PERSISTENCE_QUEUE}
-          RABBITMQ_CHAT_CACHE_UPDATER_QUEUE=${CMD_CHAT_CACHE_UPDATER_QUEUE}
-          CMD_RECOMMENDER_CALCULATE_QUEUE=${CMD_RECOMMENDER_CALCULATE_QUEUE}
-          CMD_RECOMMENDER_CALCULATE_EXCHANGE=${CMD_RECOMMENDER_CALCULATE_EXCHANGE}
-          CMD_SCRAPY_START_QUEUE=${CMD_SCRAPY_START_QUEUE}
-          CMD_SCRAPY_START_EXCHANGE=${CMD_SCRAPY_START_EXCHANGE}
-          PATRONI_ADMIN_HOST=${PATRONI_ADMIN_HOST}
-          PATRONI_ADMIN_DB=${PATRONI_ADMIN_DB}
-          PATRONI_ADMIN_PORT=${PATRONI_ADMIN_PORT}
-          PATRONI_RESTAPI_USERNAME=${PATRONI_RESTAPI_USERNAME}
-          PATRONI_REPLICATION_USERNAME=${PATRONI_REPLICATION_USERNAME}
-          PATRONI_admin_OPTIONS=${PATRONI_admin_OPTIONS}
-          PATRONI_admin_PASSWORD_FILE=/run/secrets/patroni_admin_password
-          PATRONI_SUPERUSER_USERNAME=${PATRONI_SUPERUSER_USERNAME}
-          PATRONI_SUPERUSER_PASSWORD_FILE=/run/secrets/patroni_admin_password
-          PATRONI_RESTAPI_PASSWORD_FILE=/run/secrets/patroni_restapi_password
-          POSTGRES_USER=${POSTGRES_USER}
-          POSTGRES_DB=${POSTGRES_DB}
-          POSTGRES_PORT=${POSTGRES_PORT}
-          POSTGRES_HOST=${POSTGRES_HOST}
-          CLIENT_ID=${CLIENT_ID}
-          CLIENT_SECRET=${CLIENT_SECRET}
-          GOOGLE_OAUTH2_CLIENT_ID=${GOOGLE_OAUTH2_CLIENT_ID}
-          GOOGLE_OAUTH2_CLIENT_SECRET=${GOOGLE_OAUTH2_CLIENT_SECRET}
-          TAG=${TAG}
-          CRON_HOUR=${CRON_HOUR}
-          CRON_MINUTE=${CRON_MINUTE}
-          CMD_SCRAPY_START_QUEUE=${CMD_SCRAPY_START_QUEUE}
-          CMD_SCRAPY_START_EXCHANGE=${CMD_SCRAPY_START_EXCHANGE}
-          TOTAL_POSTS=${TOTAL_POSTS}
-          USERNAME_INSTA=${USERNAME_INSTA}
-          REDIS_HOST=${REDIS_HOST}
-          REDIS_VOLUME=${REDIS_VOLUME}
-          EOF'"
+  # environment:
+  #   name: Update environment variables on Manager
+  #   runs-on: ubuntu-22.04
+  #   needs: detect_changed_services
+  #   steps:
+  #     - name: Checkout repo
+  #       uses: actions/checkout@v3
 
-      - name: Crear secrets en Docker Swarm
-        continue-on-error: true
-        run: |
-          ssh -o StrictHostKeyChecking=no root@$MANAGER_IP "
-            echo '${{ secrets.POSTGRES_PASSWORD }}' | docker secret create postgres_password - \
-              && echo '✅ Secret postgres_password creado' \
-              || echo 'ℹ️ Secret postgres_password ya existe, continuando...'
-          "
-          ssh -o StrictHostKeyChecking=no root@$MANAGER_IP "
-            echo '${{ secrets.CLICKHOUSE_PASSWORD }}' | docker secret create clickhouse_password - \
-              && echo '✅ Secret clickhouse_password creado' \
-              || echo 'ℹ️ Secret clickhouse_password ya existe, continuando...'
-          "
-          ssh -o StrictHostKeyChecking=no root@$MANAGER_IP "
-            echo '${{ secrets.PATRONI_ADMIN_PASSWORD }}' | docker secret create patroni_admin_password - \
-              && echo '✅ Secret patroni_admin_password creado' \
-              || echo 'ℹ️ Secret patroni_admin_password ya existe, continuando...'
-          "
-          ssh -o StrictHostKeyChecking=no root@$MANAGER_IP "
-            echo '${{ secrets.PATRONI_SUPERUSER_PASSWORD }}' | docker secret create patroni_superuser_password - \
-              && echo '✅ Secret patroni_superuser_password creado' \
-              || echo 'ℹ️ Secret patroni_superuser_password ya existe, continuando...'
-          "
-          ssh -o StrictHostKeyChecking=no root@$MANAGER_IP "
-            echo '${{ secrets.PATRONI_RESTAPI_PASSWORD }}' | docker secret create patroni_restapi_password - \
-              && echo '✅ Secret patroni_restapi_password creado' \
-              || echo 'ℹ️ Secret patroni_restapi_password ya existe, continuando...'
-          "
-          ssh -o StrictHostKeyChecking=no root@$MANAGER_IP "
-            echo '${{ secrets.PATRONI_REPLICATION_PASSWORD }}' | docker secret create patroni_replication_password - \
-              && echo '✅ Secret patroni_replication_password creado' \
-              || echo 'ℹ️ Secret patroni_replication_password ya existe, continuando...'
-          "
-          ssh -o StrictHostKeyChecking=no root@$MANAGER_IP "
-            echo '${{ secrets.CLIENT_SECRET }}' | docker secret create client_secret - \
-              && echo '✅ Secret client_secret creado' \
-              || echo 'ℹ️ Secret client_secret ya existe, continuando...'
-          "
-          ssh -o StrictHostKeyChecking=no root@$MANAGER_IP "
-            echo '${{ secrets.GOOGLE_OAUTH2_CLIENT_SECRET }}' | docker secret create google_oauth2_client_secret - \
-              && echo '✅ Secret google_oauth2_client_secret creado' \
-              || echo 'ℹ️ Secret google_oauth2_client_secret ya existe, continuando...'
-          "
-          ssh -o StrictHostKeyChecking=no root@$MANAGER_IP "
-            echo '${{ secrets.PASSWORD_INSTA }}' | docker secret create password_insta - \
-              && echo '✅ Secret password_insta creado' \
-              || echo 'ℹ️ Secret password_insta ya existe, continuando...'
-          "
-        shell: bash
+  #     - name: Setup SSH
+  #       uses: webfactory/ssh-agent@v0.9.0
+  #       with:
+  #         ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+  #     - name: Crear archivo .env
+  #       run: |
+  #         ssh -o StrictHostKeyChecking=no root@$MANAGER_IP "bash -c 'cat > /root/.env <<EOF
+  #         POSTGRES_USER=$POSTGRES_USER
+  #         POSTGRES_HOST=$POSTGRES_HOST
+  #         POSTGRES_PORT=$POSTGRES_PORT
+  #         POSTGRES_DB=$POSTGRES_DB
+  #         POSTGRES_VOLUME=$POSTGRES_VOLUME
+  #         CLICKHOUSE_VOLUME=$CLICKHOUSE_VOLUME
+  #         CLICKHOUSE_USER=$CLICKHOUSE_USER
+  #         RABBITMQ_VERSION=$RABBITMQ_VERSION
+  #         RABBITMQ_VOLUME=$RABBITMQ_VOLUME
+  #         HYDRA_VERSION=$HYDRA_VERSION
+  #         REDIS_VERSION=$REDIS_VERSION
+  #         CLICKHOUSE_VERSION=$CLICKHOUSE_VERSION
+  #         HOUSEPLANT_VERSION=${HOUSEPLANT_VERSION}
+  #         HOST_EXTERNAL=$MANAGER_IP
+  #         PORT_EXTERNAL=$PORT_EXTERNAL
+  #         NETWORK_APPLICATION=$NETWORK_APPLICATION
+  #         BROKER=${BROKER}
+  #         RABBITMQ_QUEUE=${RABBITMQ_QUEUE}
+  #         EVT_PAYMENT_COMPLETED_EXCHANGE=${EVT_PAYMENT_COMPLETED_EXCHANGE}
+  #         EVT_PAYMENT_PERSISTENCE_QUEUE=${EVT_PAYMENT_PERSISTENCE_QUEUE}
+  #         EVT_USER_REGISTERED_EXCHANGE=${EVT_USER_REGISTERED_EXCHANGE}
+  #         EVT_USER_REGISTERED_EMAIL_QUEUE=${EVT_USER_REGISTERED_EMAIL_QUEUE}
+  #         CMD_CHAT_MESSAGE_SEND_EXCHANGE=${CMD_CHAT_MESSAGE_SEND_EXCHANGE}
+  #         CMD_CHAT_MESSAGE_DELIVERY_QUEUE=${CMD_CHAT_MESSAGE_DELIVERY_QUEUE}
+  #         CMD_CHAT_MESSAGE_PERSISTENCE_QUEUE=${CMD_CHAT_MESSAGE_PERSISTENCE_QUEUE}
+  #         RABBITMQ_CHAT_CACHE_UPDATER_QUEUE=${CMD_CHAT_CACHE_UPDATER_QUEUE}
+  #         CMD_RECOMMENDER_CALCULATE_QUEUE=${CMD_RECOMMENDER_CALCULATE_QUEUE}
+  #         CMD_RECOMMENDER_CALCULATE_EXCHANGE=${CMD_RECOMMENDER_CALCULATE_EXCHANGE}
+  #         CMD_SCRAPY_START_QUEUE=${CMD_SCRAPY_START_QUEUE}
+  #         CMD_SCRAPY_START_EXCHANGE=${CMD_SCRAPY_START_EXCHANGE}
+  #         PATRONI_ADMIN_HOST=${PATRONI_ADMIN_HOST}
+  #         PATRONI_ADMIN_DB=${PATRONI_ADMIN_DB}
+  #         PATRONI_ADMIN_PORT=${PATRONI_ADMIN_PORT}
+  #         PATRONI_RESTAPI_USERNAME=${PATRONI_RESTAPI_USERNAME}
+  #         PATRONI_REPLICATION_USERNAME=${PATRONI_REPLICATION_USERNAME}
+  #         PATRONI_admin_OPTIONS=${PATRONI_admin_OPTIONS}
+  #         PATRONI_admin_PASSWORD_FILE=/run/secrets/patroni_admin_password
+  #         PATRONI_SUPERUSER_USERNAME=${PATRONI_SUPERUSER_USERNAME}
+  #         PATRONI_SUPERUSER_PASSWORD_FILE=/run/secrets/patroni_admin_password
+  #         PATRONI_RESTAPI_PASSWORD_FILE=/run/secrets/patroni_restapi_password
+  #         POSTGRES_USER=${POSTGRES_USER}
+  #         POSTGRES_DB=${POSTGRES_DB}
+  #         POSTGRES_PORT=${POSTGRES_PORT}
+  #         POSTGRES_HOST=${POSTGRES_HOST}
+  #         CLIENT_ID=${CLIENT_ID}
+  #         CLIENT_SECRET=${CLIENT_SECRET}
+  #         GOOGLE_OAUTH2_CLIENT_ID=${GOOGLE_OAUTH2_CLIENT_ID}
+  #         GOOGLE_OAUTH2_CLIENT_SECRET=${GOOGLE_OAUTH2_CLIENT_SECRET}
+  #         TAG=${TAG}
+  #         CRON_HOUR=${CRON_HOUR}
+  #         CRON_MINUTE=${CRON_MINUTE}
+  #         CMD_SCRAPY_START_QUEUE=${CMD_SCRAPY_START_QUEUE}
+  #         CMD_SCRAPY_START_EXCHANGE=${CMD_SCRAPY_START_EXCHANGE}
+  #         TOTAL_POSTS=${TOTAL_POSTS}
+  #         USERNAME_INSTA=${USERNAME_INSTA}
+  #         REDIS_HOST=${REDIS_HOST}
+  #         REDIS_VOLUME=${REDIS_VOLUME}
+  #         EOF'"
+
+      # - name: Crear secrets en Docker Swarm
+      #   continue-on-error: true
+      #   run: |
+      #     ssh -o StrictHostKeyChecking=no root@$MANAGER_IP "
+      #       echo '${{ secrets.POSTGRES_PASSWORD }}' | docker secret create postgres_password - \
+      #         && echo '✅ Secret postgres_password creado' \
+      #         || echo 'ℹ️ Secret postgres_password ya existe, continuando...'
+      #     "
+      #     ssh -o StrictHostKeyChecking=no root@$MANAGER_IP "
+      #       echo '${{ secrets.CLICKHOUSE_PASSWORD }}' | docker secret create clickhouse_password - \
+      #         && echo '✅ Secret clickhouse_password creado' \
+      #         || echo 'ℹ️ Secret clickhouse_password ya existe, continuando...'
+      #     "
+      #     ssh -o StrictHostKeyChecking=no root@$MANAGER_IP "
+      #       echo '${{ secrets.PATRONI_ADMIN_PASSWORD }}' | docker secret create patroni_admin_password - \
+      #         && echo '✅ Secret patroni_admin_password creado' \
+      #         || echo 'ℹ️ Secret patroni_admin_password ya existe, continuando...'
+      #     "
+      #     ssh -o StrictHostKeyChecking=no root@$MANAGER_IP "
+      #       echo '${{ secrets.PATRONI_SUPERUSER_PASSWORD }}' | docker secret create patroni_superuser_password - \
+      #         && echo '✅ Secret patroni_superuser_password creado' \
+      #         || echo 'ℹ️ Secret patroni_superuser_password ya existe, continuando...'
+      #     "
+      #     ssh -o StrictHostKeyChecking=no root@$MANAGER_IP "
+      #       echo '${{ secrets.PATRONI_RESTAPI_PASSWORD }}' | docker secret create patroni_restapi_password - \
+      #         && echo '✅ Secret patroni_restapi_password creado' \
+      #         || echo 'ℹ️ Secret patroni_restapi_password ya existe, continuando...'
+      #     "
+      #     ssh -o StrictHostKeyChecking=no root@$MANAGER_IP "
+      #       echo '${{ secrets.PATRONI_REPLICATION_PASSWORD }}' | docker secret create patroni_replication_password - \
+      #         && echo '✅ Secret patroni_replication_password creado' \
+      #         || echo 'ℹ️ Secret patroni_replication_password ya existe, continuando...'
+      #     "
+      #     ssh -o StrictHostKeyChecking=no root@$MANAGER_IP "
+      #       echo '${{ secrets.CLIENT_SECRET }}' | docker secret create client_secret - \
+      #         && echo '✅ Secret client_secret creado' \
+      #         || echo 'ℹ️ Secret client_secret ya existe, continuando...'
+      #     "
+      #     ssh -o StrictHostKeyChecking=no root@$MANAGER_IP "
+      #       echo '${{ secrets.GOOGLE_OAUTH2_CLIENT_SECRET }}' | docker secret create google_oauth2_client_secret - \
+      #         && echo '✅ Secret google_oauth2_client_secret creado' \
+      #         || echo 'ℹ️ Secret google_oauth2_client_secret ya existe, continuando...'
+      #     "
+      #     ssh -o StrictHostKeyChecking=no root@$MANAGER_IP "
+      #       echo '${{ secrets.PASSWORD_INSTA }}' | docker secret create password_insta - \
+      #         && echo '✅ Secret password_insta creado' \
+      #         || echo 'ℹ️ Secret password_insta ya existe, continuando...'
+      #     "
+      #   shell: bash
 
       # - name: Copy docker-compose.yml to manager
       #   run: |
