@@ -142,13 +142,14 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 2
+          fetch-depth: 0
       - id: detect
         run: |
           # Inicializar flags
           echo "front=false" >> $GITHUB_OUTPUT
           echo "bff=false" >> $GITHUB_OUTPUT
           # Obtener lista de archivos modificados
+          git log --oneline
           CHANGED=$(git diff --name-only HEAD^ HEAD)
 
           # Comparar por carpetas
