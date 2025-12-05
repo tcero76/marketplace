@@ -141,6 +141,8 @@ jobs:
       bff: ${{ steps.detect.outputs.bff }}
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - id: detect
         run: |
           # Inicializar flags
@@ -183,7 +185,6 @@ jobs:
           git config user.email "github-actions@github.com"
           git commit -am "Update image to ${SHA}"
           git push
-
 
   build_front:
     needs: detect_changed_services
