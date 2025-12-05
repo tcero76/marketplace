@@ -151,7 +151,6 @@ jobs:
           # Obtener lista de archivos modificados
           CHANGED=$(git diff --name-only HEAD^ HEAD)
 
-
           # Comparar por carpetas
           echo "$CHANGED" | grep "^front/" && echo "front=true" >> $GITHUB_OUTPUT
           echo "$CHANGED" | grep "^bff-service/" && echo "bff=true" >> $GITHUB_OUTPUT
@@ -236,8 +235,8 @@ jobs:
     runs-on: ubuntu-22.04
     needs: [detect_changed_services, build_front, build_bff]
     if: |
-      needs.build_front.result == 'success' ||
-      needs.build_bff.result == 'success'
+      (needs.build_front.result == 'success') ||
+      (needs.build_bff.result == 'success')
     steps:
       - name: Checkout repo
         uses: actions/checkout@v3
