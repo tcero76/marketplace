@@ -62,7 +62,7 @@ const LoginModal: React.FC = () => {
                             className="w-100 mb-2 btn btn-lg rounded-3 btn-primary"
                             onClick={e => onClickSignUp(e)}
                             type="submit">
-                                Sign up
+                                Registrate
                         </button>
                         <small className="text-body-secondary">Si ya tienes cuente clickea
                             <a onClick={e => onClickAuth(e)} href='/#'>acá</a>
