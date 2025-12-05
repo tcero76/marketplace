@@ -150,11 +150,12 @@ jobs:
           echo "bff=false" >> $GITHUB_OUTPUT
           # Obtener lista de archivos modificados
           CHANGED=$(git diff --name-only HEAD^ HEAD)
-          echo "CHANGED es: $CHANGED"
+
 
           # Comparar por carpetas
           echo "$CHANGED" | grep "^front/" && echo "front=true" >> $GITHUB_OUTPUT
           echo "$CHANGED" | grep "^bff-service/" && echo "bff=true" >> $GITHUB_OUTPUT
+          echo "Step finalizado"
 
   build_bff:
     permissions:
