@@ -209,7 +209,6 @@ jobs:
         run: |
           sed -i "s|image: tcero76/front:.*|image: tcero76/front:${SHA}|g" infra/docker/imagenes.yml
 
-      - uses: actions/checkout@v4
       - name: Build front
         run: |
           export COMPOSE_FILE=infra/docker/build.yml:infra/docker/imagenes.yml
