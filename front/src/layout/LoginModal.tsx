@@ -50,7 +50,7 @@ const LoginModal: React.FC = () => {
                             <input type="email" className="form-control rounded-3" id="floatingInput"
                                 value={user} onChange={e=>setUser(e.target.value)}
                             placeholder="name@example.com" />
-                            <label htmlFor="floatingInput">Email address</label>
+                            <label htmlFor="floatingInput">Dirección email</label>
                         </div>
                         <div className="form-floating mb-3">
                             <input type="password" className="form-control rounded-3"
