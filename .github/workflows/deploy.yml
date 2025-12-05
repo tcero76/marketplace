@@ -371,6 +371,7 @@ jobs:
   swarm:
     name: Deploy stack on Swarm manager
     needs: environment
+    if: always()
     runs-on: ubuntu-22.04
     steps:
       - name: deploy
