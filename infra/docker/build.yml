@@ -75,3 +75,7 @@ services:
       dockerfile: Dockerfile
       context: infra/docker/config/hydra/
       target: ${PROFILE}
+  flyway:
+    build:
+      dockerfile: Dockerfile
+      context: flyway/deploy

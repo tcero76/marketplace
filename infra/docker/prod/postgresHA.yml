@@ -124,6 +124,7 @@ services:
             POSTGRES_HOST: ${PATRONI_ADMIN_HOST}
             POSTGRES_PASSWORD_FILE: /run/secrets/patroni_admin_password
             POSTGRES_PORT: ${PATRONI_ADMIN_PORT}
+            URL_EXTERNAL: http://${HOST_EXTERNAL}:${PORT_EXTERNAL}
         secrets:
         - patroni_admin_password
         deploy:
