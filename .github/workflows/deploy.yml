@@ -139,6 +139,8 @@ jobs:
     outputs:
       front: ${{ steps.detect.outputs.front }}
       bff: ${{ steps.detect.outputs.bff }}
+      scrap: ${{ steps.detect.outputs.scrap }}
+      flyway: ${{ steps.detect.outputs.flyway }}
     steps:
       - uses: actions/checkout@v4
         with:
