@@ -229,7 +229,7 @@ jobs:
             --project-directory ${PWD} \
             --project-name marketplace \
             build \
-            ${matrix.service.build_target} \
+            ${{ matrix.service.build_target }} \
             --push
 
       - name: Commit new tag
