@@ -24,3 +24,4 @@ beat/celerybeat-schedule
 **/.terraform/**
 **/terraform.tfstate**
 terraform/.terraform.lock.hcl
+scrap-service/celerybeat-schedule
