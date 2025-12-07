@@ -218,7 +218,7 @@ jobs:
 
       - name: Update tag in manifests
         run: |
-          sed -i "s|image: ${matrix.service.image}:.*|image: ${matrix.service.image}:${{ github.sha }}|g" infra/docker/imagenes.yml
+          sed -i "s|image: ${{ matrix.service.image }}:.*|image: ${{ matrix.service.image }}:${{ github.sha }}|g" infra/docker/imagenes.yml
 
       - name: Build image
         run: |
