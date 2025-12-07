@@ -23,9 +23,9 @@ FROM mcr.microsoft.com/playwright/python:v1.50.0-noble AS base
   COPY scrap-service/ /app/scrap-service/
   COPY rabbitmq/ /app/rabbitmq/
   
-  RUN pip install debugpy watchdog
+  RUN pip install debugpy watchdog watchfiles
   
-   COPY scrap-service/deploy/entrypoint-dev.sh /entrypoint.sh
+  COPY scrap-service/deploy/entrypoint-dev.sh /entrypoint.sh
   RUN chmod +x /entrypoint.sh
   
   ENV PYTHONPATH="/app:${PYTHONPATH}"
@@ -35,7 +35,7 @@ FROM mcr.microsoft.com/playwright/python:v1.50.0-noble AS base
   
   FROM base AS prod
   RUN playwright==1.50.0
-  # Copiar código con propietario seguro
+
   COPY --chown=app:app scrap-service/ /app/scrap-service/
   COPY --chown=app:app rabbitmq/ /app/rabbitmq/
   
