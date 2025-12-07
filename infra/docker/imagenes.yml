@@ -29,3 +29,5 @@ services:
     image: tcero76/rabbitmq-init:${TAG}
   hydra:
     image: tcero76/hydra:${TAG}
+  flyway:
+    image: tcero76/flyway:${TAG}
