@@ -178,7 +178,7 @@ services:
     working_dir: /app/scrap-service/
     profiles:
       - scrap
-    command: [ "celery", "-A", "main", "worker", "--loglevel=debug"]
+    command: ["/entrypoint.sh"]
     container_name: scrap-service
     tty: true
     stdin_open: true
@@ -191,6 +191,7 @@ services:
       - PASSWORD_INSTA=${PASSWORD_INSTA}
       - CMD_SCRAPY_START_QUEUE=${CMD_SCRAPY_START_QUEUE}
       - CMD_SCRAPY_START_EXCHANGE=${CMD_SCRAPY_START_EXCHANGE}
+      - PROFILE=${PROFILE}
     volumes:
       - ./scrap-service:/app/scrap-service
       - ./rabbitmq:/app/rabbitmq
