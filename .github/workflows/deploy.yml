@@ -243,6 +243,7 @@ jobs:
     name: Update environment variables on Manager
     runs-on: ubuntu-22.04
     needs: [build_services]
+    if: ${{ always() && contains(needs.build_services.result, 'success') }}
     steps:
       - name: Checkout repo
         uses: actions/checkout@v3
