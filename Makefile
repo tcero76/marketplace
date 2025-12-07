@@ -91,7 +91,8 @@ buildAll:
 	@docker compose --env-file ${ENVIRONMENTS} build --no-cache
 
 build:
-	@docker compose --env-file ${ENVIRONMENTS} \
+	@docker compose \
+		--env-file ${ENVIRONMENTS} \
 		--project-directory ${PWD} \
 		--project-name marketplace \
 		build $(filter-out $@,$(MAKECMDGOALS)) --no-cache
