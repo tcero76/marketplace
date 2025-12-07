@@ -151,79 +151,91 @@ jobs:
           # Obtener lista de archivos modificados
           CHANGED=$(git diff --name-only HEAD^ HEAD)
 
-          # Comparar por carpetas
           echo "$CHANGED" | grep "^front/" && echo "front=true" >> $GITHUB_OUTPUT
-          if echo "$CHANGED" | grep -qE "^(bff-service/|postgres/|rabbitmq/|config/|loquesea/)/"; then
+          if echo "$CHANGED" | grep -qE "^(bff-service/|postgres/|clickhouse/|redis/|rabbitmq/|config/)/"; then
             echo "bff=true" >> $GITHUB_OUTPUT
           fi
+          if echo "$CHANGED" | grep -qE "^(scrap-service/|rabbitmq/)/"; then
+            echo "scrap=true" >> $GITHUB_OUTPUT
+          fi
+          echo "$CHANGED" | grep "^flyway/" && echo "flyway=true" >> $GITHUB_OUTPUT
           echo "Step finalizado"
+ 
+  build_services:
+    permissions:
+      contents: write
+    needs: detect_changed_services
+    if: >
+      needs.detect_changed_services.outputs.front == 'true' ||
+      needs.detect_changed_services.outputs.bff == 'true' ||
+      needs.detect_changed_services.outputs.scrap == 'true' ||
+      needs.detect_changed_services.outputs.flyway == 'true'
+    runs-on: ubuntu-22.04
+    strategy:
+      matrix:
+        service:
+          - name: front
+            path: front
+            image: tcero76/front
+            build_target: front
+            flag: front
+          - name: bff-service
+            path: bff-service
+            image: tcero76/bff-service
+            build_target: bff-service
+            flag: bff
+          - name: scrap-service
+            path: scrap-service
+            image: tcero76/scrap-service
+            build_target: scrap-service
+            flag: scrap
+          - name: flyway
+            path: flyway
+            image: tcero76/flyway
+            build_target: flyway
+            flag: flyway
+      max-parallel: 1
+      fail-fast: false
 
-# build_services:
-#   permissions:
-#     contents: write
-#   needs: detect_changed_services
-#   if: >
-#     needs.detect_changed_services.outputs.front == 'true' ||
-#     needs.detect_changed_services.outputs.bff == 'true'
-#   runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
-#   strategy:
-#     matrix:
-#       service:
-#         - name: front
-#           path: front
-#           image: tcero76/front
-#           build_target: front
-#           flag: front
-#         - name: bff-service
-#           path: bff-service
-#           image: tcero76/bff-service
-#           build_target: bff-service
-#           flag: bff
+      - name: Saltarse el servicio si no cambió
+        if: needs.detect_changed_services.outputs[matrix.service.flag] != 'true'
+        run: |
+          echo "El servicio ${matrix.service.name} no cambió. Saltando."
+        continue-on-error: false
 
-#     # solo correr los que cambiaron
-#     max-parallel: 1
-#     fail-fast: false
+      - name: Log in to DockerHub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
 
-#   steps:
-#     - uses: actions/checkout@v4
-#       with:
-#         fetch-depth: 0
+      - name: Update tag in manifests
+        run: |
+          sed -i "s|image: ${matrix.service.image}:.*|image: ${matrix.service.image}:${{ github.sha }}|g" infra/docker/imagenes.yml
 
-#     - name: Saltarse el servicio si no cambió
-#       if: needs.detect_changed_services.outputs[matrix.service.flag] != 'true'
-#       run: |
-#         echo "El servicio ${matrix.service.name} no cambió. Saltando."
-#       continue-on-error: false
+      - name: Build image
+        run: |
+          export COMPOSE_FILE=infra/docker/build.yml:infra/docker/imagenes.yml
+          export HOST_EXTERNAL=$MANAGER_IP
+          
+          docker compose \
+            --project-directory ${PWD} \
+            --project-name marketplace \
+            build \
+            ${matrix.service.build_target} \
+            --push
 
-#     - name: Log in to DockerHub
-#       uses: docker/login-action@v2
-#       with:
-#         username: ${{ secrets.DOCKER_USERNAME }}
-#         password: ${{ secrets.DOCKER_PASSWORD }}
-
-#     - name: Update tag in manifests
-#       run: |
-#         sed -i "s|image: ${matrix.service.image}:.*|image: ${matrix.service.image}:${{ github.sha }}|g" infra/docker/imagenes.yml
-
-#     - name: Build image
-#       run: |
-#         export COMPOSE_FILE=infra/docker/build.yml:infra/docker/imagenes.yml
-#         export HOST_EXTERNAL=$MANAGER_IP
-        
-#         docker compose \
-#           --project-directory ${PWD} \
-#           --project-name marketplace \
-#           build \
-#           ${matrix.service.build_target} \
-#           --push
-
-#     - name: Commit new tag
-#       run: |
-#         git config user.name "github-actions"
-#         git config user.email "github-actions@github.com"
-#         git commit -am "Update image to ${{ github.sha }}"
-#         git push
+      - name: Commit new tag
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+          git commit -am "Update image to ${{ github.sha }}"
+          git push
 
   # build_bff:
   #   permissions:
@@ -302,10 +314,7 @@ jobs:
   environment:
     name: Update environment variables on Manager
     runs-on: ubuntu-22.04
-    needs: [detect_changed_services, build_front, build_bff]
-    if: >
-      always() &&
-      (needs.build_front.result == 'success' || needs.build_bff.result == 'success')
+    needs: [detect_changed_services]
     steps:
       - name: Checkout repo
         uses: actions/checkout@v3
