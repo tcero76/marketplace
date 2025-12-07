@@ -30,4 +30,4 @@ services:
   hydra:
     image: tcero76/hydra:${TAG}
   flyway:
-    image: tcero76/flyway:${TAG}
+    image: tcero76/flyway:2f51090ea554e9243e74609954f84ef003bb6d50
