@@ -205,7 +205,7 @@ jobs:
           fetch-depth: 0
 
       - name: Saltarse el servicio si no cambió
-        if: needs.detect_changed_services.outputs[matrix.service.flag] != 'true'
+        if: ${{ needs.detect_changed_services.outputs[ matrix.service.flag ] != 'true' }}
         run: |
           echo "El servicio ${matrix.service.name} no cambió. Saltando."
         continue-on-error: false
