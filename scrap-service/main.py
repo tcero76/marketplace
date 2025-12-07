@@ -78,6 +78,7 @@ def run_modelo_spider():
     chain(
         # run_insta.s().set(queue=SCRAPY_QUEUE),
         obtener_cookies.s().set(queue=SCRAPY_QUEUE),
+        run_modelos.s().set(queue=SCRAPY_QUEUE),
         run_modelo.s().set(queue=SCRAPY_QUEUE),
         ejecutar_funcion_postgres.s().set(queue=SCRAPY_QUEUE)
     ).apply_async()

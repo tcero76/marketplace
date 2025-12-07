@@ -27,9 +27,12 @@ class ModelosSpider(scrapy.Spider):
         if match:
             total = int(match.group(1))
         print(f"El total es: {total}")
-        total = int(os.getenv("TOTAL_POSTS", total))
+        if (os.getenv("PROFILE")=="dev"):
+            total=20
+        else:
+            total = int(os.getenv("TOTAL_POSTS", total))
         step = 5
-        for skip in range(0, total, step):
+        for skip in range(0, 20, step):
             url = f"{base_url}?skip={skip}&total={total}"
             yield response.follow(url=url, headers=self.headers, callback=self.parse, priority=-skip)
 
