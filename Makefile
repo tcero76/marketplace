@@ -94,7 +94,7 @@ build:
 	@docker compose --env-file ${ENVIRONMENTS} \
 		--project-directory ${PWD} \
 		--project-name marketplace \
-		build $(filter-out $@,$(MAKECMDGOALS)) --no-cache --p
+		build $(filter-out $@,$(MAKECMDGOALS)) --no-cache
 
 migra:
 	@docker run --env-file ${ENVIRONMENTS} --network ${NETWORK_APPLICATION} --rm -v ./postgres/migrations/sql:/flyway/sql flyway/flyway:latest-alpine \
