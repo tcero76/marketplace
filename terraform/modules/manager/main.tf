@@ -31,7 +31,7 @@ resource "digitalocean_droplet" "swarm_manager" {
     type        = "ssh"
     user        = "root"
     host        = self.ipv4_address
-    private_key = file(var.ssh_private_key)
+    private_key = var.ssh_private_key
   }
 
   user_data = templatefile("${path.module}/scripts/install_docker_manager.sh.tmpl", {

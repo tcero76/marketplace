@@ -28,5 +28,5 @@ variable "overlay_network" {
 }
 
 variable "ssh_private_key" {
-  default = "~/.ssh/id_rsa"
+  sensitive = true
 }
