@@ -108,6 +108,8 @@ jobs:
   terraform:
     name: Terraform Apply
     runs-on: ubuntu-22.04
+    env:
+      DIGITALOCEAN_TOKEN: ${{ secrets.DIGITALOCEAN_TOKEN }}
     outputs:
       manager_ip: ${{ steps.get_ip.outputs.manager_ip }}
     steps:
