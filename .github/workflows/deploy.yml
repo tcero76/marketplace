@@ -104,11 +104,9 @@ env:
   SMTP_USER: leonardo.lastra@gmail.com
   # docker
   DOCKER_USERNAME: tcero76
-  MANAGER_IP: 142.93.189.253
 jobs:
   terraform:
     name: Terraform Apply
-    if:  false
     runs-on: ubuntu-22.04
     outputs:
       manager_ip: ${{ steps.get_ip.outputs.manager_ip }}
@@ -166,13 +164,15 @@ jobs:
   build_services:
     permissions:
       contents: write
-    needs: detect_changed_services
+    needs: [detect_changed_services,terraform]
     if: >
       needs.detect_changed_services.outputs.front == 'true' ||
       needs.detect_changed_services.outputs.bff == 'true' ||
       needs.detect_changed_services.outputs.scrap == 'true' ||
       needs.detect_changed_services.outputs.flyway == 'true'
     runs-on: ubuntu-22.04
+    env:
+      MANAGER_IP: ${{ needs.terraform.outputs.manager_ip }}
     strategy:
       matrix:
         service:
@@ -242,7 +242,9 @@ jobs:
   environment:
     name: Update environment variables on Manager
     runs-on: ubuntu-22.04
-    needs: [build_services]
+    needs: [build_services,terraform]
+    env:
+      MANAGER_IP: ${{ needs.terraform.outputs.manager_ip }}
     if: ${{ always() }}
     steps:
       - name: Checkout repo
