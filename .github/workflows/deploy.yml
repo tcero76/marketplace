@@ -135,8 +135,9 @@ jobs:
       - name: Get Swarm Manager IP
         id: get_ip
         run: |
-          IP=$(terraform -chdir=terraform output -raw manager_public_ip | tr -d '\n' )
+          IP=$(terraform -chdir=terraform output manager_public_ip 2>/dev/null | head -n 1 | tr -d '[:space:]')
           echo "manager_ip=$IP" >> $GITHUB_OUTPUT
+
 
   detect_changed_services:
     runs-on: ubuntu-22.04
