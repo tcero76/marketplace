@@ -110,6 +110,7 @@ jobs:
     runs-on: ubuntu-22.04
     env:
       DIGITALOCEAN_TOKEN: ${{ secrets.DIGITALOCEAN_TOKEN }}
+      TF_TOKEN_app_terraform_io: ${{ secrets.TF_API_TOKEN }}
       TF_VAR_ssh_private_key: ${{ secrets.SSH_PRIVATE_KEY }}
     outputs:
       manager_ip: ${{ steps.get_ip.outputs.manager_ip }}
