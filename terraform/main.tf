@@ -1,4 +1,10 @@
 terraform {
+  cloud {
+    organization = "Sugarfever"
+    workspaces {
+      name = "Sugarfever"
+    }
+  }
   required_providers {
     digitalocean = {
       source  = "digitalocean/digitalocean"
