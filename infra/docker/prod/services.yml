@@ -8,8 +8,8 @@ services:
       - PORT_EXTERNAL=${PORT_EXTERNAL}
       - HOST_EXTERNAL=${HOST_EXTERNAL}
       - RedirectURL=/bff/callback
-      - HYDRA_ADMIN_URL=http://hydra:4445
-      - HYDRA_PUBLIC_URL=http://hydra:4444
+      - HYDRA_ADMIN_URL=${PROTOCOL_EXTERNAL}://hydra:4445
+      - HYDRA_PUBLIC_URL=${PROTOCOL_EXTERNAL}://hydra:4444
       - CLIENT_ID=${CLIENT_ID}
       - CLIENT_SECRET=${CLIENT_SECRET}
       - CLICKHOUSE_HOST=clickhouse
@@ -267,7 +267,7 @@ services:
   #   volumes:
   #     - ../../../mediamtx-service:/app
   #   environment:
-  #     - HYDRA_PUBLIC_URL=http://hydra:4444
+  #     - HYDRA_PUBLIC_URL=${PROTOCOL_EXTERNAL}://hydra:4444
   #     - TIME_SEC_WAIT_RTMP_CONECTION=60
   #     - PORT=3001
   #   networks:

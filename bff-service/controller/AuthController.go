@@ -133,7 +133,6 @@ func LogoutHandler(authCacheService services.IAuthCacheService) echo.HandlerFunc
 func RefreshTokenHandler(authCacheService services.IAuthCacheService) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		log.Info("RefreshTokenHandler called")
-		redirect := "http://" + os.Getenv("HOST_EXTERNAL") + ":" + os.Getenv("PORT_EXTERNAL") + os.Getenv("RedirectURL")
 		sessionData := c.Get("session_data").(*model.SessionData)
 		log.Debug("Session Data: ", sessionData)
 		conf := &oauth2.Config{
@@ -143,7 +142,7 @@ func RefreshTokenHandler(authCacheService services.IAuthCacheService) echo.Handl
 				AuthURL:  os.Getenv("HYDRA_PUBLIC_URL") + "/oauth2/auth",
 				TokenURL: os.Getenv("HYDRA_PUBLIC_URL") + "/oauth2/token",
 			},
-			RedirectURL: redirect,
+			RedirectURL: os.Getenv("REDIRECT_URL"),
 			Scopes:      []string{"openid", "offline_access", "mediamtx:stream"},
 		}
 		log.Debug("Usando el siguiente Access Token: ", sessionData.AccessToken)

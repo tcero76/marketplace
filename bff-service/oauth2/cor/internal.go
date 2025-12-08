@@ -90,11 +90,10 @@ func (b *InternalAuth) Consent(ctx context.Context, consentChallenge string) (st
 }
 
 func (b *InternalAuth) Callback(code string, ctx context.Context) *oauth2.Token {
-	var redirect = "http://" + os.Getenv("HOST_EXTERNAL") + ":" + os.Getenv("PORT_EXTERNAL") + os.Getenv("RedirectURL")
 	conf := &oauth2.Config{
 		ClientID:     os.Getenv("CLIENT_ID"),
 		ClientSecret: os.Getenv("CLIENT_SECRET"),
-		RedirectURL:  redirect,
+		RedirectURL:  os.Getenv("REDIRECT_URL"),
 		Endpoint: oauth2.Endpoint{
 			AuthURL:  os.Getenv("HYDRA_PUBLIC_URL") + "/oauth2/auth",
 			TokenURL: os.Getenv("HYDRA_PUBLIC_URL") + "/oauth2/token",

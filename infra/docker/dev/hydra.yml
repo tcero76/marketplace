@@ -12,9 +12,9 @@ services:
     command: serve all --dev
     environment:
       - DSN=postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:5432/${POSTGRES_DB}?sslmode=disable&options=-c%20search_path%3Dhydra
-      - URLS_SELF_ISSUER=http://${HOST_EXTERNAL}:${PORT_EXTERNAL}/hydra
-      - URLS_LOGIN=http://${HOST_EXTERNAL}:${PORT_EXTERNAL}/login 
-      - URLS_CONSENT=http://${HOST_EXTERNAL}:${PORT_EXTERNAL}/bff/consent
+      - URLS_SELF_ISSUER=${PROTOCOL_EXTERNAL}://${HOST_EXTERNAL}:${PORT_EXTERNAL}/hydra
+      - URLS_LOGIN=${PROTOCOL_EXTERNAL}://${HOST_EXTERNAL}:${PORT_EXTERNAL}/login 
+      - URLS_CONSENT=${PROTOCOL_EXTERNAL}://${HOST_EXTERNAL}:${PORT_EXTERNAL}/bff/consent
       - SECRETS_SYSTEM=some_secret_key_system
       - TTL_ACCESS_TOKEN=1m
       - TTL_REFRESH_TOKEN=720h

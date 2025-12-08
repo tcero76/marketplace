@@ -19,9 +19,9 @@ services:
       - PORT=3000
       - PORT_EXTERNAL=${PORT_EXTERNAL}
       - HOST_EXTERNAL=${HOST_EXTERNAL}
-      - RedirectURL=/bff/callback
-      - HYDRA_ADMIN_URL=http://hydra:4445
-      - HYDRA_PUBLIC_URL=http://hydra:4444
+      - REDIRECT_URL=${PROTOCOL_EXTERNAL}://${HOST_EXTERNAL}:${PORT_EXTERNAL}/bff/callback
+      - HYDRA_ADMIN_URL=${PROTOCOL_EXTERNAL}://hydra:4445
+      - HYDRA_PUBLIC_URL=${PROTOCOL_EXTERNAL}://hydra:4444
       - CLIENT_ID=${CLIENT_ID}
       - CLIENT_SECRET=${CLIENT_SECRET}
       - CLICKHOUSE_HOST=clickhouse
@@ -145,8 +145,8 @@ services:
     tty: true
     stdin_open: true
     environment:
-      - VITE_HOST=http://${HOST_EXTERNAL}:${PORT_EXTERNAL}
-      - VITE_WS=ws://${HOST_EXTERNAL}:${PORT_EXTERNAL}
+      - VITE_HOST=${PROTOCOL_EXTERNAL}://${HOST_EXTERNAL}:${PORT_EXTERNAL}
+      - VITE_WS=${PROTOCOL_WS_EXTERNAL}://${HOST_EXTERNAL}:${PORT_EXTERNAL}
       - VITE_CLIENT_ID=${CLIENT_ID}
       - VITE_MOCK=${VITE_MOCK}
     ports:
@@ -259,7 +259,7 @@ services:
     volumes:
       - ../../mediamtx-service:/app
     environment:
-      - HYDRA_PUBLIC_URL=http://hydra:4444
+      - HYDRA_PUBLIC_URL=${PROTOCOL_EXTERNAL}://hydra:4444
       - TIME_SEC_WAIT_RTMP_CONECTION=60
       - PORT=3001
     networks:

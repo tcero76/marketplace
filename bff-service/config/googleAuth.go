@@ -9,7 +9,7 @@ import (
 
 func InitGoogleAuth() *oauth2.Config {
 	return &oauth2.Config{
-		RedirectURL:  os.Getenv("RedirectURL"),
+		RedirectURL:  os.Getenv("REDIRECT_URL"),
 		ClientID:     os.Getenv("GOOGLE_OAUTH2_CLIENT_ID"),
 		ClientSecret: os.Getenv("GOOGLE_OAUTH2_CLIENT_SECRET"),
 		Scopes:       []string{"https://www.googleapis.com/auth/userinfo.email"},

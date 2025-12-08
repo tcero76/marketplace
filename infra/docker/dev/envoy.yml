@@ -5,12 +5,16 @@ services:
       - front
     tty: true
     stdin_open: true
+    entrypoint: envoy -c /etc/envoy/envoy.yaml
     environment:
      - ENVOY_HOST=0.0.0.0
      - ENVOY_PORT=$PORT_EXTERNAL
     volumes:
-      - ./infra/docker/config/envoy/envoy.dev.yaml:/tmpl/envoy.yaml
+      - ./infra/docker/config/envoy/envoy.dev.yaml:/etc/envoy/envoy.yaml
+      - ./infra/docker/config/envoy/fullchain.pem:/etc/envoy/certs/fullchain.pem
+      - ./infra/docker/config/envoy/privkey.pem:/etc/envoy/certs/privkey.pem
     ports:
       - $PORT_EXTERNAL:$PORT_EXTERNAL
+      - 443:443
     networks:
       - ${NETWORK_APPLICATION}
