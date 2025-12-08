@@ -172,10 +172,13 @@ jobs:
       contents: write
     needs: [detect_changed_services,terraform]
     if: >
-      needs.detect_changed_services.outputs.front == 'true' ||
-      needs.detect_changed_services.outputs.bff == 'true' ||
-      needs.detect_changed_services.outputs.scrap == 'true' ||
-      needs.detect_changed_services.outputs.flyway == 'true'
+      success() &&
+      (
+        needs.detect_changed_services.outputs.front == 'true' ||
+        needs.detect_changed_services.outputs.bff == 'true' ||
+        needs.detect_changed_services.outputs.scrap == 'true' ||
+        needs.detect_changed_services.outputs.flyway == 'true'
+      )
     runs-on: ubuntu-22.04
     env:
       MANAGER_IP: ${{ needs.terraform.outputs.manager_ip }}
