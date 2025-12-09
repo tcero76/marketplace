@@ -131,11 +131,18 @@ jobs:
         env:
           DO_SPACES_KEY: ${{ secrets.DO_SPACES_KEY }}
           DO_SPACES_SECRET: ${{ secrets.DO_SPACES_SECRET }}
+        
+      - name: depurar
+        id: debug
+        run: |
+          echo "El valor es: $(terraform -chdir=terraform output -raw manager_public_ip)"
 
       - name: Get Swarm Manager IP
         id: get_ip
         run: |
-          echo "manager_ip=$(terraform -chdir=terraform output -raw manager_public_ip)" >> $GITHUB_OUTPUT
+          manager_ip="$(terraform -chdir=terraform output -raw manager_public_ip | tr -d '\n')"
+          { echo "manager_ip=$manager_ip" } >> "$GITHUB_OUTPUT"
+
 
   detect_changed_services:
     runs-on: ubuntu-22.04
