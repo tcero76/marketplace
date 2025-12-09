@@ -160,7 +160,7 @@ jobs:
       - id: detect
         run: |
           # Inicializar flags
-          echo "front=false" >> $GITHUB_OUTPUT
+          echo "front=true" >> $GITHUB_OUTPUT
           echo "bff=false" >> $GITHUB_OUTPUT
           # Obtener lista de archivos modificados
           git fetch --tags
@@ -170,9 +170,8 @@ jobs:
           echo "Último deploy: $LAST_DEPLOYED"
           echo "Commit actual: $CURRENT"
           CHANGED=$(git diff --name-only $LAST_DEPLOYED $CURRENT)
-          # CHANGED=$(git diff --name-only HEAD^ HEAD)
 
-          echo "$CHANGED" | grep "^front/" && echo "front=true" >> $GITHUB_OUTPUT
+          # echo "$CHANGED" | grep "^front/" && echo "front=true" >> $GITHUB_OUTPUT
           if echo "$CHANGED" | grep -qE "^(bff-service/|postgres/|clickhouse/|redis/|rabbitmq/|config/)/"; then
             echo "bff=true" >> $GITHUB_OUTPUT
           fi
