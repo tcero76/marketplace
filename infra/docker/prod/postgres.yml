@@ -33,10 +33,6 @@ services:
       #   reservations:
       #     memory: 512M
   flyway:
-    image: tcero76/flyway
-    build:
-      dockerfile: Dockerfile
-      context: ../../../postgres/migrations/
     environment:
      POSTGRES_USER: ${POSTGRES_USER}
      POSTGRES_DB: ${POSTGRES_DB}
@@ -53,8 +49,6 @@ services:
           - node.hostname == swarm-manager
     networks:
       - ${NETWORK_APPLICATION:-application}
-    depends_on:
-      - db
 volumes:
   postgres:
 secrets:
