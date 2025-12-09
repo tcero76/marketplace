@@ -163,7 +163,14 @@ jobs:
           echo "front=false" >> $GITHUB_OUTPUT
           echo "bff=false" >> $GITHUB_OUTPUT
           # Obtener lista de archivos modificados
-          CHANGED=$(git diff --name-only HEAD^ HEAD)
+          git fetch --tags
+          LAST_DEPLOYED=$(git rev-parse deploy-prod)
+          CURRENT=$(git rev-parse HEAD)
+
+          echo "Último deploy: $LAST_DEPLOYED"
+          echo "Commit actual: $CURRENT"
+          CHANGED=$(git diff --name-only $LAST_DEPLOYED $CURRENT)
+          # CHANGED=$(git diff --name-only HEAD^ HEAD)
 
           echo "$CHANGED" | grep "^front/" && echo "front=true" >> $GITHUB_OUTPUT
           if echo "$CHANGED" | grep -qE "^(bff-service/|postgres/|clickhouse/|redis/|rabbitmq/|config/)/"; then
@@ -260,6 +267,8 @@ jobs:
     name: Update environment variables on Manager
     runs-on: ubuntu-22.04
     needs: [build_services,terraform]
+    permissions:
+      contents: write
     env:
       MANAGER_IP: ${{ needs.terraform.outputs.manager_ip }}
     if: ${{ always() }}
@@ -399,6 +408,11 @@ jobs:
       - name: deploy
         run: ssh -o StrictHostKeyChecking=no root@$MANAGER_IP "
             /root/deploy_stack.sh
-          " 
+          "
+          echo "Desplegado"
 
+      - name: Mark deployed commit
+        run: |
+          git tag -f deploy-prod HEAD
+          git push origin deploy-prod --force
 
