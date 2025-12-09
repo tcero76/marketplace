@@ -122,7 +122,7 @@ jobs:
         uses: hashicorp/setup-terraform@v2
         with:
           terraform_version: 1.7.0
-
+          terraform_wrapper: false
       - name: Terraform Init
         run: terraform -chdir=terraform init
 
@@ -140,8 +140,8 @@ jobs:
       - name: Get Swarm Manager IP
         id: get_ip
         run: |
-          manager_ip="$(terraform -chdir=terraform output -raw manager_public_ip | tr -d '\n')"
-          { echo "manager_ip=$manager_ip" } >> "$GITHUB_OUTPUT"
+          manager_ip=$(terraform -chdir=terraform output -raw manager_public_ip)
+          echo "manager_ip=$manager_ip" >> "$GITHUB_OUTPUT"
 
 
   detect_changed_services:
