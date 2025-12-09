@@ -69,7 +69,6 @@ const LoginModal: React.FC = () => {
                             <a onClick={e => onClickAuth(e)} href='/#'>acá</a>
                             </small>
                         <hr className="my-4" />
-                        <h2 className="fs-5 fw-bold mb-3">O usar un tercero</h2>
                         <a className="w-100 py-2 mb-2 btn btn-outline-primary rounded-3"
                             onClick={e => onClickAuthGoogle(e)} href='/#'>
                             Registrate con Google
