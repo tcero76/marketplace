@@ -14,5 +14,5 @@ flyway -url="jdbc:postgresql://${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}"
   -schemas=marketplace,scrap \
   -locations=filesystem:/flyway/sql \
   -connectRetries=10 \
-  -placeholders.HOST_EXTERNAL=${HOST_EXTERNAL} \
+  -placeholders.URL_EXTERNAL=${URL_EXTERNAL} \
   migrate

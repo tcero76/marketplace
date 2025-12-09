@@ -1,4 +1,4 @@
-FROM flyway/flyway:latest-alpine
+FROM flyway/flyway:latest-alpine as prod
 
 COPY ./deploy/entrypoint.sh /entrypoint.sh
 
