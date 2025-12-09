@@ -104,6 +104,8 @@ env:
   SMTP_USER: leonardo.lastra@gmail.com
   # docker
   DOCKER_USERNAME: tcero76
+  PROTOCOL_EXTERNAL: http
+  PROTOCOL_WS_EXTERNAL: ws
 jobs:
   terraform:
     name: Terraform Apply
@@ -330,6 +332,8 @@ jobs:
           USERNAME_INSTA=${USERNAME_INSTA}
           REDIS_HOST=${REDIS_HOST}
           REDIS_VOLUME=${REDIS_VOLUME}
+          PROTOCOL_EXTERNAL=${PROTOCOL_EXTERNAL}
+          PROTOCOL_WS_EXTERNAL=${PROTOCOL_WS_EXTERNAL}
           EOF'"
 
       - name: Crear secrets en Docker Swarm
