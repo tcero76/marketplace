@@ -50,7 +50,7 @@ tfapply:
 	terraform -chdir=./terraform/ apply -auto-approve
 
 tfdestroy:
-	terraform -chdir=./terraform/ destroy -auto-approve
+	@export TF_VAR_ssh_private_key=$(cat ~/.ssh/id_rsa) terraform -chdir=./terraform/ destroy -auto-approve
 
 tfssh:
 	ssh root@$(terraform -chdir=./terraform/ output -raw manager_public_ip)
