@@ -5,7 +5,6 @@ services:
       - front
     tty: true
     stdin_open: true
-    entrypoint: envoy -c /etc/envoy/envoy.yaml
     environment:
      - ENVOY_HOST=0.0.0.0
      - ENVOY_PORT=$PORT_EXTERNAL
