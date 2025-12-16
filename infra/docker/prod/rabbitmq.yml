@@ -16,12 +16,11 @@ services:
           - node.hostname == swarm-manager
       restart_policy:
         condition: on-failure
-      # resources:
-      #   limits:
-      #     cpus: "1"
-      #     memory: 1G
-      #   reservations:
-      #     memory: 512M
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
   rabbitmq-init:
     image: tcero76/rabbitmq-init:${TAG}
     entrypoint: [ "sh", "/init_rabbitmq.sh" ]
@@ -50,3 +49,6 @@ services:
       placement:
         constraints:
           - node.hostname == swarm-manager
+    depends_on:
+      broker:
+        condition: service_healthy

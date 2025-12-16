@@ -34,7 +34,7 @@ services:
       - PROFILE=${PROFILE}
       - REDIS_HOST=${REDIS_HOST}
     networks:
-      - ${NETWORK_APPLICATION}
+      - ${NETWORK_APPLICATION:-application}
     depends_on:
       - db
       - cache
@@ -51,9 +51,9 @@ services:
       - BROKER=${BROKER}
       - RABBITMQ_CHAT_CACHE_UPDATER_QUEUE=${RABBITMQ_CHAT_CACHE_UPDATER_QUEUE}
     networks:
-      - ${NETWORK_APPLICATION}
+      - ${NETWORK_APPLICATION:-application}
     volumes:
-      - ../../cache-updater:/app
+      - ./cache-updater:/app
     depends_on:
       - cache
       - broker
@@ -62,6 +62,7 @@ services:
     profiles:
       - back
     container_name: brokerEmail
+    command: ["air"]
     stdin_open: true
     tty: true
     environment:
@@ -71,11 +72,15 @@ services:
       - SMTP_PORT=${SMTP_PORT}
       - SMTP_USER=${SMTP_USER}
       - SMTP_PASS=${SMTP_PASS}
+      - HOST=broker
+      - PORT=5672
     networks:
-      - ${NETWORK_APPLICATION}
+      - ${NETWORK_APPLICATION:-application}
     volumes:
-      - ../../broker-email-service:/broker-email-service
-      - ../../rabbitmq:/rabbitmq
+      - ./broker-email-service:/broker-email-service
+      - ./rabbitmq:/rabbitmq
+      - ./config:/config
+      - ./postgres:/postgres
     depends_on:
       broker:
         condition: service_healthy
@@ -91,9 +96,9 @@ services:
       - BROKER=${BROKER}
       - CMD_CHAT_MESSAGE_PERSISTENCE_QUEUE=${CMD_CHAT_MESSAGE_PERSISTENCE_QUEUE}
     networks:
-      - ${NETWORK_APPLICATION}
+      - ${NETWORK_APPLICATION:-application}
     volumes:
-      - ../../db-updater:/app
+      - ./db-updater:/app
     depends_on:
       - db
       - broker
@@ -110,10 +115,10 @@ services:
       - EVT_USER_REGISTERED_EXCHANGE=${EVT_USER_REGISTERED_EXCHANGE}
       - BROKER=${BROKER}
     networks:
-      - ${NETWORK_APPLICATION}
+      - ${NETWORK_APPLICATION:-application}
     volumes:
-      - ../../db-broker-service:/app
-      - ../../postgres:/postgres
+      - ./db-broker-service:/app
+      - ./postgres:/postgres
     depends_on:
       - db
       - broker
@@ -127,15 +132,15 @@ services:
       - MIX_ENV=dev
       - CMD_CHAT_MESSAGE_DELIVERY_QUEUE=${CMD_CHAT_MESSAGE_DELIVERY_QUEUE}
       - CMD_CHAT_MESSAGE_SEND_EXCHANGE=${CMD_CHAT_MESSAGE_SEND_EXCHANGE}
-      - RABBITMQ_HOST=broker
+      - RABBITMQ_HOST=broker  
     ports:
       - 4000:4000
     volumes:
-      - ../../ws-service:/ws-service
+      - ./ws-service:/ws-service
     depends_on:
       - broker
     networks:
-      - ${NETWORK_APPLICATION}
+      - ${NETWORK_APPLICATION:-application}
   front:
     container_name: front
     profiles:
@@ -154,7 +159,7 @@ services:
     volumes:
       - ./front:/app
     networks:
-      - ${NETWORK_APPLICATION}
+      - ${NETWORK_APPLICATION:-application}
     depends_on:
       - envoy
   solana-service:
@@ -173,7 +178,7 @@ services:
     volumes:
       - ../../solana-service:/app
     networks:
-      - ${NETWORK_APPLICATION}
+      - ${NETWORK_APPLICATION:-application}
   scrap-service:
     working_dir: /app/scrap-service/
     profiles:
@@ -198,7 +203,7 @@ services:
     depends_on:
       - broker
     networks:
-      - ${NETWORK_APPLICATION}
+      - ${NETWORK_APPLICATION:-application}
   beat-service:
     working_dir: /app/beat-service/
     profiles:
@@ -221,7 +226,7 @@ services:
       - broker
       - scrap-service
     networks:
-      - ${NETWORK_APPLICATION}
+      - ${NETWORK_APPLICATION:-application}
   recomender-service:
     working_dir: /app/recomender-service/
     profiles:
@@ -249,7 +254,7 @@ services:
       - broker
       - db
     networks:
-      - ${NETWORK_APPLICATION}
+      - ${NETWORK_APPLICATION:-application}
   mediamtx-service:
     container_name: mediamtx-service
     profiles:
@@ -257,11 +262,11 @@ services:
     ports:
       - 3001:3001
     volumes:
-      - ../../mediamtx-service:/app
+      - ./mediamtx-service:/app
     environment:
       - HYDRA_PUBLIC_URL=${PROTOCOL_EXTERNAL}://hydra:4444
       - TIME_SEC_WAIT_RTMP_CONECTION=60
       - PORT=3001
     networks:
-      - ${NETWORK_APPLICATION}
+      - ${NETWORK_APPLICATION:-application}
 

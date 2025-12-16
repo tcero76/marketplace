@@ -6,12 +6,13 @@ services:
       target: ${PROFILE}
   cache-updater-service:
     build:
-      dockerfile: ./cache-updater/Dockerfile
+      dockerfile: ./cache-updater/deploy/Dockerfile
       context: .
   broker-email-service:
     build:
-      dockerfile: Dockerfile
-      context: ./broker-email-service
+      dockerfile: ./broker-email-service/deploy/Dockerfile
+      context: .
+      target: ${PROFILE}
   db-updater-service:
     build:
       dockerfile: Dockerfile
@@ -66,16 +67,8 @@ services:
       dockerfile: Dockerfile
       context: ./infra/docker/config/envoy/
       target: ${PROFILE}
-  rabbitmq-init:
-    build:
-      dockerfile: Dockerfile
-      context: infra/docker/config/rabbitmq/
   hydra:
     build:
       dockerfile: Dockerfile
       context: infra/docker/config/hydra/
       target: ${PROFILE}
-  flyway:
-    build:
-      dockerfile: deploy/Dockerfile
-      context: flyway/

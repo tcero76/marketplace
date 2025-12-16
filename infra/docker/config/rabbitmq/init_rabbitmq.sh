@@ -59,12 +59,6 @@ create_binding_if_missing() {
   fi
 }
 
-echo "Esperando a RabbitMQ en $HOST:$PORT..."
-until nc -z "$HOST" "$PORT"; do
-  sleep 2
-done
-echo "RabbitMQ disponible, ejecutando configuración..."
-
 # Crear colas
 create_queue_if_missing ${CMD_CHAT_MESSAGE_DELIVERY_QUEUE} "/" '{"x-queue-type":"classic"}'
 create_queue_if_missing ${EVT_PAYMENT_PERSISTENCE_QUEUE} "/" '{"x-queue-type":"classic"}'
