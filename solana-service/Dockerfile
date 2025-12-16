@@ -1,9 +1,29 @@
-FROM golang:1.24.0
-
+FROM golang:1.25 AS dev
 WORKDIR /app
 
-COPY go.mod go.sum /app/
 RUN go install github.com/air-verse/air@latest
+
+FROM golang:1.25 AS builder 
+WORKDIR /app
+
+COPY ./solana-service/ ./
+
 RUN go mod download
 
-ENTRYPOINT ["air"]
+RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o main
+
+FROM alpine:3.20 AS prod
+RUN adduser -D appuser
+
+WORKDIR /app
+COPY --from=builder /app/ .
+
+USER root
+
+RUN mv /app/deploy/entrypoint.sh /usr/local/bin/entrypoint.sh && \
+    chmod +x /usr/local/bin/entrypoint.sh
+
+USER appuser
+
+EXPOSE 3000
+ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
