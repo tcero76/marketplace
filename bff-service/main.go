@@ -6,6 +6,7 @@ import (
 
 	"github.com/tcero76/marketplace/bff-service/config"
 	"github.com/tcero76/marketplace/bff-service/controller"
+	logConfig "github.com/tcero76/marketplace/config"
 
 	"github.com/tcero76/marketplace/bff-service/oauth2"
 	"github.com/tcero76/marketplace/bff-service/oauth2/cor"
@@ -14,8 +15,6 @@ import (
 
 	"github.com/labstack/echo/v4"
 	hydra "github.com/ory/hydra-client-go/v2"
-	log "github.com/sirupsen/logrus"
-	logConfig "github.com/tcero76/marketplace/config"
 )
 
 var hydraAdminClient *hydra.APIClient
@@ -23,12 +22,8 @@ var hydraAdminClient *hydra.APIClient
 var ctx = context.Background()
 
 func main() {
+	log := logConfig.NewLoggerLogstash("🗄️ BFF")
 	log.Info("Iniciando servidor...")
-	if os.Getenv("PROFILE") == "prod" {
-		logConfig.InitLogrus()
-	} else {
-		logConfig.InitDev()
-	}
 
 	authCacheService := redisServices.NewAuthCacheService()
 	userServices := modelServices.NewUserService()
@@ -57,6 +52,7 @@ func main() {
 	e.POST("/refresh", controller.RefreshTokenHandler(authCacheService))
 	e.GET("/logout", controller.LogoutHandler(authCacheService))
 	e.POST("/signup", controller.SignUpHandler(userServices))
+	e.GET("/health", controller.HealthCheckHandler)
 
 	protegido := e.Group("/usuario")
 	protegido.Use(oauth2.JWTMiddleware())

@@ -6,7 +6,6 @@ RUN go install github.com/air-verse/air@latest
 FROM golang:1.25 AS builder 
 WORKDIR /app
 
-COPY ./bff-service/go.mod ./bff-service/go.sum ./
 COPY ./bff-service ./bff-service
 COPY ./postgres ./postgres
 COPY ./clickhouse ./clickhouse
