@@ -4,9 +4,6 @@ EXPOSE 3001
 
 WORKDIR /app
 
-# COPY go.mod go.sum ./
-
-# RUN go mod download
 RUN go install github.com/air-verse/air@latest
 
 ENTRYPOINT ["air"]
