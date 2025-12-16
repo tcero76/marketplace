@@ -3,34 +3,35 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"log"
 	"net/smtp"
 	"os"
 
+	logConfig "github.com/tcero76/marketplace/config"
 	"github.com/tcero76/marketplace/rabbitmq/consumer"
 	"github.com/tcero76/marketplace/rabbitmq/events"
 )
 
 func main() {
+	log := logConfig.NewLoggerLogstash("📧 EMAIL")
+	log.Info("Inicio broker-> email")
 	msgs, conn, ch := consumer.GetMsgs(os.Getenv("EVT_USER_REGISTERED_EMAIL_QUEUE"))
 	defer conn.Close()
 	defer ch.Close()
-	log.Println("Esperando mensajes...")
+	log.Debug("Esperando mensajes...")
 	forever := make(chan bool)
 	go func() {
 		for d := range msgs {
-			log.Println(d.Body)
+			log.Info(d.Body)
 			var event events.EmailEvent
 			if err := json.Unmarshal(d.Body, &event); err != nil {
-				log.Printf("Error al parsear mensaje: %v", err)
+				log.Error("Error al parsear mensaje: %v", err)
 				continue
 			}
-
-			log.Printf("Recibido evento: %+v", event)
+			log.Info("Recibido evento: %+v", event)
 			if err := sendEmail(event); err != nil {
-				log.Printf("Error enviando correo: %v", err)
+				log.Info("Error enviando correo: %v", err)
 			} else {
-				log.Println("Correo enviado correctamente a:", event.To)
+				log.Info("Correo enviado correctamente a:", event.To)
 			}
 		}
 	}()
