@@ -119,7 +119,7 @@ func LogoutHandler(authCacheService services.IAuthCacheService) echo.HandlerFunc
 		sessionData := c.Get("session_data").(*model.SessionData)
 		sessionData.IsAuthenticated = false
 		sessionData.RefreshToken = ""
-		err := authCacheService.SaveSession(sessionData.SessionID, *sessionData)
+		err := authCacheService.SaveSession(sessionData.SessionID, *sessionData, c.Request().Context())
 		if err != nil {
 			log.WithField("err", err).Error("Error saving session data during logout")
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to logout")
@@ -161,7 +161,7 @@ func RefreshTokenHandler(authCacheService services.IAuthCacheService) echo.Handl
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to refresh token")
 		}
 		sessionData.RefreshToken = newToken.RefreshToken
-		err = authCacheService.SaveSession(sessionData.SessionID, *sessionData)
+		err = authCacheService.SaveSession(sessionData.SessionID, *sessionData, c.Request().Context())
 		if err != nil {
 			log.WithField("err", err).Error("Error storing refresh token")
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to store refresh token")

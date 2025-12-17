@@ -1,30 +1,24 @@
 package services
 
 import (
-	"os"
 	"strings"
 
-	log "github.com/sirupsen/logrus"
 	"github.com/tcero76/marketplace/bff-service/dto"
 	"github.com/tcero76/marketplace/bff-service/payload"
-	logConfig "github.com/tcero76/marketplace/config"
+	logger "github.com/tcero76/marketplace/config"
 	"github.com/tcero76/marketplace/postgres/config"
 	"github.com/tcero76/marketplace/postgres/model"
 	"gorm.io/gorm"
 )
 
 type SearchService struct {
-	DB *gorm.DB
+	DB  *gorm.DB
+	log *logger.LoggerLogstash
 }
 
-func NewSearchService() *SearchService {
-	db := config.GetPostgres()
-	if os.Getenv("PROFILE") == "prod" {
-		logConfig.InitLogrus()
-	} else {
-		logConfig.InitDev()
-	}
-	return &SearchService{DB: db}
+func NewSearchService(log *logger.LoggerLogstash) *SearchService {
+	db := config.GetPostgres(log)
+	return &SearchService{DB: db, log: log}
 }
 
 type Specification interface {
@@ -33,10 +27,11 @@ type Specification interface {
 
 type TextSpec struct {
 	Words []string
+	log   *logger.LoggerLogstash
 }
 
 func (s TextSpec) Apply(db *gorm.DB) *gorm.DB {
-	log.Info("Words son: ", s.Words)
+	s.log.Info("Words son: ", s.Words)
 	if len(s.Words) > 0 {
 		tsQuery := strings.Join(s.Words, " | ")
 		return db.Where("to_tsvector('spanish', descripcion) @@ plainto_tsquery('spanish', ?)", tsQuery)
@@ -46,10 +41,11 @@ func (s TextSpec) Apply(db *gorm.DB) *gorm.DB {
 
 type MentionSpec struct {
 	Mention string
+	log     *logger.LoggerLogstash
 }
 
 func (s MentionSpec) Apply(db *gorm.DB) *gorm.DB {
-	log.Info("Mention es: ", s.Mention)
+	s.log.Info("Mention es: ", s.Mention)
 	if s.Mention != "" {
 		mention := strings.TrimPrefix(s.Mention, "@")
 		return db.Where("modelo ILIKE ?", mention+"%")
@@ -59,10 +55,11 @@ func (s MentionSpec) Apply(db *gorm.DB) *gorm.DB {
 
 type SelectSpec struct {
 	Words []string
+	log   *logger.LoggerLogstash
 }
 
 func (s SelectSpec) Apply(db *gorm.DB) *gorm.DB {
-	log.Info("SelectSpec Words son: ", s.Words)
+	s.log.Info("SelectSpec Words son: ", s.Words)
 	if len(s.Words) > 0 {
 		tsQuery := strings.Join(s.Words, " | ")
 		return db.
@@ -79,18 +76,18 @@ func ApplySpecifications(db *gorm.DB, specs ...Specification) *gorm.DB {
 }
 
 func (s *SearchService) GetSearch(searchRequest payload.SearchRequest) []dto.SearchDTO {
-	log.Info("GetSearch: Iniciando...")
-	log.Info("GetSearch: searchRequest es: ", searchRequest)
+	s.log.Info("GetSearch: Iniciando...")
+	s.log.Info("GetSearch: searchRequest es: ", searchRequest)
 	specs := []Specification{
-		MentionSpec{Mention: searchRequest.Mention},
-		TextSpec{Words: searchRequest.Text},
-		SelectSpec{Words: searchRequest.Text},
+		MentionSpec{Mention: searchRequest.Mention, log: s.log},
+		TextSpec{Words: searchRequest.Text, log: s.log},
+		SelectSpec{Words: searchRequest.Text, log: s.log},
 	}
 	var modeloSearchDTOs []dto.SearchDTO
 	err := ApplySpecifications(s.DB.Model(&model.Modelo{}), specs...).
 		Find(&modeloSearchDTOs)
 	if err.Error != nil {
-		log.Error("Error al obtener los modelos en GetSearch: ", err.Error)
+		s.log.Error("Error al obtener los modelos en GetSearch: ", err.Error)
 		return []dto.SearchDTO{}
 	}
 	return modeloSearchDTOs

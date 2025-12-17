@@ -39,13 +39,13 @@ func RedisSessionMiddleware(authCacheService services.IAuthCacheService) echo.Mi
 				log.Debug("Session ID from cookie: ", sessionID)
 			}
 			log.Info("Session ID: ", sessionID)
-			val, err := authCacheService.GetSession(sessionID)
+			val, err := authCacheService.GetSession(sessionID, c.Request().Context())
 			if err != nil {
 				log.Error("Error getting session: ", err)
 				sessionData := &model.SessionData{}
 				sessionData.SessionID = sessionID
 				sessionData.IsAuthenticated = false
-				authCacheService.SaveSession(sessionID, *sessionData)
+				authCacheService.SaveSession(sessionID, *sessionData, c.Request().Context())
 			}
 			c.Set("session_data", val)
 			return next(c)

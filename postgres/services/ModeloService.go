@@ -1,49 +1,42 @@
 package services
 
 import (
-	"os"
 	"strings"
 
 	"github.com/tcero76/marketplace/bff-service/dto"
-	"github.com/tcero76/marketplace/bff-service/services"
-	logConfig "github.com/tcero76/marketplace/config"
+	logger "github.com/tcero76/marketplace/config"
 	"github.com/tcero76/marketplace/postgres/config"
 	"github.com/tcero76/marketplace/postgres/model"
 
-	log "github.com/sirupsen/logrus"
 	"gorm.io/gorm"
 )
 
 type ModeloService struct {
-	DB *gorm.DB
+	DB  *gorm.DB
+	log *logger.LoggerLogstash
 }
 
-func NewModeloService() services.IModeloService {
-	db := config.GetPostgres()
-	if os.Getenv("PROFILE") == "prod" {
-		logConfig.InitLogrus()
-	} else {
-		logConfig.InitDev()
-	}
-	return &ModeloService{DB: db}
+func NewModeloService(log *logger.LoggerLogstash) *ModeloService {
+	db := config.GetPostgres(log)
+	return &ModeloService{DB: db, log: log}
 }
 
 func (s *ModeloService) GetModelByModelo(query string) (*dto.Modelo, error) {
-	log.Info("Entrando a GetModelByModelo")
+	s.log.Info("Entrando a GetModelByModelo")
 	modelo := &model.Modelo{}
 	result := s.DB.
 		Model(&model.Modelo{}).
 		Where("modelo = ?", query).
 		Where("modelo = ?", query).First(modelo)
 	if result.Error != nil {
-		log.Error("Error al obtener el modelo: ", result.Error)
+		s.log.Error("Error al obtener el modelo: ", result.Error)
 		return nil, result.Error
 	}
 	return dto.ToModeloDTO(modelo), nil
 }
 
 func (s *ModeloService) GetSearch(text []string) (*[]dto.Modelo, error) {
-	log.Info("Entrando a GetSearch")
+	s.log.Info("Entrando a GetSearch")
 	var modelos []dto.Modelo
 	tsquery := strings.Join(text, " | ")
 	query := `
@@ -55,7 +48,7 @@ func (s *ModeloService) GetSearch(text []string) (*[]dto.Modelo, error) {
 	`
 	result := s.DB.Raw(query, tsquery, tsquery).Scan(&modelos)
 	if result.Error != nil {
-		log.Error("Error al obtener los modelos: ", result.Error)
+		s.log.Error("Error al obtener los modelos: ", result.Error)
 		return nil, result.Error
 	}
 	return &modelos, nil
@@ -65,7 +58,7 @@ func (s *ModeloService) GetModelos() []dto.Modelo {
 	var modelos []model.Modelo
 	err := s.DB.Select("modelo").Find(&modelos)
 	if err.Error != nil {
-		log.Error("Error al obtener los modelos: ", err.Error)
+		s.log.Error("Error al obtener los modelos: ", err.Error)
 		return []dto.Modelo{}
 	}
 	return dto.ToModelosDTO(modelos)

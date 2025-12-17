@@ -28,7 +28,7 @@ func (h *LoginGoogleHandler) Handle(c echo.Context) error {
 	if idp == "google" {
 		redirect, _ := h.GoogleAuth.Login(c.QueryParam("state"), nil, c.Request().Context())
 		sessionData.LoginChallenge = c.QueryParam("login_challenge")
-		h.AuthCacheService.SaveSession(sessionData.SessionID, *sessionData)
+		h.AuthCacheService.SaveSession(sessionData.SessionID, *sessionData, c.Request().Context())
 		url := make(map[string]string)
 		url["url"] = redirect
 		return c.JSON(http.StatusOK, url)
@@ -106,7 +106,7 @@ func (h *CallbackGoogleHandler) Handle(c echo.Context) error {
 		sessionData.IsAuthenticated = true
 		sessionData.Idp = "internal"
 
-		err = h.AuthCacheService.SaveSession(sessionData.SessionID, *sessionData)
+		err = h.AuthCacheService.SaveSession(sessionData.SessionID, *sessionData, c.Request().Context())
 		if err != nil {
 			log.Error("Error saving session data to Redis: ", err)
 			return c.String(http.StatusInternalServerError, "Error saving session data to Redis: "+err.Error())

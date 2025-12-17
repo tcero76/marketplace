@@ -3,46 +3,40 @@ package services
 import (
 	"encoding/json"
 	"fmt"
-	"os"
 	"time"
 
 	"github.com/tcero76/marketplace/bff-service/dto"
-	"github.com/tcero76/marketplace/bff-service/services"
-	logConfig "github.com/tcero76/marketplace/config"
+	logger "github.com/tcero76/marketplace/config"
 
 	"github.com/tcero76/marketplace/postgres/config"
 	"github.com/tcero76/marketplace/postgres/model"
 	"github.com/tcero76/marketplace/rabbitmq/events"
 
-	log "github.com/sirupsen/logrus"
 	"gorm.io/datatypes"
 	"gorm.io/gorm"
 )
 
 type UserService struct {
-	DB *gorm.DB
+	DB  *gorm.DB
+	log *logger.LoggerLogstash
 }
 
-func NewUserService() services.IUserService {
-	db := config.GetPostgres()
-	if os.Getenv("PROFILE") == "prod" {
-		logConfig.InitLogrus()
-	} else {
-		logConfig.InitDev()
-	}
-	return &UserService{DB: db}
+func NewUserService(log *logger.LoggerLogstash) *UserService {
+	log.Info("Initializing UserService")
+	db := config.GetPostgres(log)
+	return &UserService{DB: db, log: log}
 }
 
 func (s *UserService) GetUser(username string) (*dto.UserDTO, error) {
 	var user *model.User
-	log.Info("GetUser called with username: ", username)
+	s.log.Info("GetUser called with username: ", username)
 	err := s.DB.Where("nombre = ?", username).First(&user).Error
 	userDTO := dto.ToUserDTO(*user)
 	return &userDTO, err
 }
 
 func (s *UserService) GetUserById(userId string) (*dto.UserDTO, error) {
-	log.Info("GetUserById called with userId: ", userId)
+	s.log.Info("GetUserById called with userId: ", userId)
 	var user *model.User
 	err := s.DB.Where("user_id = ?", userId).First(&user).Error
 	userDTO := dto.ToUserDTO(*user)
@@ -50,11 +44,11 @@ func (s *UserService) GetUserById(userId string) (*dto.UserDTO, error) {
 }
 
 func (s *UserService) CreateUser(userDTO *dto.UserDTO) error {
-	log.Info("CreateUser called with user: ", userDTO)
+	s.log.Info("CreateUser called with user: ", userDTO)
 	user := dto.ToUser(*userDTO)
 	return s.DB.Transaction(func(tx *gorm.DB) error {
 		if err := tx.Create(user).Error; err != nil {
-			log.Error("Error creating user: ", err)
+			s.log.Error("Error creating user: ", err)
 			return err
 		}
 
@@ -65,7 +59,7 @@ func (s *UserService) CreateUser(userDTO *dto.UserDTO) error {
 		}
 		payloadBytes, err := json.Marshal(payloadStruct)
 		if err != nil {
-			log.Error("Error marshalling payload: ", err)
+			s.log.Error("Error marshalling payload: ", err)
 			return err
 		}
 		outbox := model.Outbox{
@@ -77,7 +71,7 @@ func (s *UserService) CreateUser(userDTO *dto.UserDTO) error {
 			Processed:     false,
 		}
 		if err := tx.Create(&outbox).Error; err != nil {
-			log.Error("Error creating outbox entry: ", err)
+			s.log.Error("Error creating outbox entry: ", err)
 			return err
 		}
 		return nil

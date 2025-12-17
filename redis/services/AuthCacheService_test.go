@@ -4,8 +4,7 @@ import (
 	"testing"
 
 	"github.com/joho/godotenv"
-	log "github.com/sirupsen/logrus"
-	"github.com/tcero76/marketplace/config"
+	"github.com/labstack/gommon/log"
 	"github.com/tcero76/marketplace/redis/model"
 	"github.com/tcero76/marketplace/redis/services"
 )
@@ -26,7 +25,6 @@ func TestGetSession(t *testing.T) {
 	log.Info("Starting TestGetSession")
 	// _ = godotenv.Load("~/.environments/marketplace.env")
 	authCacheService := services.NewAuthCacheService()
-	config.InitDev()
 	sessionData, err := authCacheService.GetSession("session:test_session")
 	log.Info("Session Data: ", sessionData)
 	if err != nil {

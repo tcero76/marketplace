@@ -22,14 +22,14 @@ var hydraAdminClient *hydra.APIClient
 var ctx = context.Background()
 
 func main() {
-	log := logConfig.NewLoggerLogstash("🗄️ BFF")
+	log := logConfig.NewLoggerLogstash("🗄️  BFF")
 	log.Info("Iniciando servidor...")
 
-	authCacheService := redisServices.NewAuthCacheService()
-	userServices := modelServices.NewUserService()
-	modeloService := modelServices.NewModeloService()
-	postService := modelServices.NewPostsService()
-	searchService := modelServices.NewSearchService()
+	authCacheService := redisServices.NewAuthCacheService(log)
+	userServices := modelServices.NewUserService(log)
+	modeloService := modelServices.NewModeloService(log)
+	postService := modelServices.NewPostsService(log)
+	searchService := modelServices.NewSearchService(log)
 
 	cfg := hydra.NewConfiguration()
 	cfg.Servers = hydra.ServerConfigurations{{URL: os.Getenv("HYDRA_ADMIN_URL")}}
@@ -44,6 +44,7 @@ func main() {
 	e := echo.New()
 
 	e.Use(config.RedisSessionMiddleware(authCacheService))
+	e.Use(config.LoggerMiddleware(log))
 
 	e.POST("/login", controller.HandleLogin(loginHandler))
 	e.GET("/consent", controller.HandleConsent(consentHandler))
@@ -52,7 +53,7 @@ func main() {
 	e.POST("/refresh", controller.RefreshTokenHandler(authCacheService))
 	e.GET("/logout", controller.LogoutHandler(authCacheService))
 	e.POST("/signup", controller.SignUpHandler(userServices))
-	e.GET("/health", controller.HealthCheckHandler)
+	e.GET("/health", controller.HealthCheckHandler(log))
 
 	protegido := e.Group("/usuario")
 	protegido.Use(oauth2.JWTMiddleware())

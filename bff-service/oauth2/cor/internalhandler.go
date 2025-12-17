@@ -21,7 +21,7 @@ func (h *LoginInternalHandler) Handle(c echo.Context) error {
 		return c.String(http.StatusBadRequest, "No login challenge provided")
 	}
 	sessionData.Idp = idp
-	err := h.AuthCacheService.SaveSession(sessionData.SessionID, *sessionData)
+	err := h.AuthCacheService.SaveSession(sessionData.SessionID, *sessionData, c.Request().Context())
 	if err != nil {
 		log.Error("Error saving session data: ", err)
 		return c.String(http.StatusInternalServerError, "Error saving session data: "+err.Error())
@@ -107,7 +107,7 @@ func (h *CallbackInternalHandler) Handle(c echo.Context) error {
 		token := h.InternalAuth.Callback(code, c.Request().Context())
 		sessionData.AccessToken = token.AccessToken
 		sessionData.RefreshToken = token.RefreshToken
-		h.AuthCacheService.SaveSession(sessionData.SessionID, *sessionData)
+		h.AuthCacheService.SaveSession(sessionData.SessionID, *sessionData, c.Request().Context())
 		log.Debug("Storing tokens in session Data: ", sessionData)
 		return c.Redirect(http.StatusFound, "/home?accessToken="+token.AccessToken)
 	} else {
