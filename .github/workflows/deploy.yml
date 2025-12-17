@@ -18,6 +18,7 @@ env:
   TF_VAR_overlay_network: application
   TAG: v0.0.0
   COMPOSE_PROFILE: bff
+  MONITOREO: "false"
   COMPOSE_FILE: infra/docker/imagenes.yml:infra/docker/prod/services.yml:infra/docker/prod/monitoring.yml:infra/docker/prod/postgres.yml:infra/docker/prod/clickhouse.yml:infra/docker/prod/hydra.yml:infra/docker/prod/envoy.yml:infra/docker/prod/rabbitmq.yml:infra/docker/prod/mediamtx.yml:infra/docker/prod/redis.yml:infra/docker/prod/elastic.yml:infra/docker/prod/common.yml
 
   #secrets
@@ -144,7 +145,6 @@ jobs:
         run: |
           manager_ip=$(terraform -chdir=terraform output -raw manager_public_ip)
           echo "manager_ip=$manager_ip" >> "$GITHUB_OUTPUT"
-
 
   detect_changed_services:
     runs-on: ubuntu-22.04
@@ -342,6 +342,7 @@ jobs:
           REDIS_VOLUME=${REDIS_VOLUME}
           PROTOCOL_EXTERNAL=${PROTOCOL_EXTERNAL}
           PROTOCOL_WS_EXTERNAL=${PROTOCOL_WS_EXTERNAL}
+          MONITOREO=${MONITOREO}
           EOF'"
 
       - name: Crear secrets en Docker Swarm

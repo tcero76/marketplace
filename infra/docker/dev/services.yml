@@ -33,6 +33,7 @@ services:
       - GOOGLE_OAUTH2_REDIRECT_URI=${GOOGLE_OAUTH2_REDIRECT_URI}
       - PROFILE=${PROFILE}
       - REDIS_HOST=${REDIS_HOST}
+      - MONITOREO=${MONITOREO}
     networks:
       - ${NETWORK_APPLICATION:-application}
     depends_on:
