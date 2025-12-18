@@ -238,10 +238,6 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
-      - name: Update tag in manifests
-        run: |
-          sed -i "s|image: ${{ matrix.service.image }}:.*|image: ${{ matrix.service.image }}:${{ github.sha }}|g" infra/docker/prod/imagenes.yml
-
       - name: Build image
         run: |
           export COMPOSE_FILE=infra/docker/build.yml:infra/docker/prod/imagenes.yml
@@ -254,13 +250,53 @@ jobs:
             ${{ matrix.service.build_target }} \
             --push
 
-      - name: Commit new tag
+  commit_images:
+    needs: [build_services, detect_changed_services]
+    runs-on: ubuntu-22.04
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Update only changed images
+        run: |
+          changed=false
+
+          if [ "${{ needs.detect_changed_services.outputs.front }}" = "true" ]; then
+            sed -i "s|image: tcero76/front:.*|image: tcero76/front:${{ github.sha }}|g" infra/docker/prod/imagenes.yml
+            changed=true
+          fi
+
+          if [ "${{ needs.detect_changed_services.outputs.bff }}" = "true" ]; then
+            sed -i "s|image: tcero76/bff-service:.*|image: tcero76/bff-service:${{ github.sha }}|g" infra/docker/prod/imagenes.yml
+            changed=true
+          fi
+
+          if [ "${{ needs.detect_changed_services.outputs.scrap }}" = "true" ]; then
+            sed -i "s|image: tcero76/scrap-service:.*|image: tcero76/scrap-service:${{ github.sha }}|g" infra/docker/prod/imagenes.yml
+            changed=true
+          fi
+
+          if [ "${{ needs.detect_changed_services.outputs.flyway }}" = "true" ]; then
+            sed -i "s|image: tcero76/flyway:.*|image: tcero76/flyway:${{ github.sha }}|g" infra/docker/prod/imagenes.yml
+            changed=true
+          fi
+
+          if [ "$changed" = "false" ]; then
+            echo "Ningún servicio cambió, no hay nada que commitear"
+            exit 0
+          fi
+
+      - name: Commit and push
         run: |
           git config user.name "github-actions"
           git config user.email "github-actions@github.com"
-          git commit -am "Update image to ${{ github.sha }}"
-          git pull
+          git commit -am "Update images for changed services to ${{ github.sha }}"
           git push
+
+
+
 
   environment:
     name: Update environment variables on Manager
