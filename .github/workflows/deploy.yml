@@ -182,8 +182,6 @@ jobs:
           echo "Step finalizado"
  
   build_services:
-    permissions:
-      contents: write
     needs: [detect_changed_services,terraform]
     if: >
       success() &&
@@ -253,7 +251,8 @@ jobs:
   commit_images:
     needs: [build_services, detect_changed_services]
     runs-on: ubuntu-22.04
-
+    permissions:
+      contents: write
     steps:
       - uses: actions/checkout@v4
         with:
