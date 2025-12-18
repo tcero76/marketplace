@@ -12,7 +12,7 @@ services:
   ws-service:
     image: tcero76/ws-service:${TAG}
   front:
-    image: tcero76/front:4512a5870950fe18d658a17b58db83fdb8f109b3
+    image: tcero76/front:51614b173d53717bb92defba8ad2d6dd5079438a
   solana-service:
     image: tcero76/solana-service:${TAG}
   scrap-service:
