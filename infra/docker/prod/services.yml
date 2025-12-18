@@ -6,7 +6,7 @@ services:
       - PORT=3000
       - PORT_EXTERNAL=${PORT_EXTERNAL}
       - HOST_EXTERNAL=${HOST_EXTERNAL}
-      - RedirectURL=/bff/callback
+      - REDIRECT_URL=${PROTOCOL_EXTERNAL}://${HOST_EXTERNAL}:${PORT_EXTERNAL}/bff/callback
       - HYDRA_ADMIN_URL=${PROTOCOL_EXTERNAL}://hydra:4445
       - HYDRA_PUBLIC_URL=${PROTOCOL_EXTERNAL}://hydra:4444
       - CLIENT_ID=${CLIENT_ID}
