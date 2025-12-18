@@ -1,6 +1,5 @@
 services:
   bff-service:
-    image: tcero76/bff-service:${TAG}
     working_dir: /bff-service
     command: ["/app/main"]
     environment:
@@ -52,7 +51,6 @@ services:
       restart_policy:
         condition: on-failure
   front:
-    image: tcero76/front:${TAG}
     working_dir: /app
     networks:
       - ${NETWORK_APPLICATION:-application}
@@ -65,7 +63,6 @@ services:
       restart_policy:
         condition: on-failure
   scrap-service:
-    image: tcero76/scrap-service:${TAG}
     working_dir: /app/scrap-service
     command: [ "celery", "-A", "main", "worker", "--loglevel=debug"]
     secrets:
@@ -87,7 +84,6 @@ services:
     networks:
       - ${NETWORK_APPLICATION:-application}
   beat-service:
-    image: tcero76/beat-service:${TAG}
     working_dir: /app/beat-service
     user: app
     entrypoint: [ "celery", "-A", "main", "beat", "--schedule=/tmp/celery/celerybeat-schedule","--loglevel=debug"]
