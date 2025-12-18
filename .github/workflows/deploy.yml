@@ -1,15 +1,20 @@
 name: Deploy Infrastructure & Services
 
 on:
-  pull_request:
-    branches:
-      - main
-  push:
-    branches:
-      - main
-    tags:
-      - "v*.*.*"
+  # pull_request:
+  #   branches:
+  #     - main
+  # push:
+  #   branches:
+  #     - main
+  #   tags:
+  #     - "v*.*.*"
   workflow_dispatch:
+    inputs:
+      run_job:
+        description: "Job a ejecutar"
+        required: true
+        default: "all"
 env:
   PROFILE: prod
   # Application
@@ -110,6 +115,7 @@ env:
 jobs:
   terraform:
     name: Terraform Apply
+    if: ${{ inputs.run_job == 'terraform' || inputs.run_job == 'all' }}
     runs-on: ubuntu-22.04
     env:
       DIGITALOCEAN_TOKEN: ${{ secrets.DIGITALOCEAN_TOKEN }}
@@ -148,6 +154,7 @@ jobs:
 
   detect_changed_services:
     runs-on: ubuntu-22.04
+    if: ${{ inputs.run_job == 'detect' || inputs.run_job == 'all' }}
     outputs:
       front: ${{ steps.detect.outputs.front }}
       bff: ${{ steps.detect.outputs.bff }}
@@ -162,7 +169,10 @@ jobs:
           # Inicializar flags
           echo "front=true" >> $GITHUB_OUTPUT
           echo "bff=false" >> $GITHUB_OUTPUT
+          echo "scrap=false" >> $GITHUB_OUTPUT
+          echo "flyway=false" >> $GITHUB_OUTPUT
           # Obtener lista de archivos modificados
+          cd "$GITHUB_WORKSPACE"
           git fetch --tags
           LAST_DEPLOYED=$(git rev-parse deploy-prod)
           CURRENT=$(git rev-parse HEAD)
@@ -193,7 +203,7 @@ jobs:
       )
     runs-on: ubuntu-22.04
     env:
-      MANAGER_IP: ${{ needs.terraform.outputs.manager_ip }}
+      MANAGER_IP: 0.0.0.0
     strategy:
       matrix:
         service:
