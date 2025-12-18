@@ -190,6 +190,13 @@ jobs:
           fi
           echo "$CHANGED" | grep "^flyway/" && echo "flyway=true" >> $GITHUB_OUTPUT
           echo "Step finalizado"
+      - name: Mostrar outputs detectados
+        run: |
+          echo "front = ${{ steps.detect.outputs.front }}"
+          echo "bff = ${{ steps.detect.outputs.bff }}"
+          echo "scrap = ${{ steps.detect.outputs.scrap }}"
+          echo "flyway = ${{ steps.detect.outputs.flyway }}"
+
  
   build_services:
     needs: [detect_changed_services,terraform]
