@@ -257,7 +257,7 @@ jobs:
 
       - name: Build image
         run: |
-          export COMPOSE_FILE=infra/docker/build.yml:infra/docker/prod/imagenes.yml
+          export COMPOSE_FILE=infra/docker/prod/build.yml:infra/docker/prod/imagenes.yml
           export HOST_EXTERNAL=$MANAGER_IP
           docker compose \
             --project-directory ${PWD} \
