@@ -229,8 +229,7 @@ jobs:
 
       - name: Saltarse el servicio si no cambió
         if: ${{ needs.detect_changed_services.outputs[matrix.service.flag] != 'true' }}
-        run: |
-          echo "El servicio ${matrix.service.name} no cambió. Saltando."
+        run: exit 0
         continue-on-error: false
 
       - name: Log in to DockerHub
@@ -260,6 +259,7 @@ jobs:
           git config user.name "github-actions"
           git config user.email "github-actions@github.com"
           git commit -am "Update image to ${{ github.sha }}"
+          git pull
           git push
 
   environment:
