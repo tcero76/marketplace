@@ -18,8 +18,8 @@ services:
         condition: on-failure
     healthcheck:
       test: ["CMD", "rabbitmq-diagnostics", "ping"]
-      interval: 5s
-      timeout: 3s
+      interval: 10s
+      timeout: 10s
       retries: 5
   rabbitmq-init:
     image: tcero76/rabbitmq-init:${TAG}

@@ -18,31 +18,3 @@ services:
       interval: 5s
       retries: 5
       timeout: 2s
-  # broker-job:
-  #   image: tcero76/rabbitmq-init
-  #   build:
-  #     dockerfile: Dockerfile
-  #     context: ../../rabbitmq/scripts/
-  #   restart: "no"
-  #   container_name: brokerJob
-  #   entrypoint: ["/init/init_rabbitmq.sh"]
-  #   environment:
-  #     HOST: broker
-  #     PORT: 15672
-  #     USERNAME: guest
-  #     PASSWORD: guest
-  #     CMD_CHAT_MESSAGE_PERSISTENCE_QUEUE: ${CMD_CHAT_MESSAGE_PERSISTENCE_QUEUE}
-  #     EVT_USER_REGISTERED_EMAIL_QUEUE: ${EVT_USER_REGISTERED_EMAIL_QUEUE}
-  #     EVT_USER_REGISTERED_EXCHANGE: ${EVT_USER_REGISTERED_EXCHANGE}
-  #     CMD_CHAT_MESSAGE_SEND_EXCHANGE: ${CMD_CHAT_MESSAGE_SEND_EXCHANGE}
-  #     EVT_PAYMENT_COMPLETED_EXCHANGE: ${EVT_PAYMENT_COMPLETED_EXCHANGE}
-  #     EVT_PAYMENT_PERSISTENCE_QUEUE: ${EVT_PAYMENT_PERSISTENCE_QUEUE}
-  #     CMD_CHAT_MESSAGE_DELIVERY_QUEUE: ${CMD_CHAT_MESSAGE_DELIVERY_QUEUE}
-  #   volumes:
-  #     - ../../rabbitmq/scripts/:/init/
-  #   profiles:
-  #     - broker              
-  #   networks:
-  #     - ${NETWORK_APPLICATION}
-  #   depends_on:
-  #     - broker
