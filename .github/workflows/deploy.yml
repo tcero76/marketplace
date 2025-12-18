@@ -208,7 +208,7 @@ jobs:
       )
     runs-on: ubuntu-22.04
     env:
-      MANAGER_IP: 0.0.0.0
+      MANAGER_IP: ${{ needs.terraform.outputs.manager_ip }}
     strategy:
       matrix:
         service:
