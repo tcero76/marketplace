@@ -10,11 +10,11 @@ on:
   #   tags:
   #     - "v*.*.*"
   workflow_dispatch:
-    inputs:
-      run_job:
-        description: "Job a ejecutar"
-        required: true
-        default: "all"
+    # inputs:
+    #   run_job:
+    #     description: "Job a ejecutar"
+    #     required: true
+    #     default: "all"
 env:
   PROFILE: prod
   # Application
@@ -115,7 +115,6 @@ env:
 jobs:
   terraform:
     name: Terraform Apply
-    if: ${{ inputs.run_job == 'terraform' || inputs.run_job == 'all' }}
     runs-on: ubuntu-22.04
     env:
       DIGITALOCEAN_TOKEN: ${{ secrets.DIGITALOCEAN_TOKEN }}
@@ -154,7 +153,6 @@ jobs:
 
   detect_changed_services:
     runs-on: ubuntu-22.04
-    if: ${{ inputs.run_job == 'detect' || inputs.run_job == 'all' }}
     outputs:
       front: ${{ steps.detect.outputs.front }}
       bff: ${{ steps.detect.outputs.bff }}
