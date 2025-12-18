@@ -172,10 +172,10 @@ jobs:
           CHANGED=$(git diff --name-only $LAST_DEPLOYED $CURRENT)
 
           # echo "$CHANGED" | grep "^front/" && echo "front=true" >> $GITHUB_OUTPUT
-          if echo "$CHANGED" | grep -qE "^(bff-service/|postgres/|clickhouse/|redis/|rabbitmq/|config/)/"; then
+          if echo "$CHANGED" | grep -qE "^(bff-service|postgres|clickhouse|redis|rabbitmq|config)/"; then
             echo "bff=true" >> $GITHUB_OUTPUT
           fi
-          if echo "$CHANGED" | grep -qE "^(scrap-service/|rabbitmq/)/"; then
+          if echo "$CHANGED" | grep -qE "^(scrap-service|rabbitmq)/"; then
             echo "scrap=true" >> $GITHUB_OUTPUT
           fi
           echo "$CHANGED" | grep "^flyway/" && echo "flyway=true" >> $GITHUB_OUTPUT
