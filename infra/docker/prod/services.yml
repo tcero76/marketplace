@@ -36,10 +36,8 @@ services:
       - client_secret
       - patroni_admin_password
     depends_on:
-      haproxy:
-        condition: service_healthy
-      broker:
-        condition: service_healthy
+      - haproxy
+      - broker
     healthcheck:
       test: ["CMD", "wget", "-qO-", "http://localhost:3000/health"]
       interval: 10s

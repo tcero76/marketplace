@@ -50,5 +50,4 @@ services:
         constraints:
           - node.hostname == swarm-manager
     depends_on:
-      broker:
-        condition: service_healthy
+      - broker
