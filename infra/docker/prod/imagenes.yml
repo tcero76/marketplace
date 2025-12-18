@@ -1,6 +1,6 @@
 services:
   bff-service:
-    image: tcero76/bff-service:${TAG}
+    image: tcero76/bff-service:4ea48a2edff92518f7d9652879474ce3be9f125f
   cache-updater-service:
     image: tcero76/cache-updater-service:${TAG}
   broker-email-service:
@@ -12,11 +12,11 @@ services:
   ws-service:
     image: tcero76/ws-service:${TAG}
   front:
-    image: tcero76/front:04e1abfe14c06bd23212869491b56e7a7c615531
+    image: tcero76/front:4ea48a2edff92518f7d9652879474ce3be9f125f
   solana-service:
     image: tcero76/solana-service:${TAG}
   scrap-service:
-    image: tcero76/scrap-service:${TAG}
+    image: tcero76/scrap-service:4ea48a2edff92518f7d9652879474ce3be9f125f
   beat-service:
     image: tcero76/beat-service:${TAG}
   recomender-service:
@@ -30,4 +30,4 @@ services:
   hydra:
     image: tcero76/hydra:${TAG}
   flyway:
-    image: tcero76/flyway:d8d93992ef3edea90b41a23bc4fcf95ab3f87995
+    image: tcero76/flyway:4ea48a2edff92518f7d9652879474ce3be9f125f
