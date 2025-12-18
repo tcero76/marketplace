@@ -294,13 +294,10 @@ jobs:
           git commit -am "Update images for changed services to ${{ github.sha }}"
           git push
 
-
-
-
   environment:
     name: Update environment variables on Manager
     runs-on: ubuntu-22.04
-    needs: [build_services,terraform]
+    needs: [commit_images,terraform]
     permissions:
       contents: write
     env:
