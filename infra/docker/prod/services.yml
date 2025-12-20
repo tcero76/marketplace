@@ -43,6 +43,13 @@ services:
       interval: 10s
       timeout: 2s
       retries: 5
+    labels:
+      - traefik.enable=true
+      - traefik.http.middlewares.bff-strip.stripprefix.prefixes=/bff
+      - traefik.http.routers.bff.rule=PathPrefix(`/bff`)
+      - traefik.http.routers.bff.entrypoints=web
+      - traefik.http.services.bff.loadbalancer.server.port=3000
+      - traefik.http.routers.bff.middlewares=bff-strip
     deploy:
       mode: replicated
       replicas: 1
@@ -63,6 +70,13 @@ services:
           - node.hostname == swarm-manager
       restart_policy:
         condition: on-failure
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.front.rule=Host(`${HOST_EXTERNAL}`)
+      - traefik.http.routers.front.entrypoints=web
+      - traefik.http.routers.front.entrypoints=websecure
+      - traefik.http.routers.front.tls.certresolver=le
+      - traefik.http.services.front.loadbalancer.server.port=80
   scrap-service:
     working_dir: /app/scrap-service
     command: [ "celery", "-A", "main", "worker", "--loglevel=debug"]

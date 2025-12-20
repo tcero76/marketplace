@@ -173,11 +173,9 @@ services:
       - traefik.enable=true
       - traefik.http.routers.front.rule=Host(`sugarfever.ddns.net`)
       - traefik.http.routers.front.entrypoints=web
-      - "traefik.http.routers.front.entrypoints=websecure"
-      - "traefik.http.routers.front.tls.certresolver=le"
-      - "traefik.http.services.front.loadbalancer.server.port=5173"
-
-
+      - traefik.http.routers.front.entrypoints=websecure
+      - traefik.http.routers.front.tls.certresolver=le
+      - traefik.http.services.front.loadbalancer.server.port=5173
     depends_on:
       - traefik
   solana-service:

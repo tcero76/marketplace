@@ -17,7 +17,7 @@ docker stack deploy \
   -c /root/docker/hydra.yml \
   -c /root/docker/rabbitmq.yml \
   -c /root/docker/common.yml \
-  -c /root/docker/envoy.yml \
+  -c /root/docker/traefik.yml \
   -c /root/docker/services.yml \
   -c /root/docker/redis.yml \
   -c /root/docker/imagenes.yml \
