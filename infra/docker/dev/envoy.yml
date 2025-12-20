@@ -1,8 +1,8 @@
 services:
   envoy:
     container_name: envoy
-    profiles:
-      - front
+    # profiles:
+    #   - front
     tty: true
     stdin_open: true
     environment:

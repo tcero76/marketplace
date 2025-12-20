@@ -23,8 +23,6 @@ services:
     image: tcero76/recomender-service:${TAG}
   mediamtx-service:
     image: tcero76/mediamtx-service:${TAG}
-  envoy:
-    image: tcero76/envoy:${TAG}
   rabbitmq-init:
     image: tcero76/rabbitmq-init:${TAG}
   hydra:

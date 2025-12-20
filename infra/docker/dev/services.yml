@@ -15,7 +15,8 @@ services:
     stdin_open: true
     tty: true
     environment:
-      - DNS=postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:5432/${POSTGRES_DB}?sslmode=disable&options=-c%20search_path%3Dmarketplace
+      - DSN_WRITE=postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:5432/${POSTGRES_DB}?sslmode=disable&options=-c%20search_path%3Dmarketplace
+      - DSN_READ=postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:5432/${POSTGRES_DB}?sslmode=disable&options=-c%20search_path%3Dmarketplace
       - PORT=3000
       - PORT_EXTERNAL=${PORT_EXTERNAL}
       - HOST_EXTERNAL=${HOST_EXTERNAL}
@@ -34,6 +35,13 @@ services:
       - PROFILE=${PROFILE}
       - REDIS_HOST=${REDIS_HOST}
       - MONITOREO=${MONITOREO}
+    labels:
+      - traefik.enable=true
+      - traefik.http.middlewares.bff-strip.stripprefix.prefixes=/bff
+      - traefik.http.routers.bff.rule=PathPrefix(`/bff`)
+      - traefik.http.routers.bff.entrypoints=web
+      - traefik.http.services.bff.loadbalancer.server.port=3000
+      - traefik.http.routers.bff.middlewares=bff-strip
     networks:
       - ${NETWORK_APPLICATION:-application}
     depends_on:
@@ -161,8 +169,17 @@ services:
       - ./front:/app
     networks:
       - ${NETWORK_APPLICATION:-application}
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.front.rule=Host(`sugarfever.ddns.net`)
+      - traefik.http.routers.front.entrypoints=web
+      - "traefik.http.routers.front.entrypoints=websecure"
+      - "traefik.http.routers.front.tls.certresolver=le"
+      - "traefik.http.services.front.loadbalancer.server.port=5173"
+
+
     depends_on:
-      - envoy
+      - traefik
   solana-service:
     profiles:
       - solana

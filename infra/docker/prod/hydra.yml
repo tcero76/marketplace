@@ -29,3 +29,11 @@ services:
           - node.hostname == swarm-worker-0
       restart_policy:
         condition: on-failure
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:4445/health/ready || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+    depends_on:
+      - haproxy

@@ -23,7 +23,5 @@ services:
     image: tcero76/recomender-service:${TAG}
   mediamtx-service:
     image: tcero76/mediamtx-service:${TAG}
-  envoy:
-    image: tcero76/envoy:${TAG}
   hydra:
     image: tcero76/hydra:${TAG}

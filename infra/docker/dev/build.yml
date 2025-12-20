@@ -62,11 +62,6 @@ services:
     build:
       context: ./clickhouse/image/
       dockerfile: Dockerfile
-  envoy:
-    build:
-      dockerfile: Dockerfile
-      context: ./infra/docker/config/envoy/
-      target: ${PROFILE}
   hydra:
     build:
       dockerfile: Dockerfile

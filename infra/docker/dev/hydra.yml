@@ -18,6 +18,13 @@ services:
       - SECRETS_SYSTEM=some_secret_key_system
       - TTL_ACCESS_TOKEN=1m
       - TTL_REFRESH_TOKEN=720h
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.hydra.rule=PathPrefix(`/hydra`)
+      - traefik.http.routers.hydra.entrypoints=web
+      - traefik.http.middlewares.hydra-strip.stripprefix.prefixes=/hydra
+      - traefik.http.routers.hydra.middlewares=hydra-strip
+      - traefik.http.services.hydra.loadbalancer.server.port=4444
     depends_on:
      - db
     networks:
