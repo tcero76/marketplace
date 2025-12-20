@@ -447,6 +447,8 @@ jobs:
       - name: Copy docker-compose.yml to manager
         run: |
           git fetch origin main
+          git checkout main
+          git pull --ff-only origin main
           ssh -o StrictHostKeyChecking=no root@$MANAGER_IP "
             mkdir -p docker
           "

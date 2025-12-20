@@ -26,8 +26,8 @@ func main() {
 	log := logConfig.NewLoggerLogstash("🗄️  BFF")
 	log.Info("Iniciando servidor...")
 
-	dbRead := postgresConfig.GetPostgresRead(log)
 	dbWrite := postgresConfig.GetPostgresWrite(log)
+	dbRead := postgresConfig.GetPostgresRead(log)
 
 	authCacheService := redisServices.NewAuthCacheService(log)
 	userServices := modelServices.NewUserService(log, dbWrite, dbRead)
