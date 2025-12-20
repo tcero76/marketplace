@@ -10,18 +10,33 @@ import (
 	"gorm.io/gorm"
 )
 
-var dbInstance *gorm.DB
-var once sync.Once
+var dbWrite *gorm.DB
+var dbRead *gorm.DB
+var onceWrite sync.Once
+var onceRead sync.Once
 
-func GetPostgres(log *logger.LoggerLogstash) *gorm.DB {
-	once.Do(func() {
-		dsn := os.Getenv("DNS")
+func GetPostgresWrite(log *logger.LoggerLogstash) *gorm.DB {
+	onceWrite.Do(func() {
+		dsn := os.Getenv("DSN_WRITE")
 		db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 		if err != nil {
-			log.Error("Error al conectar a la base de datos:", err)
+			log.Error("Error al conectar a la base de datos (write):", err)
 		}
-		log.Info("Conexión exitosa a PostgreSQL con GORM")
-		dbInstance = db
+		log.Info("Conexión exitosa a PostgreSQL (write) con GORM")
+		dbWrite = db
 	})
-	return dbInstance
+	return dbWrite
+}
+
+func GetPostgresRead(log *logger.LoggerLogstash) *gorm.DB {
+	onceRead.Do(func() {
+		dsn := os.Getenv("DSN_READ")
+		db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
+		if err != nil {
+			log.Error("Error al conectar a la base de datos (read):", err)
+		}
+		log.Info("Conexión exitosa a PostgreSQL (read) con GORM")
+		dbRead = db
+	})
+	return dbRead
 }

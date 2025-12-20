@@ -6,19 +6,17 @@ import (
 	"github.com/tcero76/marketplace/bff-service/dto"
 	"github.com/tcero76/marketplace/bff-service/payload"
 	logger "github.com/tcero76/marketplace/config"
-	"github.com/tcero76/marketplace/postgres/config"
 	"github.com/tcero76/marketplace/postgres/model"
 	"gorm.io/gorm"
 )
 
 type SearchService struct {
-	DB  *gorm.DB
-	log *logger.LoggerLogstash
+	dbRead *gorm.DB
+	log    *logger.LoggerLogstash
 }
 
-func NewSearchService(log *logger.LoggerLogstash) *SearchService {
-	db := config.GetPostgres(log)
-	return &SearchService{DB: db, log: log}
+func NewSearchService(log *logger.LoggerLogstash, dbRead *gorm.DB) *SearchService {
+	return &SearchService{dbRead: dbRead, log: log}
 }
 
 type Specification interface {
@@ -84,7 +82,7 @@ func (s *SearchService) GetSearch(searchRequest payload.SearchRequest) []dto.Sea
 		SelectSpec{Words: searchRequest.Text, log: s.log},
 	}
 	var modeloSearchDTOs []dto.SearchDTO
-	err := ApplySpecifications(s.DB.Model(&model.Modelo{}), specs...).
+	err := ApplySpecifications(s.dbRead.Model(&model.Modelo{}), specs...).
 		Find(&modeloSearchDTOs)
 	if err.Error != nil {
 		s.log.Error("Error al obtener los modelos en GetSearch: ", err.Error)

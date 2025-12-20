@@ -10,6 +10,7 @@ import (
 
 	"github.com/tcero76/marketplace/bff-service/oauth2"
 	"github.com/tcero76/marketplace/bff-service/oauth2/cor"
+	postgresConfig "github.com/tcero76/marketplace/postgres/config"
 	modelServices "github.com/tcero76/marketplace/postgres/services"
 	redisServices "github.com/tcero76/marketplace/redis/services"
 
@@ -25,11 +26,14 @@ func main() {
 	log := logConfig.NewLoggerLogstash("🗄️  BFF")
 	log.Info("Iniciando servidor...")
 
+	dbWrite := postgresConfig.GetPostgresWrite(log)
+	dbRead := postgresConfig.GetPostgresRead(log)
+
 	authCacheService := redisServices.NewAuthCacheService(log)
-	userServices := modelServices.NewUserService(log)
-	modeloService := modelServices.NewModeloService(log)
-	postService := modelServices.NewPostsService(log)
-	searchService := modelServices.NewSearchService(log)
+	userServices := modelServices.NewUserService(log, dbWrite, dbRead)
+	modeloService := modelServices.NewModeloService(log, dbWrite, dbRead)
+	postService := modelServices.NewPostsService(log, dbWrite, dbRead)
+	searchService := modelServices.NewSearchService(log, dbRead)
 
 	cfg := hydra.NewConfiguration()
 	cfg.Servers = hydra.ServerConfigurations{{URL: os.Getenv("HYDRA_ADMIN_URL")}}

@@ -5,26 +5,28 @@ import (
 
 	"github.com/tcero76/marketplace/bff-service/dto"
 	logger "github.com/tcero76/marketplace/config"
-	"github.com/tcero76/marketplace/postgres/config"
 	"github.com/tcero76/marketplace/postgres/model"
 
 	"gorm.io/gorm"
 )
 
 type ModeloService struct {
-	DB  *gorm.DB
-	log *logger.LoggerLogstash
+	dbWrite *gorm.DB
+	dbRead  *gorm.DB
+	log     *logger.LoggerLogstash
 }
 
-func NewModeloService(log *logger.LoggerLogstash) *ModeloService {
-	db := config.GetPostgres(log)
-	return &ModeloService{DB: db, log: log}
+func NewModeloService(log *logger.LoggerLogstash, dbWrite *gorm.DB, dbRead *gorm.DB) *ModeloService {
+	return &ModeloService{
+		dbWrite: dbWrite,
+		dbRead:  dbRead,
+		log:     log}
 }
 
 func (s *ModeloService) GetModelByModelo(query string) (*dto.Modelo, error) {
 	s.log.Info("Entrando a GetModelByModelo")
 	modelo := &model.Modelo{}
-	result := s.DB.
+	result := s.dbRead.
 		Model(&model.Modelo{}).
 		Where("modelo = ?", query).
 		Where("modelo = ?", query).First(modelo)
@@ -46,7 +48,7 @@ func (s *ModeloService) GetSearch(text []string) (*[]dto.Modelo, error) {
 	WHERE descripcion_tsv @@ to_tsquery('spanish', ?)
 	ORDER BY rank DESC
 	`
-	result := s.DB.Raw(query, tsquery, tsquery).Scan(&modelos)
+	result := s.dbRead.Raw(query, tsquery, tsquery).Scan(&modelos)
 	if result.Error != nil {
 		s.log.Error("Error al obtener los modelos: ", result.Error)
 		return nil, result.Error
@@ -56,7 +58,7 @@ func (s *ModeloService) GetSearch(text []string) (*[]dto.Modelo, error) {
 
 func (s *ModeloService) GetModelos() []dto.Modelo {
 	var modelos []model.Modelo
-	err := s.DB.Select("modelo").Find(&modelos)
+	err := s.dbRead.Select("modelo").Find(&modelos)
 	if err.Error != nil {
 		s.log.Error("Error al obtener los modelos: ", err.Error)
 		return []dto.Modelo{}

@@ -8,7 +8,6 @@ import (
 	"github.com/tcero76/marketplace/bff-service/dto"
 	logger "github.com/tcero76/marketplace/config"
 
-	"github.com/tcero76/marketplace/postgres/config"
 	"github.com/tcero76/marketplace/postgres/model"
 	"github.com/tcero76/marketplace/rabbitmq/events"
 
@@ -17,20 +16,20 @@ import (
 )
 
 type UserService struct {
-	DB  *gorm.DB
-	log *logger.LoggerLogstash
+	dbWrite *gorm.DB
+	dbRead  *gorm.DB
+	log     *logger.LoggerLogstash
 }
 
-func NewUserService(log *logger.LoggerLogstash) *UserService {
+func NewUserService(log *logger.LoggerLogstash, dbWrite *gorm.DB, dbRead *gorm.DB) *UserService {
 	log.Info("Initializing UserService")
-	db := config.GetPostgres(log)
-	return &UserService{DB: db, log: log}
+	return &UserService{dbWrite: dbWrite, dbRead: dbRead, log: log}
 }
 
 func (s *UserService) GetUser(username string) (*dto.UserDTO, error) {
 	var user *model.User
 	s.log.Info("GetUser called with username: ", username)
-	err := s.DB.Where("nombre = ?", username).First(&user).Error
+	err := s.dbRead.Where("nombre = ?", username).First(&user).Error
 	userDTO := dto.ToUserDTO(*user)
 	return &userDTO, err
 }
@@ -38,7 +37,7 @@ func (s *UserService) GetUser(username string) (*dto.UserDTO, error) {
 func (s *UserService) GetUserById(userId string) (*dto.UserDTO, error) {
 	s.log.Info("GetUserById called with userId: ", userId)
 	var user *model.User
-	err := s.DB.Where("user_id = ?", userId).First(&user).Error
+	err := s.dbRead.Where("user_id = ?", userId).First(&user).Error
 	userDTO := dto.ToUserDTO(*user)
 	return &userDTO, err
 }
@@ -46,7 +45,7 @@ func (s *UserService) GetUserById(userId string) (*dto.UserDTO, error) {
 func (s *UserService) CreateUser(userDTO *dto.UserDTO) error {
 	s.log.Info("CreateUser called with user: ", userDTO)
 	user := dto.ToUser(*userDTO)
-	return s.DB.Transaction(func(tx *gorm.DB) error {
+	return s.dbWrite.Transaction(func(tx *gorm.DB) error {
 		if err := tx.Create(user).Error; err != nil {
 			s.log.Error("Error creating user: ", err)
 			return err
@@ -80,7 +79,7 @@ func (s *UserService) CreateUser(userDTO *dto.UserDTO) error {
 
 func (s *UserService) GetUserByEmail(email string) (*dto.UserDTO, error) {
 	var user model.User
-	err := s.DB.Where("email = ?", email).First(&user).Error
+	err := s.dbRead.Where("email = ?", email).First(&user).Error
 	userDTO := dto.ToUserDTO(user)
 	return &userDTO, err
 }
