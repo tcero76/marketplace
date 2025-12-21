@@ -100,7 +100,6 @@ env:
   POSTGRES_DB: marketplace
   POSTGRES_PORT: 5000
   POSTGRES_HOST: haproxy
-  # patroni
 
   #OAuth google
   GOOGLE_OAUTH2_REDIRECT_URI: http://localhost:8080/bff/callback
@@ -110,7 +109,7 @@ env:
   SMTP_USER: leonardo.lastra@gmail.com
   # docker
   DOCKER_USERNAME: tcero76
-  PROTOCOL_EXTERNAL: http
+  PROTOCOL_EXTERNAL: https
   PROTOCOL_WS_EXTERNAL: ws
 jobs:
   terraform:
