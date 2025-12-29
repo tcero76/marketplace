@@ -10,9 +10,9 @@ import (
 
 func NewLoggerLogstash(icon string) *LoggerLogstash {
 	if os.Getenv("MONITOREO") == "true" {
-		return &LoggerLogstash{log: initLogrus(icon)}
+		return &LoggerLogstash{log: setLogLevel(initLogrus(icon))}
 	}
-	return &LoggerLogstash{log: initDev(icon)}
+	return &LoggerLogstash{log: setLogLevel(initDev(icon))}
 }
 
 func initLogrus(icon string) *logrus.Entry {
@@ -21,7 +21,6 @@ func initLogrus(icon string) *logrus.Entry {
 	if err != nil {
 		log.Fatal(err)
 	}
-	log.SetLevel(logrus.InfoLevel)
 	hook := logrustash.New(conn, logrustash.DefaultFormatter(logrus.Fields{"type": "bff"}))
 	log.AddHook(hook)
 	log.SetFormatter(&logrus.JSONFormatter{})
@@ -35,4 +34,21 @@ func initDev(icon string) *logrus.Entry {
 	log.SetFormatter(&LogstashFormatter{EnableColors: true, icon: icon})
 	log.SetLevel(logrus.InfoLevel)
 	return logrus.NewEntry(log)
+}
+
+func setLogLevel(log *logrus.Entry) *logrus.Entry {
+	level := os.Getenv("LOG_LEVEL")
+	switch level {
+	case "debug":
+		log.Logger.SetLevel(logrus.DebugLevel)
+	case "info":
+		log.Logger.SetLevel(logrus.InfoLevel)
+	case "warn":
+		log.Logger.SetLevel(logrus.WarnLevel)
+	case "error":
+		log.Logger.SetLevel(logrus.ErrorLevel)
+	default:
+		log.Logger.SetLevel(logrus.InfoLevel)
+	}
+	return log
 }
