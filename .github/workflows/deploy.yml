@@ -143,7 +143,7 @@ jobs:
         id: get_ip
         run: |
           manager_ip=$(terraform -chdir=terraform output -raw manager_public_ip)
-          echo "manager_ip=$manager_ip" >> "$GITHUB_OUTPUT"
+          echo "manager_ip="sugarfevercl.ddns.net" >> "$GITHUB_OUTPUT"
 
   detect_changed_services:
     runs-on: ubuntu-22.04
