@@ -1,6 +1,6 @@
 services:
   bff-service:
-    image: tcero76/bff-service:1a1104f0bebaaf60ce3c7ac51b6c84aaed8ab3fb
+    image: tcero76/bff-service:11b8b37c1b1ee3c720f157b88eb5f42d0a7cae6c
   cache-updater-service:
     image: tcero76/cache-updater-service:${TAG}
   broker-email-service:
@@ -12,7 +12,7 @@ services:
   ws-service:
     image: tcero76/ws-service:${TAG}
   front:
-    image: tcero76/front:7556711b497614035cfa786b42ecf123897baeeb
+    image: tcero76/front:11b8b37c1b1ee3c720f157b88eb5f42d0a7cae6c
   solana-service:
     image: tcero76/solana-service:${TAG}
   scrap-service:
