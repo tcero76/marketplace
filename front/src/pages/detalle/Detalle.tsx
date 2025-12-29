@@ -27,15 +27,15 @@ const Detalle = () => {
       <div className="col bg-primary text-white p-3 rounded">
         { modelo!=undefined && <VideoPlayer src={src}/>}
       </div>
-      {/* <div className="col bg-success text-white p-3 rounded">
+      <div className="col bg-success text-white p-3 rounded">
         <SimpleChat/>
-      </div> */}
+      </div>
     </div>
-    {/* <div className="row">
+    <div className="row">
       <div className="col bg-warning p-3 rounded">
         <Pago/>
       </div>
-    </div> */}
+    </div>
     <div className="row">
       <div className="col p-3 rounded">
         <CreatePost/>
