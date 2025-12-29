@@ -12,6 +12,7 @@ const initModelo:Modelo = { descripcion: '', modelo: '', id: 0, fecharegistro: n
 const Detalle = () => {
   const [ modeloState, setModeloState ] = useState<Modelo>(initModelo);
   const { modelo } = useParams<{ modelo: string }>();
+  const src = modelo ? `https://sugarfever-media.ddns.net/${modelo}/index.m3u8` : ''
   useEffect(() => {
     getUserApi().getModelo(modelo || '')
       .then((res) => {
@@ -24,17 +25,17 @@ const Detalle = () => {
       <p>{modeloState.descripcion}</p>
     <div className="row mb-3">
       <div className="col bg-primary text-white p-3 rounded">
-        <VideoPlayer/>
+        { modelo!=undefined && <VideoPlayer src={src}/>}
       </div>
-      <div className="col bg-success text-white p-3 rounded">
+      {/* <div className="col bg-success text-white p-3 rounded">
         <SimpleChat/>
-      </div>
+      </div> */}
     </div>
-    <div className="row">
+    {/* <div className="row">
       <div className="col bg-warning p-3 rounded">
         <Pago/>
       </div>
-    </div>
+    </div> */}
     <div className="row">
       <div className="col p-3 rounded">
         <CreatePost/>

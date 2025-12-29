@@ -2,14 +2,14 @@ import { useEffect, useRef } from 'react';
 import Hls from 'hls.js'
 
 interface HlsPlayerProps {
-    src?: string;
+    src: string;
     autoPlay?: boolean;
     controls?: boolean;
     muted?: boolean;
     className?: string;
   }
 export const VideoPlayer:React.FC<HlsPlayerProps> = ({
-    src = '',
+    src,
     autoPlay = true,
     controls = false,
     muted = true,
