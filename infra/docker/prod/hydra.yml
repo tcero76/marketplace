@@ -1,14 +1,11 @@
 services:
   hydra:
     image: tcero76/hydra:v0.0.0
-    ports:
-      - "4444:4444"
-      - "4445:4445"
     command: hydra serve all --dev
     environment:
-      - URLS_SELF_ISSUER=${PROTOCOL_EXTERNAL}://${HOST_EXTERNAL}:${PORT_EXTERNAL}/hydra
-      - URLS_LOGIN=${PROTOCOL_EXTERNAL}://${HOST_EXTERNAL}:${PORT_EXTERNAL}/login 
-      - URLS_CONSENT=${PROTOCOL_EXTERNAL}://${HOST_EXTERNAL}:${PORT_EXTERNAL}/bff/consent
+      - URLS_SELF_ISSUER=${PROTOCOL_EXTERNAL}://${HOST_EXTERNAL}/hydra
+      - URLS_LOGIN=${PROTOCOL_EXTERNAL}://${HOST_EXTERNAL}/login
+      - URLS_CONSENT=${PROTOCOL_EXTERNAL}://${HOST_EXTERNAL}/bff/consent
       - SECRETS_SYSTEM=some_secret_key_system
       - TTL_ACCESS_TOKEN=1h
       - TTL_REFRESH_TOKEN=720h
@@ -21,12 +18,20 @@ services:
       - patroni_admin_password
     networks:
       - ${NETWORK_APPLICATION:-application}
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.hydra.rule=Host(`sugarfever.ddns.net`) && PathPrefix(`/hydra`)
+      - traefik.http.routers.hydra.entrypoints=websecure
+      - traefik.http.routers.hydra.tls.certresolver=le
+      - traefik.http.middlewares.hydra-strip.stripprefix.prefixes=/hydra
+      - traefik.http.routers.hydra.middlewares=hydra-strip
+      - traefik.http.services.hydra.loadbalancer.server.port=4444
     deploy:
       mode: replicated
       replicas: 1
       placement:
         constraints:
-          - node.hostname == swarm-worker-0
+          - node.hostname == swarm-manager
       restart_policy:
         condition: on-failure
     healthcheck:

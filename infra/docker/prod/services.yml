@@ -4,7 +4,8 @@ services:
     command: ["/app/main"]
     environment:
       - PORT=3000
-      - PORT_EXTERNAL=${PORT_EXTERNAL}
+      - PORT_EXTERNAL_WRITE=${PORT_EXTERNAL_WRITE}
+      - PORT_EXTERNAL_READ=${PORT_EXTERNAL_READ}
       - HOST_EXTERNAL=${HOST_EXTERNAL}
       - REDIRECT_URL=${PROTOCOL_EXTERNAL}://${HOST_EXTERNAL}:${PORT_EXTERNAL}/bff/callback
       - HYDRA_ADMIN_URL=http://hydra:4445
@@ -47,7 +48,8 @@ services:
       - traefik.enable=true
       - traefik.http.middlewares.bff-strip.stripprefix.prefixes=/bff
       - traefik.http.routers.bff.rule=PathPrefix(`/bff`)
-      - traefik.http.routers.bff.entrypoints=web
+      - traefik.http.routers.bff.entrypoints=websecure
+      - traefik.http.routers.front.tls.certresolver=le
       - traefik.http.services.bff.loadbalancer.server.port=3000
       - traefik.http.routers.bff.middlewares=bff-strip
     deploy:

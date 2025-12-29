@@ -1,6 +1,6 @@
 services:
   bff-service:
-    image: tcero76/bff-service:bfcddb0b641de88951da79a30a82afe473c97dcd
+    image: tcero76/bff-service:11b8b37c1b1ee3c720f157b88eb5f42d0a7cae6c
   cache-updater-service:
     image: tcero76/cache-updater-service:${TAG}
   broker-email-service:

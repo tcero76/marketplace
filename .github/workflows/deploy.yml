@@ -18,7 +18,7 @@ on:
 env:
   PROFILE: prod
   # Application
-  PORT_EXTERNAL: 80
+  PORT_EXTERNAL: 443
   NETWORK_APPLICATION: application
   TF_VAR_overlay_network: application
   TAG: v0.0.0

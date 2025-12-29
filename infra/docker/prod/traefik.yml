@@ -27,7 +27,7 @@ services:
       - ${NETWORK_APPLICATION:-application}
     labels:
       - traefik.enable=true
-      - traefik.http.routers.traefik.rule=Host(`sugarfever-trafik.ddns.net`)
+      - traefik.http.routers.traefik.rule=Host(`sugarfever-traefik.ddns.net`)
       - traefik.http.routers.traefik.entrypoints=websecure
       - traefik.http.routers.traefik.tls.certresolver=le
       - traefik.http.routers.traefik.service=api@internal
