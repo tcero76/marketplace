@@ -30,8 +30,8 @@ services:
       context: ./front
       target: ${PROFILE}
       args:
-        VITE_HOST: "${PROTOCOL_EXTERNAL}://${HOST_EXTERNAL}:${PORT_EXTERNAL}"
-        VITE_WS: "ws://${HOST_EXTERNAL}:${PORT_EXTERNAL}"
+        VITE_HOST: "${PROTOCOL_EXTERNAL}://${HOST_EXTERNAL}"
+        VITE_WS: "ws://${HOST_EXTERNAL}"
         VITE_CLIENT_ID: "${CLIENT_ID}"
         VITE_MOCK: ${VITE_MOCK}
   solana-service:
