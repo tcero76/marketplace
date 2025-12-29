@@ -124,7 +124,7 @@ services:
             POSTGRES_DB: ${PATRONI_ADMIN_DB}
             POSTGRES_HOST: ${PATRONI_ADMIN_HOST}
             POSTGRES_PASSWORD_FILE: /run/secrets/patroni_admin_password
-            POSTGRES_PORT: ${PATRONI_ADMIN_PORT}
+            POSTGRES_PORT: ${POSTGRES_PORT_WRITE}
             URL_EXTERNAL: ${PROTOCOL_EXTERNAL}://${HOST_EXTERNAL}:${PORT_EXTERNAL}
         secrets:
         - patroni_admin_password
@@ -135,6 +135,8 @@ services:
             placement:
                 constraints:
                 - node.hostname == swarm-manager
+        depends_on:
+            - haproxy
         networks:
         - ${NETWORK_APPLICATION:-application}
 secrets:

@@ -7,8 +7,8 @@ services:
       - PORT_EXTERNAL=${PORT_EXTERNAL}
       - HOST_EXTERNAL=${HOST_EXTERNAL}
       - REDIRECT_URL=${PROTOCOL_EXTERNAL}://${HOST_EXTERNAL}:${PORT_EXTERNAL}/bff/callback
-      - HYDRA_ADMIN_URL=${PROTOCOL_EXTERNAL}://hydra:4445
-      - HYDRA_PUBLIC_URL=${PROTOCOL_EXTERNAL}://hydra:4444
+      - HYDRA_ADMIN_URL=http://hydra:4445
+      - HYDRA_PUBLIC_URL=http://hydra:4444
       - CLIENT_ID=${CLIENT_ID}
       - CLIENT_SECRET=${CLIENT_SECRET}
       - CLICKHOUSE_HOST=clickhouse
@@ -25,7 +25,7 @@ services:
       - POSTGRES_PASSWORD_FILE=/run/secrets/patroni_admin_password
       - POSTGRES_USER=${POSTGRES_USER}
       - POSTGRES_HOST=${POSTGRES_HOST}
-      - POSTGRES_PORT=${POSTGRES_PORT}
+      - POSTGRES_PORT=${POSTGRES_PORT_WRITE}
       - POSTGRES_DB=${POSTGRES_DB}
       - MONITOREO=${MONITOREO}
     networks:
@@ -86,7 +86,7 @@ services:
     environment:
       - POSTGRES_USER=${POSTGRES_USER}
       - POSTGRES_HOST=${POSTGRES_HOST}
-      - POSTGRES_PORT=${POSTGRES_PORT}
+      - POSTGRES_PORT=${POSTGRES_PORT_WRITE}
       - POSTGRES_DB=${POSTGRES_DB}
       - POSTGRES_PASSWORD_FILE=/run/secrets/patroni_admin_password
       - BROKER=${BROKER}
@@ -258,7 +258,7 @@ services:
   #   tty: true
   #   stdin_open: true
   #   environment:
-  #     - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}
+  #     - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT_WRITE}/${POSTGRES_DB}
   #     - BROKER=${BROKER}
   #     - PORT=8000
   #     - RECOMENDER_QUEUE=${RECOMENDER_QUEUE}

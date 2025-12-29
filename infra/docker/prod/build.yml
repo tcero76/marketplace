@@ -74,3 +74,4 @@ services:
     build:
       dockerfile: deploy/Dockerfile
       context: flyway/
+      target: ${PROFILE}
