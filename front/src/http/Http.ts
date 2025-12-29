@@ -86,7 +86,7 @@ export default class Http implements IHttpApi {
     return authUrl;
   }
 
-  fetchLoginChallenge =  createAsyncThunk<FetchLoginChallengeType,void, object>(
+  fetchLoginChallenge = createAsyncThunk<FetchLoginChallengeType,void, object>(
     '/hydra/oauth2/auth',
     async ():Promise<FetchLoginChallengeType>  => {
       const stateVerification = uuidv4();
