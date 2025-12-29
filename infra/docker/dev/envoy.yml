@@ -1,19 +1,31 @@
 services:
   envoy:
+    image: envoyproxy/envoy:${ENVOY_VERSION}
     container_name: envoy
-    # profiles:
-    #   - front
+    profiles:
+      - media
     tty: true
     stdin_open: true
-    environment:
-     - ENVOY_HOST=0.0.0.0
-     - ENVOY_PORT=$PORT_EXTERNAL
+    ports:
+      - "9901:9901"
     volumes:
       - ./infra/docker/config/envoy/envoy.dev.yaml:/etc/envoy/envoy.yaml
-      - ./infra/docker/config/envoy/fullchain.pem:/etc/envoy/certs/fullchain.pem
-      - ./infra/docker/config/envoy/privkey.pem:/etc/envoy/certs/privkey.pem
-    ports:
-      - $PORT_EXTERNAL:$PORT_EXTERNAL
-      - 443:443
     networks:
-      - ${NETWORK_APPLICATION}
+      - ${NETWORK_APPLICATION:-application}
+    labels:
+      - traefik.enable=true
+
+      # TCP router RTMP (PLAIN TCP)
+      - traefik.tcp.routers.rtmp.rule=HostSNI(`*`)
+      - traefik.tcp.routers.rtmp.entrypoints=rtmp
+      - traefik.tcp.routers.rtmp.tls=false
+      - traefik.tcp.routers.rtmp.service=rtmp-envoy
+
+      # TCP service
+      - traefik.tcp.services.rtmp-envoy.loadbalancer.server.port=1935
+
+      # HTTP router HLS (HTTP)
+      - traefik.http.routers.hls.rule=Host(`sugarfever-media.ddns.net`)
+      - traefik.http.routers.hls.entrypoints=websecure
+      - traefik.http.routers.hls.tls.certresolver=le
+      - traefik.http.services.hls.loadbalancer.server.port=8888

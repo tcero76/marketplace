@@ -25,3 +25,7 @@ services:
     image: tcero76/mediamtx-service:${TAG}
   hydra:
     image: tcero76/hydra:${TAG}
+  mediamtx1:
+    image: tcero76/mediamtx:${TAG}
+  mediamtx2:
+    image: tcero76/mediamtx:${TAG}

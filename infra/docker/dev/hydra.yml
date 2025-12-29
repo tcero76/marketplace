@@ -25,6 +25,14 @@ services:
       - traefik.http.middlewares.hydra-strip.stripprefix.prefixes=/hydra
       - traefik.http.routers.hydra.middlewares=hydra-strip
       - traefik.http.services.hydra.loadbalancer.server.port=4444
+
+      - traefik.http.routers.hydra-public.rule=PathPrefix(`/hydra`)
+      - traefik.http.routers.hydra-public.entrypoints=websecure
+      - traefik.http.routers.hydra-public.tls.certresolver=le
+      - traefik.http.middlewares.hydra-public-strip.stripprefix.prefixes=/hydra
+      - traefik.http.routers.hydra-public.middlewares=hydra-public-strip
+      - traefik.http.services.hydra-public.loadbalancer.server.port=4445
+
     depends_on:
      - db
     networks:

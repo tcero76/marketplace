@@ -56,8 +56,21 @@ services:
       target: ${PROFILE}
   mediamtx-service:
     build:
-      dockerfile: ./mediamtx-service/Dockerfile
+      dockerfile: ./mediamtx-service/deploy/Dockerfile
       context: .
+      target: ${PROFILE}
+  mediamtx1:
+    build:
+      context: ./infra/docker/config/mediamtx/
+      dockerfile: Dockerfile
+      args:
+        MEDIAMTX_VERSION: ${MEDIAMTX_VERSION}
+  mediamtx2:
+    build:
+      context: ./infra/docker/config/mediamtx/
+      dockerfile: Dockerfile
+      args:
+        MEDIAMTX_VERSION: ${MEDIAMTX_VERSION}
   clickhouse:
     build:
       context: ./clickhouse/image/

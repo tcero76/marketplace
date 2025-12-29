@@ -176,8 +176,6 @@ services:
       - traefik.http.routers.front.entrypoints=websecure
       - traefik.http.routers.front.tls.certresolver=le
       - traefik.http.services.front.loadbalancer.server.port=5173
-    depends_on:
-      - traefik
   solana-service:
     profiles:
       - solana
@@ -279,10 +277,13 @@ services:
       - 3001:3001
     volumes:
       - ./mediamtx-service:/app
+      - ./config:/app/config
+      - ./redis:/app/redis
     environment:
       - HYDRA_PUBLIC_URL=${PROTOCOL_EXTERNAL}://hydra:4444
       - TIME_SEC_WAIT_RTMP_CONECTION=60
       - PORT=3001
+      - REDIS_HOST=${REDIS_HOST}
     networks:
       - ${NETWORK_APPLICATION:-application}
 

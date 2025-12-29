@@ -1,17 +1,45 @@
 services:
-  mediamtx:
-    image: bluenviron/mediamtx:${MEDIAMTX_VERSION}
-    container_name: mediamtx
+  mediamtx1:
+    container_name: mediamtx1
     entrypoint: /mediamtx /etc/mediamtx/mediamtx.yml
     profiles:
       - media
-    ports:
-      - "1935:1935"
+    # ports:
+    #   - "8888:8888"
     volumes:
-      - ./config/mediamtx/mediamtx.yml:/etc/mediamtx/mediamtx.yml
+      - ./infra/docker/config/mediamtx/mediamtx1.yml:/etc/mediamtx/mediamtx.yml
       - ${MEDIAMTX_VOLUME}/data:/data
     environment:
+      - NODE_ID=mediamtx1
       - MEDIAMTX_CONFIG_PATH=/etc/mediamtx/mediamtx.yml
     restart: unless-stopped
     networks:
-      - ${NETWORK_APPLICATION}
+      - ${NETWORK_APPLICATION:-application}
+    # labels:
+    #   - traefik.enable=true
+    #   - traefik.http.routers.mediamtx-hls.rule=Host(`sugarfever-media.ddns.net`)
+    #   - traefik.http.routers.mediamtx-hls.entrypoints=websecure
+    #   - traefik.http.routers.mediamtx-hls.tls.certresolver=le
+    #   - traefik.http.services.mediamtx-hls.loadbalancer.server.port=8888
+  mediamtx2:
+    container_name: mediamtx2
+    entrypoint: /mediamtx /etc/mediamtx/mediamtx.yml
+    profiles:
+      - media
+    # ports:
+    #   - "8899:8899"
+    volumes:
+      - ./infra/docker/config/mediamtx/mediamtx2.yml:/etc/mediamtx/mediamtx.yml
+      - ${MEDIAMTX_VOLUME}/data:/data
+    environment:
+      - NODE_ID=mediamtx2
+      - MEDIAMTX_CONFIG_PATH=/etc/mediamtx/mediamtx.yml
+    restart: unless-stopped
+    networks:
+      - ${NETWORK_APPLICATION:-application}
+    # labels:
+    #   - traefik.enable=true
+    #   - traefik.http.routers.mediamtx-hls.rule=Host(`sugarfever-media.ddns.net`)
+    #   - traefik.http.routers.mediamtx-hls.entrypoints=websecure
+    #   - traefik.http.routers.mediamtx-hls.tls.certresolver=le
+    #   - traefik.http.services.mediamtx-hls.loadbalancer.server.port=8899

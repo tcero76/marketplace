@@ -3,6 +3,7 @@ WORKDIR /app
 
 RUN go install github.com/air-verse/air@latest
 RUN go install github.com/swaggo/swag/cmd/swag@latest
+ENTRYPOINT ["air"]
 
 FROM golang:1.25 AS builder 
 WORKDIR /app
