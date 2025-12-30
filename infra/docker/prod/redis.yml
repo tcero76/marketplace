@@ -1,10 +1,14 @@
 services:
   cache:
     image: redis:${REDIS_VERSION}
+    command: redis-server /usr/local/etc/redis/redis.conf
     networks:
       - ${NETWORK_APPLICATION:-application}
     volumes:
       - ${REDIS_VOLUME}/data:/data
+    configs:
+      - source: redis_config
+        target: /usr/local/etc/redis/redis.conf
     deploy:
       mode: replicated
       replicas: 1
@@ -13,3 +17,6 @@ services:
           - node.hostname == swarm-manager
       restart_policy:
         condition: on-failure
+configs:
+  redis_config:
+    external: true
