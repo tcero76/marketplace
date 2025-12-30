@@ -11,20 +11,20 @@ import (
 
 func InitRedis() *redis.Client {
 	log := logConfig.NewLoggerLogstash("🗄️ Redis")
-	log.Info("Initializing Redis Client...")
-
+	addr := os.Getenv("REDIS_HOST") + ":6379"
+	log.Info("Connecting to Redis at " + addr)
 	rdb := redis.NewClient(&redis.Options{
-		Addr: os.Getenv("REDIS_HOST") + ":6379",
+		Addr: addr,
 	})
 
-	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
 	if err := rdb.Ping(ctx).Err(); err != nil {
-		log.Error("❌ Redis connection failed" + err.Error())
+		log.Error("❌ Redis connection failed: " + err.Error())
 		return nil
 	}
 
-	log.Info("✅ Redis connected successfully")
+	log.Info("✅ Redis connected successfully at " + addr)
 	return rdb
 }

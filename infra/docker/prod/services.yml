@@ -42,7 +42,7 @@ services:
     healthcheck:
       test: ["CMD", "wget", "-qO-", "http://localhost:3000/health"]
       interval: 10s
-      timeout: 2s
+      timeout: 10s
       retries: 5
     labels:
       - traefik.enable=true
