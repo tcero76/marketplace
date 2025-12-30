@@ -21,7 +21,7 @@ func InitRedis() *redis.Client {
 	defer cancel()
 
 	if err := rdb.Ping(ctx).Err(); err != nil {
-		log.Error("❌ Redis connection failed")
+		log.Error("❌ Redis connection failed" + err.Error())
 		return nil
 	}
 
