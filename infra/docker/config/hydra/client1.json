@@ -7,7 +7,8 @@
     "created_at": "2025-02-23T00:22:27Z",
     "grant_types": [
         "authorization_code",
-        "refresh_token"
+        "refresh_token",
+        "client_credentials"
     ],
     "jwks": {},
     "logo_uri": "",
@@ -15,7 +16,7 @@
     "owner": "",
     "policy_uri": "",
     "redirect_uris": [
-        "http://localhost:3000/callback"
+        "https://sugarfever.ddns.net/bff/callback"
     ],
     "registration_access_token": "ory_at_DcrcPbrd2VvroicLFTIt27jNnTiVzuoE_g8TkW6BYVc.7fXdOwW9wac7cAm_nwCZgb2HdQyb2PvQM10RHmw-VLQ",
     "registration_client_uri": "http://localhost:4444/oauth2/register/",
@@ -23,7 +24,7 @@
     "response_types": [
         "code"
     ],
-    "scope": "openid offline",
+    "scope": "openid offline mediamtx:stream",
     "skip_consent": true,
     "skip_logout_consent": true,
     "subject_type": "public",

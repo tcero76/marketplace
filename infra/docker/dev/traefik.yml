@@ -2,6 +2,8 @@ services:
   traefik:
     image: traefik:v3.0
     container_name: traefik
+    profiles:
+      - traefik
     command:
       - "--api.dashboard=true"
 
@@ -10,8 +12,7 @@ services:
       - "--entrypoints.rtmp.address=:1935"
       - "--entrypoints.web.http.redirections.entrypoint.to=websecure"
       - "--entrypoints.web.http.redirections.entrypoint.scheme=https"
-
-#      - "--certificatesresolvers.le.acme.caServer=https://acme-staging-v02.api.letsencrypt.org/directory"
+      - "--certificatesresolvers.le.acme.caServer=https://acme-staging-v02.api.letsencrypt.org/directory"
       - "--certificatesresolvers.le.acme.email=admin@sugarfever.ddns.net"
       - "--certificatesresolvers.le.acme.storage=/letsencrypt/acme.json"
       - "--certificatesresolvers.le.acme.tlschallenge=true"

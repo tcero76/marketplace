@@ -15,14 +15,14 @@ services:
     stdin_open: true
     tty: true
     environment:
-      - DSN_WRITE=postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:5432/${POSTGRES_DB}?sslmode=disable&options=-c%20search_path%3Dmarketplace
-      - DSN_READ=postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:5432/${POSTGRES_DB}?sslmode=disable&options=-c%20search_path%3Dmarketplace
+      - DNS_WRITE=postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:5432/${POSTGRES_DB}?sslmode=disable&options=-c%20search_path%3Dmarketplace
+      - DNS_READ=postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:5432/${POSTGRES_DB}?sslmode=disable&options=-c%20search_path%3Dmarketplace
       - PORT=3000
       - PORT_EXTERNAL=${PORT_EXTERNAL}
       - HOST_EXTERNAL=${HOST_EXTERNAL}
-      - REDIRECT_URL=${PROTOCOL_EXTERNAL}://${HOST_EXTERNAL}:${PORT_EXTERNAL}/bff/callback
-      - HYDRA_ADMIN_URL=${PROTOCOL_EXTERNAL}://hydra:4445
-      - HYDRA_PUBLIC_URL=${PROTOCOL_EXTERNAL}://hydra:4444
+      - REDIRECT_URL=${PROTOCOL_EXTERNAL}://${HOST_EXTERNAL}/bff/callback
+      - HYDRA_ADMIN_URL=http://hydra:4445
+      - HYDRA_PUBLIC_URL=http://hydra:4444
       - CLIENT_ID=${CLIENT_ID}
       - CLIENT_SECRET=${CLIENT_SECRET}
       - CLICKHOUSE_HOST=clickhouse
@@ -35,13 +35,16 @@ services:
       - PROFILE=${PROFILE}
       - REDIS_HOST=${REDIS_HOST}
       - MONITOREO=${MONITOREO}
+      - LOG_LEVEL=${LOG_LEVEL}
     labels:
       - traefik.enable=true
       - traefik.http.middlewares.bff-strip.stripprefix.prefixes=/bff
-      - traefik.http.routers.bff.rule=PathPrefix(`/bff`)
-      - traefik.http.routers.bff.entrypoints=web
-      - traefik.http.services.bff.loadbalancer.server.port=3000
+      - traefik.http.routers.bff.rule=Host(`sugarfever.ddns.net`) && PathPrefix(`/bff`)
+      - traefik.http.routers.bff.entrypoints=websecure
+      - traefik.http.routers.bff.priority=100
+      - traefik.http.routers.bff.tls.certresolver=le
       - traefik.http.routers.bff.middlewares=bff-strip
+      - traefik.http.services.bff.loadbalancer.server.port=3000
     networks:
       - ${NETWORK_APPLICATION:-application}
     depends_on:
@@ -159,8 +162,8 @@ services:
     tty: true
     stdin_open: true
     environment:
-      - VITE_HOST=${PROTOCOL_EXTERNAL}://${HOST_EXTERNAL}:${PORT_EXTERNAL}
-      - VITE_WS=${PROTOCOL_WS_EXTERNAL}://${HOST_EXTERNAL}:${PORT_EXTERNAL}
+      - VITE_HOST=${PROTOCOL_EXTERNAL}://${HOST_EXTERNAL}
+      - VITE_WS=${PROTOCOL_WS_EXTERNAL}://${HOST_EXTERNAL}
       - VITE_CLIENT_ID=${CLIENT_ID}
       - VITE_MOCK=${VITE_MOCK}
     ports:
@@ -172,10 +175,10 @@ services:
     labels:
       - traefik.enable=true
       - traefik.http.routers.front.rule=Host(`sugarfever.ddns.net`)
-      - traefik.http.routers.front.entrypoints=web
       - traefik.http.routers.front.entrypoints=websecure
       - traefik.http.routers.front.tls.certresolver=le
       - traefik.http.services.front.loadbalancer.server.port=5173
+      - traefik.http.routers.front.priority=10
   solana-service:
     profiles:
       - solana
@@ -279,11 +282,15 @@ services:
       - ./mediamtx-service:/app
       - ./config:/app/config
       - ./redis:/app/redis
+      - ./postgres:/app/postgres
     environment:
+      - DNS_WRITE=postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:5432/${POSTGRES_DB}?sslmode=disable&options=-c%20search_path%3Dmarketplace
+      - DNS_READ=postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:5432/${POSTGRES_DB}?sslmode=disable&options=-c%20search_path%3Dmarketplace
       - HYDRA_PUBLIC_URL=${PROTOCOL_EXTERNAL}://hydra:4444
       - TIME_SEC_WAIT_RTMP_CONECTION=60
       - PORT=3001
       - REDIS_HOST=${REDIS_HOST}
+      - LOG_LEVEL=${LOG_LEVEL}
     networks:
       - ${NETWORK_APPLICATION:-application}
 

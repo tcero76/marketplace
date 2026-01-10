@@ -62,21 +62,6 @@ static_resources:
                       address: mediamtx2
                       port_value: 1935
                 load_balancing_weight: 20
-    - name: control_plane
-      type: logical_dns
-      connect_timeout: 5s
-      lb_policy: round_robin
-      http2_protocol_options: {}
-      load_assignment:
-        cluster_name: control_plane
-        endpoints:
-          - lb_endpoints:
-              - endpoint:
-                  address:
-                    socket_address:
-                      address: mediamtx-service
-                      port_value: 18000
-    
     - name: xds_cluster
       connect_timeout: 5s
       type: logical_dns
