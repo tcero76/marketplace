@@ -10,7 +10,7 @@ require (
 	github.com/golang-jwt/jwt/v5 v5.2.2
 	github.com/lestrrat-go/jwx/v2 v2.1.6
 	github.com/redis/go-redis/v9 v9.8.0
-	github.com/tcero76/marketplace/config v0.0.0-00010101000000-000000000000
+	github.com/tcero76/marketplace/config v0.0.0
 	github.com/tcero76/marketplace/redis/config v0.0.0
 	google.golang.org/grpc v1.75.1
 	google.golang.org/protobuf v1.36.10
@@ -62,6 +62,6 @@ require (
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
 
-replace github.com/tcero76/marketplace/config => ./config
+replace github.com/tcero76/marketplace/config => /app/config
 
-replace github.com/tcero76/marketplace/redis/config => ./redis/config
+replace github.com/tcero76/marketplace/redis/config => /app/redis/config

@@ -27,7 +27,7 @@ func StreamReadyHandler(rdb *redis.Client, snapshotCache cache.SnapshotCache, lo
 			})
 			return
 		}
-		log.Debug("Stream READY path=%s node=%s\n", evt.Path, evt.Node)
+		log.Debugf("Stream READY path=%s node=%s\n", evt.Path, evt.Node)
 
 		snapshot, err := rds.BuildSnapshot(evt.Path, "mediamtx_hls_cluster")
 
