@@ -15,6 +15,10 @@ func (l *LoggerLogstash) Info(args ...interface{}) {
 	reportCaller(l.log).Info(args...)
 }
 
+func (l *LoggerLogstash) Infof(format string, args ...interface{}) {
+	reportCaller(l.log).Infof(format, args...)
+}
+
 func (l *LoggerLogstash) Error(args ...interface{}) {
 	reportCaller(l.log).Error(args...)
 }
@@ -25,6 +29,10 @@ func (l *LoggerLogstash) Warn(args ...interface{}) {
 
 func (l *LoggerLogstash) Debug(args ...interface{}) {
 	reportCaller(l.log).Debug(args...)
+}
+
+func (l *LoggerLogstash) Debugf(format string, args ...interface{}) {
+	reportCaller(l.log).Debugf(format, args...)
 }
 
 func reportCaller(log *logrus.Entry) *logrus.Entry {
