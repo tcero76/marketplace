@@ -2,7 +2,9 @@ package services
 
 import (
 	"context"
+	"crypto/rsa"
 
+	"github.com/lestrrat-go/jwx/jwk"
 	"github.com/tcero76/marketplace/bff-service/dto"
 	dtoClickhouse "github.com/tcero76/marketplace/bff-service/dto/clickhouse"
 	"github.com/tcero76/marketplace/bff-service/payload"
@@ -41,4 +43,8 @@ type IAuthCacheService interface {
 	LoadTokenFromRedis(sessionID string, key string, ctx context.Context) (string, error)
 	GetSession(key string, ctx context.Context) (*model.SessionData, error)
 	SaveSession(key string, s model.SessionData, ctx context.Context) error
+}
+
+type IJWKService interface {
+	GetKeys() (*rsa.PrivateKey, *jwk.Set, error)
 }

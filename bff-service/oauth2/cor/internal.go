@@ -10,6 +10,8 @@ import (
 	"github.com/tcero76/marketplace/bff-service/services"
 	"github.com/tcero76/marketplace/postgres/model"
 
+	oauthModel "github.com/tcero76/marketplace/bff-service/model"
+
 	hydra "github.com/ory/hydra-client-go/v2"
 	"golang.org/x/oauth2"
 )
@@ -68,9 +70,11 @@ func (b *InternalAuth) Consent(ctx context.Context, consentChallenge string) (st
 	acceptConsentBody := hydra.AcceptOAuth2ConsentRequest{
 		GrantScope: consentRequest.GetRequestedScope(),
 		Session: &hydra.AcceptOAuth2ConsentRequestSession{
-			AccessToken: map[string]interface{}{
-				"name":   userDTO.Nombre,
-				"avatar": userDTO.Avatar,
+			AccessToken: &oauthModel.InternalUser{
+				ID:      userDTO.UserID,
+				Name:    userDTO.Nombre,
+				Email:   userDTO.Email,
+				Picture: userDTO.Avatar,
 			},
 		},
 		Remember:    b.boolPtr(true),

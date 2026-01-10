@@ -28,12 +28,14 @@ func main() {
 
 	dbRead := postgresConfig.GetPostgresRead(log)
 	dbWrite := postgresConfig.GetPostgresWrite(log)
+	log.Debug("Conectado a la base de datos Postgres")
 
 	authCacheService := redisServices.NewAuthCacheService(log)
 	userServices := modelServices.NewUserService(log, dbWrite, dbRead)
 	modeloService := modelServices.NewModeloService(log, dbWrite, dbRead)
 	postService := modelServices.NewPostsService(log, dbWrite, dbRead)
 	searchService := modelServices.NewSearchService(log, dbRead)
+	jwkService := modelServices.NewJWKService(log, dbWrite, dbRead)
 
 	cfg := hydra.NewConfiguration()
 	cfg.Servers = hydra.ServerConfigurations{{URL: os.Getenv("HYDRA_ADMIN_URL")}}
@@ -67,6 +69,10 @@ func main() {
 	protegido.POST("/searchPosts", controller.GetSearch(searchService))
 	protegido.POST("/createPost", controller.CreatePosteo(postService))
 	protegido.GET("/getPosteos", controller.GetPosteos(postService))
+
+	e.GET("/.well-known/jwks.json", controller.JwksHandler(jwkService, log))
+	e.GET("/token", controller.TokenHandler(jwkService, log))
+
 	e.GET("/getPosts", controller.GetPosts(postService))
 
 	log.Info("Servidor iniciado en el puerto: ", os.Getenv("PORT"))
