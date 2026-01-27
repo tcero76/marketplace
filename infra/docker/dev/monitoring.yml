@@ -27,10 +27,10 @@ services:
     ports:
       - 9090:9090
     volumes:
-      - ./config/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      - ./infra/docker/config/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
       - ${PROMETHEUS_VOLUME}:/prometheus
     networks:
-      - ${NETWORK_APPLICATION}
+      - ${NETWORK_APPLICATION:-application}
   node_exporter:
     image: prom/node-exporter:v1.9.1
     container_name: node_exporter
@@ -42,3 +42,31 @@ services:
       - "9100:9100"
     networks:
       - ${NETWORK_APPLICATION}
+  pg_exporter:
+    image: tcero76/pg_exporter:v0.0.0
+    container_name: postgres_exporter
+    command:
+      - --collector.locks
+      - --collector.database
+      - --collector.stat
+      - --collector.replication
+      - --collector.index
+      - --collector.statements
+      - --collector.tls
+      - --collector.exporter
+    profiles:
+      - monitoring
+    tty: true
+    stdin_open: true
+    # volumes:
+    #   - ./infra/docker/config/postgres_exporter/queries.yml:/queries.yml
+    # environment:
+    #   - DATA_SOURCE_URI=
+    #   - DATA_SOURCE_USER=
+    #   - DATA_SOURCE_PASS=
+    environment:
+      - PG_EXPORTER_DSN=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:5432/${POSTGRES_DB}?sslmode=disable
+    ports:
+      - "9432:9432"
+    networks:
+      - ${NETWORK_APPLICATION:-application}

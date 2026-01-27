@@ -12,27 +12,34 @@ services:
       - "--entrypoints.rtmp.address=:1935"
       - "--entrypoints.web.http.redirections.entrypoint.to=websecure"
       - "--entrypoints.web.http.redirections.entrypoint.scheme=https"
-      - "--certificatesresolvers.le.acme.caServer=https://acme-staging-v02.api.letsencrypt.org/directory"
-      - "--certificatesresolvers.le.acme.email=admin@sugarfever.ddns.net"
-      - "--certificatesresolvers.le.acme.storage=/letsencrypt/acme.json"
-      - "--certificatesresolvers.le.acme.tlschallenge=true"
+      # - "--certificatesresolvers.le.acme.caServer=https://acme-staging-v02.api.letsencrypt.org/directory"
+      # - "--certificatesresolvers.le.acme.email=admin@sugarfever.ddns.net"
+      # - "--certificatesresolvers.le.acme.storage=/letsencrypt/acme.json"
+      # - "--certificatesresolvers.le.acme.tlschallenge=true"
+      - "--providers.file.directory=/etc/traefik/dynamic"
+      - "--providers.file.watch=true"
 
       - "--providers.docker=true"
       - "--providers.docker.exposedbydefault=false"
-
     ports:
       - "80:80"
       - "443:443"
       - "1935:1935"
-      - "8888:8888"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
-      - ./infra/docker/config/traefik/acme.json:/letsencrypt/acme.json
+      - ./infra/docker/config/traefik/dynamic:/etc/traefik/dynamic
+      # - ./infra/docker/config/traefik/acme.json:/letsencrypt/acme.json
+      - ./infra/docker/config/traefik:/certs
     networks:
       - ${NETWORK_APPLICATION:-application}
     labels:
       - traefik.enable=true
-      - traefik.http.routers.traefik.rule=Host(`sugarfever-traefik.ddns.net`)
+
+      - traefik.http.routers.traefik.rule=Host(`sugarfever.ddns.net`) && PathPrefix(`/traefik`)
+      - traefik.http.middlewares.traefik-strip.stripprefix.prefixes=/traefik
+      - traefik.http.routers.traefik.middlewares=traefik-strip
       - traefik.http.routers.traefik.entrypoints=websecure
-      - traefik.http.routers.traefik.tls.certresolver=le
+      - traefik.http.routers.traefik.tls=true
+      # - traefik.http.routers.traefik.tls.certresolver=le
       - traefik.http.routers.traefik.service=api@internal
+      - traefik.http.routers.traefik.priority=100

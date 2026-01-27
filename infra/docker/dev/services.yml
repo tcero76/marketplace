@@ -38,13 +38,13 @@ services:
       - LOG_LEVEL=${LOG_LEVEL}
     labels:
       - traefik.enable=true
-      - traefik.http.middlewares.bff-strip.stripprefix.prefixes=/bff
       - traefik.http.routers.bff.rule=Host(`sugarfever.ddns.net`) && PathPrefix(`/bff`)
-      - traefik.http.routers.bff.entrypoints=websecure
-      - traefik.http.routers.bff.priority=100
-      - traefik.http.routers.bff.tls.certresolver=le
+      - traefik.http.middlewares.bff-strip.stripprefix.prefixes=/bff
       - traefik.http.routers.bff.middlewares=bff-strip
+      - traefik.http.routers.bff.entrypoints=websecure
+      - traefik.http.routers.bff.tls=true
       - traefik.http.services.bff.loadbalancer.server.port=3000
+      - traefik.http.routers.bff.priority=100
     networks:
       - ${NETWORK_APPLICATION:-application}
     depends_on:
@@ -176,7 +176,12 @@ services:
       - traefik.enable=true
       - traefik.http.routers.front.rule=Host(`sugarfever.ddns.net`)
       - traefik.http.routers.front.entrypoints=websecure
-      - traefik.http.routers.front.tls.certresolver=le
+      # - traefik.http.routers.front.tls.certresolver=le
+      - traefik.http.routers.front.tls=true
+      - traefik.http.middlewares.front-headers.headers.customrequestheaders.X-Forwarded-Proto=https
+      - traefik.http.middlewares.front-headers.headers.customrequestheaders.X-Forwarded-Host=sugarfever.ddns.net
+      - traefik.http.routers.front.middlewares=front-headers
+
       - traefik.http.services.front.loadbalancer.server.port=5173
       - traefik.http.routers.front.priority=10
   solana-service:
@@ -291,6 +296,16 @@ services:
       - PORT=3001
       - REDIS_HOST=${REDIS_HOST}
       - LOG_LEVEL=${LOG_LEVEL}
+    labels:
+    - traefik.enable=true
+    - traefik.http.routers.control-plane.rule=Host(`sugarfever.ddns.net`) && PathPrefix(`/control`)
+    - traefik.http.routers.control-plane.entrypoints=websecure
+    - traefik.http.routers.control-plane.tls=true
+    - traefik.http.routers.control-plane.tls.certresolver=le
+    - traefik.http.routers.control-plane.priority=100
+    - traefik.http.routers.control-plane.middlewares=control-plane-strip
+    - traefik.http.middlewares.control-plane-strip.stripprefix.prefixes=/control
+    - traefik.http.services.control-plane.loadbalancer.server.port=3001
     networks:
       - ${NETWORK_APPLICATION:-application}
 

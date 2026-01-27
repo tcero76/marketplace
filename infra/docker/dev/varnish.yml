@@ -1,0 +1,24 @@
+services:
+  varnish:
+    image: varnish:${VARNISH_VERSION}
+    container_name: varnish
+    profiles:
+      - varnish
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./infra/docker/config/varnish/varnish.vcl:/etc/varnish/default.vcl
+    command: ["varnishd", "-F", "-f", "/etc/varnish/default.vcl", "-a", ":80", "-s", "malloc,256m"]
+    depends_on:
+      - bff-service
+    networks:
+      - ${NETWORK_APPLICATION:-application}
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.varnish.rule=Host(`sugarfever.ddns.net`) && PathPrefix(`/varnish`)
+      - traefik.http.middlewares.varnish-strip.stripprefix.prefixes=/varnish
+      - traefik.http.routers.varnish.middlewares=varnish-strip
+      - traefik.http.routers.varnish.entrypoints=websecure
+      - traefik.http.routers.varnish.tls=true
+      - traefik.http.services.varnish.loadbalancer.server.port=3000
+      - traefik.http.routers.varnish.priority=100

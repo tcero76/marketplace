@@ -9,38 +9,39 @@ services:
       - "4445:4445"
     profiles:
       - hydra
-    command: serve all --dev
+    command: serve all
     environment:
-      - DSN=postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:5432/${POSTGRES_DB}?sslmode=disable #&options=-c%20search_path%3Dhydra
-      - URLS_SELF_ISSUER=http://hydra:4444
+      - DSN=postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:5432/${POSTGRES_DB}?sslmode=disable&options=-c%20search_path%3Dhydra
+      - URLS_SELF_ISSUER=${PROTOCOL_EXTERNAL}://${HOST_EXTERNAL}/hydra
       - URLS_LOGIN=${PROTOCOL_EXTERNAL}://${HOST_EXTERNAL}/login 
       - URLS_CONSENT=${PROTOCOL_EXTERNAL}://${HOST_EXTERNAL}/bff/consent
-      - URLS_ERROR=https://sugarfever.ddns.net/error
+      - URLS_ERROR=${PROTOCOL_EXTERNAL}://${HOST_EXTERNAL}/error
       - SECRETS_SYSTEM=some_secret_key_system
       - TTL_ACCESS_TOKEN=1000m
       - TTL_REFRESH_TOKEN=720h
-      # - SERVE_PUBLIC_TRUSTED_PROXIES=0.0.0.0/0
-      # - SERVE_ADMIN_TRUSTED_PROXIES=0.0.0.0/0
-      # - SERVE_PUBLIC_COOKIE_SECURE=true
-      # - SERVE_PUBLIC_COOKIE_SAMESITE=None
-      # - SERVE_ADMIN_COOKIE_SECURE=true
-      # - SERVE_ADMIN_COOKIE_SAMESITE=None
-      - OAUTH2_TOKEN_HOOK_URL=http://mediamtx-service:3001/webhooks/hydra/token
-      - OAUTH2_TOKEN_HOOK_AUTH_TYPE=api_key
-      - OAUTH2_TOKEN_HOOK_AUTH_CONFIG_IN=header
-      - OAUTH2_TOKEN_HOOK_AUTH_CONFIG_NAME=X-API-Key
-      - OAUTH2_TOKEN_HOOK_AUTH_CONFIG_VALUE=MY API KEY
-      - OAUTH2_ALLOWED_TOP_LEVEL_CLAIMS=mediamtx_permissions
-      - OAUTH2_MIRROR_TOP_LEVEL_CLAIMS=false
+      - SERVE_PUBLIC_TRUSTED_PROXIES=0.0.0.0/0
+      - SERVE_ADMIN_TRUSTED_PROXIES=0.0.0.0/0
+      - SERVE_PUBLIC_COOKIE_SECURE=true
+      - SERVE_PUBLIC_COOKIE_SAMESITE=None
+      - SERVE_ADMIN_COOKIE_SECURE=true
+      - SERVE_ADMIN_COOKIE_SAMESITE=None
+      - SERVE_PUBLIC_FORWARDED_PROTO_HEADER=X-Forwarded-Proto
+      - SERVE_ADMIN_FORWARDED_PROTO_HEADER=X-Forwarded-Proto
+      # - OAUTH2_TOKEN_HOOK_URL=http://mediamtx-service:3001/webhooks/hydra/token
+      # - OAUTH2_TOKEN_HOOK_AUTH_TYPE=api_key
+      # - OAUTH2_TOKEN_HOOK_AUTH_CONFIG_IN=header
+      # - OAUTH2_TOKEN_HOOK_AUTH_CONFIG_NAME=X-API-Key
+      # - OAUTH2_TOKEN_HOOK_AUTH_CONFIG_VALUE=MY API KEY
+      # - OAUTH2_ALLOWED_TOP_LEVEL_CLAIMS=mediamtx_permissions
+      # - OAUTH2_MIRROR_TOP_LEVEL_CLAIMS=false
     labels:
       - traefik.enable=true
       - traefik.http.routers.hydra.rule=Host(`sugarfever.ddns.net`) && PathPrefix(`/hydra`)
-      - traefik.http.routers.hydra.entrypoints=websecure
-      - traefik.http.routers.hydra.tls.certresolver=le
-      - traefik.http.routers.hydra.middlewares=hydra-strip,hydra-headers
-      - traefik.http.middlewares.hydra-headers.headers.customrequestheaders.X-Forwarded-Proto=https
-      - traefik.http.middlewares.hydra-headers.headers.customrequestheaders.X-Forwarded-Host=sugarfever.ddns.net
       - traefik.http.middlewares.hydra-strip.stripprefix.prefixes=/hydra
+      - traefik.http.routers.hydra.middlewares=hydra-strip
+      - traefik.http.routers.hydra.entrypoints=websecure
+      - traefik.http.routers.hydra.tls=true
+      # - traefik.http.routers.hydra.tls.certresolver=le
       - traefik.http.services.hydra.loadbalancer.server.port=4444
       - traefik.http.routers.hydra.priority=100
     depends_on:

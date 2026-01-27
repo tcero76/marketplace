@@ -2,6 +2,10 @@ services:
   mediamtx1:
     container_name: mediamtx1
     entrypoint: /mediamtx /etc/mediamtx/mediamtx.yml
+    ports:
+      - "8189:8189/udp"
+      - "8888:8888/tcp"
+      - "8889:8889"
     profiles:
       - media
     volumes:
@@ -11,8 +15,21 @@ services:
       - NODE_ID=mediamtx1
       - MEDIAMTX_CONFIG_PATH=/etc/mediamtx/mediamtx.yml
     restart: unless-stopped
+    labels:
+    - traefik.enable=true
+
+  # -------- Router API / HTTP (8888) --------
+    - traefik.http.routers.mediamtx-hls.rule=Host(`sugarfever.ddns.net`) && PathPrefix(`/hls`)
+    - traefik.http.routers.mediamtx-hls.entrypoints=websecure
+    - traefik.http.routers.mediamtx-hls.tls=true
+    - traefik.http.routers.mediamtx-hls.tls.certresolver=le
+    - traefik.http.routers.mediamtx-hls.priority=100
+    - traefik.http.routers.mediamtx-hls.middlewares=mediamtx-hls-strip
+    - traefik.http.middlewares.mediamtx-hls-strip.stripprefix.prefixes=/hls
+    - traefik.http.services.mediamtx-hls.loadbalancer.server.port=8888
     networks:
       - ${NETWORK_APPLICATION:-application}
+
   mediamtx2:
     container_name: mediamtx2
     profiles:

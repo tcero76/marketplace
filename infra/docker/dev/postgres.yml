@@ -3,6 +3,9 @@ services:
     image: timescale/timescaledb:${TIMESCALEDB_VERSION}
     container_name: db
     profiles: ["postgres"]
+    command: >
+      postgres
+      -c shared_preload_libraries=timescaledb,pg_stat_statements
     volumes:
       - timescaledb_data:/var/lib/postgresql/data
     ports:
