@@ -71,7 +71,7 @@ func main() {
 	protegido.GET("/getPosteos", controller.GetPosteos(postService))
 
 	e.GET("/.well-known/jwks.json", controller.JwksHandler(jwkService, log))
-	e.GET("/token", controller.TokenHandler(jwkService, log))
+	e.POST("/token", controller.TokenHandler(jwkService, log))
 
 	e.GET("/getPosts", controller.GetPosts(postService))
 

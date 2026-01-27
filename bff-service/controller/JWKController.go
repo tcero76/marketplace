@@ -56,6 +56,9 @@ func TokenHandler(jwkService services.IJWKService, log *logConfig.LoggerLogstash
 		claims := jwt.MapClaims{
 			"mediamtx_permissions": []map[string]interface{}{
 				{"action": "publish", "path": "streams"},
+				{"action": "read", "path": "streams"},
+				{"action": "playback", "path": "streams"},
+				{"action": "metrics", "path": "metrics"},
 			},
 			"iat": time.Now().Unix(),
 			"exp": time.Now().Add(10 * time.Minute).Unix(),
