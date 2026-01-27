@@ -2,6 +2,8 @@ import scrapy
 import os
 import re
 import json
+import time
+from arsmate.items import ModelosItem
 
 class ModelosSpider(scrapy.Spider):
     name = "modelos"
@@ -10,6 +12,10 @@ class ModelosSpider(scrapy.Spider):
         "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.36",
         "X-Requested-With": "XMLHttpRequest",
     }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.id_job = time.time()
 
     def start_requests(self):
         url = "https://arsmate.com/explore"
@@ -38,10 +44,8 @@ class ModelosSpider(scrapy.Spider):
 
     def parse(self, response):
         for div in response.css("div.card.mb-3.card-updates"):
-            fechaCreacion = div.css("small.timeAgo.text-muted").attrib.get("data","")
-            yield {
-                "tabla": "modelos",
-                "id": div.attrib.get("data", ""),
-                "fechaCreacion": fechaCreacion,
-                "modelo": div.css("small.text-muted.font-14::text").get(default="").strip()
-            }
+            item=ModelosItem()
+            item["id"] =  div.attrib.get("data", "")
+            item["modelo"] =  div.css("small.text-muted.font-14::text").get(default="").strip()
+            item["id_job"] =  self.id_job
+            yield item

@@ -4,6 +4,10 @@ import re
 import os
 import urllib.parse as up
 import psycopg2
+import time
+from datetime import datetime
+
+from arsmate.items import ModeloItem, PostItem
 
 class ModeloSpider(scrapy.Spider):
     name = "modelo"
@@ -13,6 +17,10 @@ class ModeloSpider(scrapy.Spider):
         "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.36",
         "X-Requested-With": "XMLHttpRequest",
     }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.id_job = time.time()
 
     def fetch_modelos(self):
         try:
@@ -57,13 +65,13 @@ class ModeloSpider(scrapy.Spider):
         match = re.search(r"var\s+profile_id\s*=\s*(\d+)", response.text)
         if match:
             id = int(match.group(1))
-        descripcion = response.css("div#navbarUserHome span.update-text::text").getall()
-        yield {
-            "tabla": "modelo",
-            "id": id,
-            "modelo": modelo,
-            "descripcion": descripcion,
-        }
+            item=ModeloItem()
+            item["id"] =  id
+            item["modelo"] =  modelo
+            item["fecharegistro"]= datetime.now()
+            item["descripcion"] = response.css("div#navbarUserHome span.update-text::text").getall()
+            item["id_job"] =  self.id_job
+            yield item
         for skip in range(0,total,5):
             url = f"https://arsmate.com/ajax/updates?id={id}&skip={skip}&total={total}"
             yield scrapy.Request(url=url, headers=self.headers, cookies=self.cookies,
@@ -81,15 +89,16 @@ class ModeloSpider(scrapy.Spider):
                 div.css("small.countLikes::text").getall()
             ).strip())
             fechaCreacion = response.css("small.timeAgo.text-muted").attrib.get("data","")
-            yield {
-                "tabla": "posts",
-                "descripcion": descripcion,
-                "data": data_value,
-                "id": id,
-                "modelo": modelo,
-                "likes": likes,
-                "fechaCreacion": fechaCreacion
-            }
+            item=PostItem()
+            item["descripcion"] = descripcion
+            item["id"] = data_value
+            item["id_modelos"] = id
+            item["modelo"] =  modelo
+            item["likes"] =  likes
+            item["fecharegistro"] = datetime.now()
+            item["created_at"] =  datetime.fromisoformat(fechaCreacion)
+            item["id_job"] =  self.id_job
+            yield item
 
 
         

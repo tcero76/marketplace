@@ -6,7 +6,30 @@
 import scrapy
 
 
-class ArsmateItem(scrapy.Item):
-    # define the fields for your item here like:
-    # name = scrapy.Field()
-    pass
+class ModeloItem(scrapy.Item):
+    __table__ = "scrap.modelos"
+    id = scrapy.Field()
+    modelo = scrapy.Field()
+    descripcion = scrapy.Field()
+    fecharegistro = scrapy.Field()
+    id_job = scrapy.Field()
+
+class PostItem(scrapy.Item):
+    __table__ = "scrap.posts"
+    id = scrapy.Field()
+    id_modelos = scrapy.Field()
+    id_job = scrapy.Field()
+    descripcion = scrapy.Field()
+    modelo = scrapy.Field()
+    fecharegistro = scrapy.Field()
+    created_at = scrapy.Field()
+    likes = scrapy.Field()
+
+class ModelosItem(scrapy.Item):
+    __table__ = "scrap.explore"
+    id = scrapy.Field()
+    id_job = scrapy.Field()
+    modelo = scrapy.Field()
+    fechaRegistro = scrapy.Field()
+    created_at = scrapy.Field()
+    likes = scrapy.Field()
