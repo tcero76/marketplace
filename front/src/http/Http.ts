@@ -176,7 +176,12 @@ export default class Http implements IHttpApi {
 
   getModelos():Promise<AxiosResponse<string[]>> {
     return this._api
-    .get(`${import.meta.env.VITE_HOST}/bff/usuario/getModelos`)
+      .get(`${import.meta.env.VITE_HOST}/bff/usuario/getModelos`)
+  }
+
+  getTopics():Promise<AxiosResponse<string[]>> {
+    return this._api
+      .get(`${import.meta.env.VITE_HOST}/bff/usuario/getTopics`)
   }
 
   sendPost(posteo:Posteo):Promise<AxiosResponse<string>> {
@@ -205,4 +210,18 @@ export default class Http implements IHttpApi {
       );
     }
   )
+}
+
+export async function onImagePaste(file: File) {
+  const formData = new FormData()
+  formData.append("image", file)
+
+  const res = await fetch("/bff/uploadImage", {
+    method: "POST",
+    body: formData
+  })
+
+  if (!res.ok) {
+    throw new Error("Upload failed")
+  }
 }

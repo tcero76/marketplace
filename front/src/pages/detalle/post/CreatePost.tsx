@@ -9,8 +9,7 @@ import ModalHtml from '../../../components/modal/ModalHtml';
 import { useUIContext } from '../../../context/UIContext';
 import Post from './Post';
 
-
-const posteoInicial: Posteo = { menciones: [], texto: '', id:'', userId: '' };
+const posteoInicial: Posteo = { meta: {}, texto: '', id:'', userId: '' };
 const CreatePost = () => {
     const { modelo } = useParams(); 
     const uiContext = useUIContext();

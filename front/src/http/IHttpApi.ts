@@ -21,6 +21,7 @@ export interface IHttpApi {
     searchPosts(search:SearchType):Promise<AxiosResponse<SearchPosts[]>> 
     getModelo(modelo:string):Promise<AxiosResponse<Modelo>>
     getModelos():Promise<AxiosResponse<string[]>>
+    getTopics():Promise<AxiosResponse<string[]>>
     sendPost(posteo:Posteo):Promise<AxiosResponse<string>> 
     getPosteos(modelo?:string):Promise<AxiosResponse<Posteo[]>>
     signUp:AsyncThunk<AxiosResponse<string>,CredencialType,object>

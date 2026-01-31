@@ -3,9 +3,5 @@ import HttpMock from './HttpMock';
 import Http from './Http';
 
 export default function getUserApi(): IHttpApi {
-  const mock = import.meta.env.VITE_MOCK === "true";
-  if (mock) {
-    return new HttpMock();
-  }
-  return new Http();
+  return import.meta.env.VITE_MOCK === "true"? new HttpMock():new Http()
 }

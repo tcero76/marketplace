@@ -7,20 +7,28 @@ interface HlsPlayerProps {
     controls?: boolean;
     muted?: boolean;
     className?: string;
+    accessToken: string;
   }
+
 export const VideoPlayer:React.FC<HlsPlayerProps> = ({
     src,
     autoPlay = true,
     controls = false,
     muted = true,
     className = '',
+    accessToken
   }) => {
     const videoRef = useRef<HTMLVideoElement>(document.createElement('video'))
     useEffect(() => {
+    window.setTimeout(() => {
         const video = videoRef.current;
         if (!video) return;
         if(Hls.isSupported()) {
-            const hls = new Hls();
+            const hls = new Hls({
+              xhrSetup: (xhr, _url) => {
+                xhr.setRequestHeader("Authorization", `Bearer ${accessToken}`); 
+              }
+            });
             hls.loadSource(src);
             hls.attachMedia(video);
             hls.on(Hls.Events.ERROR, (_event, data) => {
@@ -30,7 +38,8 @@ export const VideoPlayer:React.FC<HlsPlayerProps> = ({
         } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
             video.src = src;
         }
-    },[src])
+    }, 1500);
+    },[src,accessToken])
     return <>{(src.length>0)?<video
             ref={videoRef}
             className={className}

@@ -1,7 +1,8 @@
 import { ComponentPropsWithoutRef } from 'react'
+import { Meta } from './highlight'
 
 export type Posteo = {
-    menciones:string[]
+    meta:Meta
     texto:string
     id: string
     userId: string

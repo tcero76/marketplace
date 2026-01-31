@@ -69,12 +69,11 @@ func main() {
 	protegido.POST("/searchPosts", controller.GetSearch(searchService))
 	protegido.POST("/createPost", controller.CreatePosteo(postService))
 	protegido.GET("/getPosteos", controller.GetPosteos(postService))
-
+	e.POST("/uploadImage", controller.UploadImage(log))
+	e.GET("/getImage/:name", controller.GetImage(log))
 	e.GET("/.well-known/jwks.json", controller.JwksHandler(jwkService, log))
 	e.POST("/token", controller.TokenHandler(jwkService, log))
-
 	e.GET("/getPosts", controller.GetPosts(postService))
-
 	log.Info("Servidor iniciado en el puerto: ", os.Getenv("PORT"))
 	e.Start(":" + os.Getenv("PORT"))
 }

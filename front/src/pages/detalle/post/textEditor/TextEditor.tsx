@@ -3,13 +3,17 @@ import TextFormat from './TextFormat.tsx';
 import { Posteo, type TextEditorProps,
   type TextEditorType,
   type TextFormatType } from '../../../../types/index.ts';
+import {
+  arrobaHighlighter,
+  hashtagHighlighter,
+  httpsHighlighter } from '../../../../utils/highlights/highlighters.ts';
+import { composeHighlighters } from '../../../../utils/highlights/composeHighlighters.ts';
 
 const initialTextEditorState: TextFormatType = {
   cleanInput:() => null,
   setInput:() => null
 }
-const initialPosteo: Posteo = { menciones: [], texto: '', id:'', userId: '' };
-
+const initialPosteo: Posteo = { meta: {}, texto: '', id:'', userId: '' };
 const TextEditor = forwardRef<TextEditorType,TextEditorProps>(({onChangePosteo, ...props},ref:ForwardedRef<TextEditorType>) => {
   const textFormatRef = useRef<TextFormatType>(initialTextEditorState);
   const posteoRef = useRef<Posteo>(initialPosteo);
@@ -21,17 +25,12 @@ const TextEditor = forwardRef<TextEditorType,TextEditorProps>(({onChangePosteo, 
     }
   }))
   const highlight = (texto:string):string => {
-      const regex = /#[\p{L}\p{N}_]+/gu;
-      const menciones = texto.match(regex) ?? [];
-      onChangePosteo({ ...posteoRef.current, menciones, texto})
-      return texto.replace(regex, (palabra) => {
-        const safe = palabra
-          .replace(/&/g, "&amp;")
-          .replace(/</g, "&lt;")
-          .replace(/>/g, "&gt;")
-          .replace(/"/g, "&quot;");
-        return `<span class="highlight" contenteditable="true">${safe}</span>`;
-      });
+    const { html, meta } = composeHighlighters(
+        hashtagHighlighter,
+        arrobaHighlighter,
+        httpsHighlighter)(texto);
+      onChangePosteo({ ...posteoRef.current, meta, texto})
+      return html;
   }
   return <TextFormat
             highlight={highlight}

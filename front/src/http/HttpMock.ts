@@ -50,7 +50,10 @@ export default class HttpMock implements IHttpApi {
                 return Promise.resolve(mockAxiosResponse<string>("Mock logout successful",{}));
             });
     getModelos(): Promise<AxiosResponse<string[]>> {
-        return Promise.resolve(mockAxiosResponse<string[]>([]))
+        return Promise.resolve(mockAxiosResponse<string[]>(['camila','cristina','maca'],{}));
+    }
+    getTopics(): Promise<AxiosResponse<string[]>> {
+        return Promise.resolve(mockAxiosResponse<string[]>(['Viña','Concepción','Valparaíso', 'Santiago'],{}));
     }
     sendPost(posteo: Posteo): Promise<AxiosResponse<string>> {
         console.log("🚀 ~ HttpMock ~ sendPost ~ posteo:", posteo)

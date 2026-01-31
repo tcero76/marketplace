@@ -1,7 +1,7 @@
 import { useRef, useState } from 'react'
 import Button from '../../components/buttons/Button';
-import { useGlobalKeyboard } from '../../store/useKeyboardListener';
 import { useNavigate } from 'react-router';
+import { useGlobalKeyboard } from '../../hooks/useKeyboardListener';
 
 const Search = () => {
     const navigate = useNavigate()
