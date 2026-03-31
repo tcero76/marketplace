@@ -30,5 +30,3 @@ async def get_cookies():
             json.dump(filtered, f)
         print(f"Cookies guardadas en {COOKIES_FILE}")
         await browser.close()
-
-asyncio.run(get_cookies())

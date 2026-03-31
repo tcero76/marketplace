@@ -48,6 +48,15 @@ def run_modelos(_=None):
     subprocess.run(["scrapy", "crawl", "modelos"])
 
 @app.task
+def run_escorts(_=None):
+    print(f"Inicia run_escorts")
+    # subprocess.run(["scrapy", "crawl", "chimbis"])
+    subprocess.run(["scrapy", "crawl", "escortnorte"])
+    subprocess.run(["scrapy", "crawl", "laplayaescort"])
+    subprocess.run(["scrapy", "crawl", "planetaescort"])
+    subprocess.run(["scrapy", "crawl", "relaxchile"])
+
+@app.task
 def ejecutar_funcion_postgres(_=None):
     print(f"Inicia ejecutar_funcion_postgres")
     url = os.getenv("DATABASE_URL")
@@ -80,5 +89,6 @@ def run_modelo_spider():
         obtener_cookies.s().set(queue=SCRAPY_QUEUE),
         run_modelos.s().set(queue=SCRAPY_QUEUE),
         run_modelo.s().set(queue=SCRAPY_QUEUE),
-        ejecutar_funcion_postgres.s().set(queue=SCRAPY_QUEUE)
+        # run_escorts.s().set(queue=SCRAPY_QUEUE),
+        # ejecutar_funcion_postgres.s().set(queue=SCRAPY_QUEUE)
     ).apply_async()

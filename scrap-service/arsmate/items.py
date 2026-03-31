@@ -33,3 +33,17 @@ class ModelosItem(scrapy.Item):
     fechaRegistro = scrapy.Field()
     created_at = scrapy.Field()
     likes = scrapy.Field()
+
+class TSItem(scrapy.Item):
+    __table__ = "scrap.ts"
+    id = scrapy.Field()
+    id_job = scrapy.Field()
+    portal = scrapy.Field()
+    idpagina = scrapy.Field()
+    nombre = scrapy.Field()
+    edad = scrapy.Field()
+    ciudad = scrapy.Field()
+    servicios = scrapy.Field()
+    servicios_adicionales  = scrapy.Field()
+    descripcion = scrapy.Field()
+    scraped_at = scrapy.Field()
