@@ -12,6 +12,7 @@ defmodule WsService.Application do
       {WsServiceWeb.MQConsumer, []},
       {DNSCluster, query: Application.get_env(:ws_service, :dns_cluster_query) || :ignore},
       {Phoenix.PubSub, name: WsService.PubSub},
+      WsServiceWeb.Presence,
       # Start the Finch HTTP client for sending emails
       {Finch, name: WsService.Finch},
       # Start a worker by calling: WsService.Worker.start_link(arg)

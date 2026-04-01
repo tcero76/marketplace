@@ -48,9 +48,9 @@ defmodule WsServiceWeb.MQConsumer do
   def handle_info({:basic_deliver, payload, meta}, state) do
     IO.puts("Confirmación de consumo recibido: #{inspect(payload)}")
     case Jason.decode(payload) do
-      {:ok, %{"userId" => user_id, "body" => body}} ->
-        IO.puts("Mensaje procesado de #{user_id}: #{body}")
-        WsServiceWeb.Endpoint.broadcast("room:lobby", "message:new", %{tipo: "notificacion", body: body})
+      {:ok, %{"userId" => user_id, "body" => body, "room" => room, "ext_name" => ext_name}} ->
+        WsServiceWeb.Endpoint.broadcast("room:" <> room, "message:new",
+          %{tipo: "notificacion", body: body, extName: ext_name, userId: user_id})
       {:error, reason} ->
         IO.puts("Error al decodificar el mensaje: #{inspect(reason)}")
     end

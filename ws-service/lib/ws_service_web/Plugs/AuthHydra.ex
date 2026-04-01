@@ -3,6 +3,8 @@ defmodule WsServiceWeb.Plugs.AuthHydra do
   require Logger
   alias HTTPoison
 
+  @jwks_url System.get_env("HYDRA_JWKS_URL") || "http://hydra:4444/.well-known/jwks.json"
+
   def init(opts), do: opts
 
   def call(conn, _opts) do
@@ -53,7 +55,7 @@ defmodule WsServiceWeb.Plugs.AuthHydra do
   end
 
   defp fetch_jwks do
-    case HTTPoison.get("http://hydra:4444/.well-known/jwks.json") do
+    case HTTPoison.get(@jwks_url) do
       {:ok, %HTTPoison.Response{status_code: 200, body: body}} ->
         IO.inspect(body)
         {:ok, Jason.decode!(body)}
