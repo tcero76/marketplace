@@ -1,31 +1,93 @@
 services:
   bff-service:
     image: tcero76/bff-service:${TAG}
+    build:
+      dockerfile: ./bff-service/deploy/Dockerfile
+      context: .
+      target: ${PROFILE}
   cache-updater-service:
     image: tcero76/cache-updater-service:${TAG}
+    build:
+      dockerfile: ./cache-updater/deploy/Dockerfile
+      context: .
   broker-email-service:
     image: tcero76/broker-email-service:${TAG}
+    build:
+      dockerfile: ./broker-email-service/deploy/Dockerfile
+      context: .
+      target: ${PROFILE}
   db-updater-service:
     image: tcero76/db-updater-service:${TAG}
+    build:
+      dockerfile: Dockerfile
+      context: ./db-updater
   db-broker-service:
     image: tcero76/db-broker-service:${TAG}
+    build:
+      dockerfile: Dockerfile
+      context: ./db-broker-service
   ws-service:
     image: tcero76/ws-service:${TAG}
+    build:
+      dockerfile: Dockerfile
+      context: ./ws-service
   front:
-    image: tcero76/front:${TAG}
+    image: tcero76/frontend:${TAG}
+    build:
+      dockerfile: deploy/Dockerfile
+      context: ./frontend
+      target: ${PROFILE}
+      args:
+        VITE_HOST: "${PROTOCOL_EXTERNAL}://${HOST_EXTERNAL}:${PORT_EXTERNAL}"
+        VITE_WS: "ws://${HOST_EXTERNAL}:${PORT_EXTERNAL}"
+        VITE_CLIENT_ID: "${CLIENT_ID}"
+        VITE_MOCK: ${VITE_MOCK}
   solana-service:
     image: tcero76/solana-service:${TAG}
+    build:
+      dockerfile: ./solana-service/Dockerfile
+      context: .
   scrap-service:
     image: tcero76/scrap-service:${TAG}
+    build:
+      dockerfile: ./scrap-service/deploy/Dockerfile
+      context: .
+      target: ${PROFILE}
   beat-service:
     image: tcero76/beat-service:${TAG}
+    build:
+      dockerfile: beat-service/deploy/Dockerfile
+      context: .
+      target: ${PROFILE}
   recomender-service:
     image: tcero76/recomender-service:${TAG}
+    build:
+      dockerfile: recomender-service/deploy/Dockerfile
+      context: .
+      target: ${PROFILE}
   mediamtx-service:
     image: tcero76/mediamtx-service:${TAG}
+    build:
+      dockerfile: ./mediamtx-service/deploy/Dockerfile
+      context: .
+      target: ${PROFILE}
   hydra:
     image: tcero76/hydra:${TAG}
   mediamtx1:
     image: tcero76/mediamtx:${TAG}
+    build:
+      context: ./infra/docker/config/mediamtx/
+      dockerfile: Dockerfile
+      args:
+        MEDIAMTX_VERSION: ${MEDIAMTX_VERSION}
   mediamtx2:
     image: tcero76/mediamtx:${TAG}
+    build:
+      context: ./infra/docker/config/mediamtx/
+      dockerfile: Dockerfile
+      args:
+        MEDIAMTX_VERSION: ${MEDIAMTX_VERSION}
+  # clickhouse:
+  #   build:
+  #     context: ./clickhouse/image/
+  #     dockerfile: Dockerfile
