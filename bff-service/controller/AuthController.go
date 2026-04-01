@@ -13,7 +13,6 @@ import (
 	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
 	"github.com/lestrrat-go/jwx/v2/jwk"
-	log "github.com/sirupsen/logrus"
 
 	"github.com/golang-jwt/jwt/v4"
 
@@ -21,38 +20,46 @@ import (
 	"github.com/tcero76/marketplace/bff-service/oauth2/cor"
 	"github.com/tcero76/marketplace/bff-service/payload"
 	"github.com/tcero76/marketplace/bff-service/services"
+	logConfig "github.com/tcero76/marketplace/config"
 	"github.com/tcero76/marketplace/redis/model"
 
 	"golang.org/x/oauth2"
 )
 
+type AuthController struct {
+	log *logConfig.LoggerLogstash
+}
+
+func NewAuthController(log *logConfig.LoggerLogstash) *AuthController {
+	return &AuthController{log}
+}
+
 var token *oauth2.Token
 
-func HandleLogin(handler cor.Handler) echo.HandlerFunc {
+func (h *AuthController) HandleLogin(handler cor.Handler) echo.HandlerFunc {
 	return func(c echo.Context) error {
-		log.Info("HandleLogin called")
+		h.log.Info("HandleLogin called")
 		return handler.Handle(c)
 	}
 }
 
-func HandleConsent(handler cor.Handler) echo.HandlerFunc {
+func (h *AuthController) HandleConsent(handler cor.Handler) echo.HandlerFunc {
 	return func(c echo.Context) error {
-		log.Info("HandleConsent called")
+		h.log.Info("HandleConsent called")
 		return handler.Handle(c)
 	}
 }
 
-func HandleCallback(handler cor.Handler) echo.HandlerFunc {
+func (h *AuthController) HandleCallback(handler cor.Handler) echo.HandlerFunc {
 	return func(c echo.Context) error {
-		log.Info("HandleCallback called")
+		h.log.Info("HandleCallback called")
 		return handler.Handle(c)
 	}
 }
 
-func getKeyFromJWKS(kid string) (*rsa.PublicKey, error) {
+func getKeyFromJWKS(kid string, log *logConfig.LoggerLogstash) (*rsa.PublicKey, error) {
 	log.Info("Getting key")
-	log.WithField("from", os.Getenv("HYDRA_PUBLIC_URL")+"/.well-known/jwks.json").
-		Info("Fetching JWKS")
+	log.Info("Fetching JWKS")
 	url := os.Getenv("HYDRA_PUBLIC_URL") + "/.well-known/jwks.json"
 	set, err := jwk.Fetch(context.Background(), url, jwk.WithHTTPClient(http.DefaultClient))
 	if err != nil {
@@ -72,7 +79,7 @@ func getKeyFromJWKS(kid string) (*rsa.PublicKey, error) {
 	return &pubKey, nil
 }
 
-func verifyToken(tokenStr string) (jwt.MapClaims, error) {
+func verifyToken(tokenStr string, log *logConfig.LoggerLogstash) (jwt.MapClaims, error) {
 	log.Info("Verifying token")
 	keyFunc := func(token *jwt.Token) (interface{}, error) {
 		kid, ok := token.Header["kid"].(string)
@@ -80,7 +87,7 @@ func verifyToken(tokenStr string) (jwt.MapClaims, error) {
 			log.Error("kid header missing or not a string")
 			return nil, errors.New("token missing kid header")
 		}
-		return getKeyFromJWKS(kid)
+		return getKeyFromJWKS(kid, log)
 	}
 	token, err := jwt.ParseWithClaims(tokenStr, jwt.MapClaims{}, keyFunc)
 	if err != nil {
@@ -94,34 +101,34 @@ func verifyToken(tokenStr string) (jwt.MapClaims, error) {
 	log.Error("Invalid token")
 	return nil, errors.New("invalid token")
 }
-
-func AuthHandler(c echo.Context) error {
-	log.Info("AuthHandler called")
-	authHeader := c.Request().Header.Get("Authorization")
-	const prefix = "Bearer "
-	if !strings.HasPrefix(authHeader, prefix) {
-		log.Warn("Invalid or missing Authorization header")
-		return echo.NewHTTPError(http.StatusUnauthorized, "Invalid or missing Authorization header")
-	}
-	tokenStr := strings.TrimPrefix(authHeader, prefix)
-	claims, err := verifyToken(tokenStr)
-	log.Debug("Claims: ", claims)
-	if err != nil {
-		log.Error("Token verification failed: ", err)
-		return echo.NewHTTPError(http.StatusUnauthorized, err.Error())
-	}
-	return c.JSON(http.StatusOK, claims)
-}
-
-func LogoutHandler(authCacheService services.IAuthCacheService) echo.HandlerFunc {
+func (h *AuthController) AuthHandler() echo.HandlerFunc {
 	return func(c echo.Context) error {
-		log.Info("LogoutHandler called")
+		h.log.Info("AuthHandler called")
+		authHeader := c.Request().Header.Get("Authorization")
+		const prefix = "Bearer "
+		if !strings.HasPrefix(authHeader, prefix) {
+			h.log.Warn("Invalid or missing Authorization header")
+			return echo.NewHTTPError(http.StatusUnauthorized, "Invalid or missing Authorization header")
+		}
+		tokenStr := strings.TrimPrefix(authHeader, prefix)
+		claims, err := verifyToken(tokenStr, h.log)
+		h.log.Debug("Claims: ", claims)
+		if err != nil {
+			h.log.Error("Token verification failed: ", err)
+			return echo.NewHTTPError(http.StatusUnauthorized, err.Error())
+		}
+		return c.JSON(http.StatusOK, claims)
+	}
+}
+func (h *AuthController) LogoutHandler(authCacheService services.IAuthCacheService) echo.HandlerFunc {
+	return func(c echo.Context) error {
+		h.log.Info("LogoutHandler called")
 		sessionData := c.Get("session_data").(*model.SessionData)
 		sessionData.IsAuthenticated = false
 		sessionData.RefreshToken = ""
 		err := authCacheService.SaveSession(sessionData.SessionID, *sessionData, c.Request().Context())
 		if err != nil {
-			log.WithField("err", err).Error("Error saving session data during logout")
+			h.log.Error("Error saving session data during logout: ", err)
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to logout")
 		}
 		return c.JSON(http.StatusOK, map[string]string{
@@ -130,11 +137,11 @@ func LogoutHandler(authCacheService services.IAuthCacheService) echo.HandlerFunc
 	}
 }
 
-func RefreshTokenHandler(authCacheService services.IAuthCacheService) echo.HandlerFunc {
+func (h *AuthController) RefreshTokenHandler(authCacheService services.IAuthCacheService) echo.HandlerFunc {
 	return func(c echo.Context) error {
-		log.Info("RefreshTokenHandler called")
+		h.log.Info("RefreshTokenHandler called")
 		sessionData := c.Get("session_data").(*model.SessionData)
-		log.Debug("Session Data: ", sessionData)
+		h.log.Debug("Session Data: ", sessionData)
 		conf := &oauth2.Config{
 			ClientID:     os.Getenv("CLIENT_ID"),
 			ClientSecret: os.Getenv("CLIENT_SECRET"),
@@ -145,25 +152,25 @@ func RefreshTokenHandler(authCacheService services.IAuthCacheService) echo.Handl
 			RedirectURL: os.Getenv("REDIRECT_URL"),
 			Scopes:      []string{"openid", "offline_access", "mediamtx:stream"},
 		}
-		log.Debug("Usando el siguiente Access Token: ", sessionData.AccessToken)
+		h.log.Debug("Usando el siguiente Access Token: ", sessionData.AccessToken)
 		token := &oauth2.Token{
 			RefreshToken: sessionData.RefreshToken,
 			Expiry:       time.Now().Add(-time.Minute),
 		}
-		log.Debug("Access Token Refrescado: ", token.AccessToken)
+		h.log.Debug("Access Token Refrescado: ", token.AccessToken)
 		ctx := c.Request().Context()
 		ts := conf.TokenSource(ctx, token)
-		log.Debug("TokenSource creado", ts)
+		h.log.Debug("TokenSource creado", ts)
 		newToken, err := ts.Token()
-		log.Debug("Nuevo token obtenido", newToken)
+		h.log.Debug("Nuevo token obtenido", newToken)
 		if err != nil {
-			log.WithField("err", err).Error("Error al refrescar token")
+			h.log.Error("Error al refrescar token: ", err)
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to refresh token")
 		}
 		sessionData.RefreshToken = newToken.RefreshToken
 		err = authCacheService.SaveSession(sessionData.SessionID, *sessionData, c.Request().Context())
 		if err != nil {
-			log.WithField("err", err).Error("Error storing refresh token")
+			h.log.Error("Error storing refresh token: ", err)
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to store refresh token")
 		}
 
@@ -172,18 +179,18 @@ func RefreshTokenHandler(authCacheService services.IAuthCacheService) echo.Handl
 	}
 }
 
-func SignUpHandler(userService services.IUserService) echo.HandlerFunc {
+func (h *AuthController) SignUpHandler(userService services.IUserService) echo.HandlerFunc {
 	return func(c echo.Context) error {
-		log.Info("SignUpHandler called")
+		h.log.Info("SignUpHandler called")
 		var req payload.SignUpRequest
 		if err := c.Bind(&req); err != nil {
-			log.Error("Error binding request: ", err)
+			h.log.Error("Error binding request: ", err)
 			return echo.NewHTTPError(http.StatusBadRequest, "Invalid request payload")
 		}
 
 		_, err := userService.GetUserByEmail(req.Email)
 		if err == nil {
-			log.Error("Email already in use: ", req.Email)
+			h.log.Error("Email already in use: ", req.Email)
 			return echo.NewHTTPError(http.StatusConflict, "Email already in use")
 		}
 		newUser := dto.UserDTO{
@@ -193,9 +200,9 @@ func SignUpHandler(userService services.IUserService) echo.HandlerFunc {
 			Password: req.Password,
 			Provider: "internal",
 		}
-		log.Debug("Creating user: ", newUser)
+		h.log.Debug("Creating user: ", newUser)
 		if err := userService.CreateUser(&newUser); err != nil {
-			log.Error("Error creating user: ", err)
+			h.log.Error("Error creating user: ", err)
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to create user")
 		}
 		return c.JSON(http.StatusCreated, map[string]string{

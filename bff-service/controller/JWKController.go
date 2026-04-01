@@ -10,34 +10,18 @@ import (
 	logConfig "github.com/tcero76/marketplace/config"
 )
 
-// // --- Simulación de DB ---
-// var rsaPrivateKey *rsa.PrivateKey
-// var jwkSet jwk.Set
+type JWKController struct {
+	jwkService services.IJWKService
+	log        *logConfig.LoggerLogstash
+}
 
-// func initKeys() {
-// 	// Genera una llave RSA de 2048 bits
-// 	var err error
-// 	rsaPrivateKey, err = rsa.GenerateKey(rand.Reader, 2048)
-// 	if err != nil {
-// 		log.Fatalf("Error generando RSA key: %v", err)
-// 	}
+func NewJwksHandler(log *logConfig.LoggerLogstash, jwkService services.IJWKService) *JWKController {
+	return &JWKController{jwkService, log}
+}
 
-// 	// Convierte a JWK y crea un JWKS
-// 	key, err := jwk.New(&rsaPrivateKey.PublicKey)
-// 	if err != nil {
-// 		log.Fatalf("Error creando JWK: %v", err)
-// 	}
-
-// 	// Asignamos un kid (identificador)
-// 	key.Set(jwk.KeyIDKey, "mediamtx-demo-key")
-// 	jwkSet = jwk.NewSet()
-// 	jwkSet.Add(key)
-// }
-
-// --- Endpoint JWKS ---
-func JwksHandler(jwkService services.IJWKService, log *logConfig.LoggerLogstash) echo.HandlerFunc {
+func (h *JWKController) JwksHandler() echo.HandlerFunc {
 	return func(c echo.Context) error {
-		_, jwkSet, err := jwkService.GetKeys()
+		_, jwkSet, err := h.jwkService.GetKeys()
 		if err != nil {
 			return c.JSON(http.StatusInternalServerError, "Error obteniendo claves")
 		}
@@ -45,10 +29,9 @@ func JwksHandler(jwkService services.IJWKService, log *logConfig.LoggerLogstash)
 	}
 }
 
-// --- Endpoint para generar token JWT ---
-func TokenHandler(jwkService services.IJWKService, log *logConfig.LoggerLogstash) echo.HandlerFunc {
+func (h *JWKController) TokenHandler() echo.HandlerFunc {
 	return func(c echo.Context) error {
-		rsaPrivateKey, _, err := jwkService.GetKeys()
+		rsaPrivateKey, _, err := h.jwkService.GetKeys()
 		if err != nil {
 			return c.JSON(http.StatusInternalServerError, "Error obteniendo claves")
 		}

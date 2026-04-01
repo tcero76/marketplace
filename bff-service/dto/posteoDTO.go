@@ -5,22 +5,29 @@ import (
 	"github.com/tcero76/marketplace/postgres/model"
 )
 
+type Metadata struct {
+	Hashtags []string `json:"hashtags,omitempty"`
+	Mentions []string `json:"mentions,omitempty"`
+	Urls     []string `json:"urls,omitempty"`
+}
+
 type Posteo struct {
-	ID        string    `json:"id"`
-	Texto     string    `json:"texto"`
-	Menciones []string  `json:"menciones"`
-	UserId    uuid.UUID `json:"userId"`
+	ID       string    `json:"id,omitempty"`
+	Texto    string    `json:"texto"`
+	Metadata Metadata  `json:"meta"`
+	UserId   uuid.UUID `json:"userId,omitempty"`
 }
 
 func ToPosteoDTO(posteo *model.Posteo) *Posteo {
 	if posteo == nil {
 		return nil
 	}
+	metadata := Metadata{Mentions: posteo.Menciones}
 	return &Posteo{
-		ID:        posteo.ID,
-		Texto:     posteo.Texto,
-		Menciones: posteo.Menciones,
-		UserId:    posteo.UserId,
+		ID:       posteo.ID,
+		Texto:    posteo.Texto,
+		Metadata: metadata,
+		UserId:   posteo.UserId,
 	}
 }
 func ToPosteosDTO(posteos []model.Posteo) []Posteo {
@@ -37,7 +44,7 @@ func ToPosteoModel(posteo *Posteo) *model.Posteo {
 	return &model.Posteo{
 		ID:        posteo.ID,
 		Texto:     posteo.Texto,
-		Menciones: posteo.Menciones,
+		Menciones: posteo.Metadata.Mentions,
 		UserId:    posteo.UserId,
 	}
 }

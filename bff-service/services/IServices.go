@@ -6,7 +6,6 @@ import (
 
 	"github.com/lestrrat-go/jwx/jwk"
 	"github.com/tcero76/marketplace/bff-service/dto"
-	dtoClickhouse "github.com/tcero76/marketplace/bff-service/dto/clickhouse"
 	"github.com/tcero76/marketplace/bff-service/payload"
 	"github.com/tcero76/marketplace/redis/model"
 )
@@ -20,8 +19,18 @@ type IUserService interface {
 
 type IModeloService interface {
 	GetModelByModelo(query string) (*dto.Modelo, error)
-	GetSearch(text []string) (*[]dto.Modelo, error)
 	GetModelos() []dto.Modelo
+	GetSearch(searchRequest payload.SearchRequest) []dto.SearchDTO
+}
+
+type ITsService interface {
+	GetTs(query string) (*dto.Ts, error)
+	GetTses() ([]dto.Ts, error)
+	GetSearchTs(searchRequest payload.SearchRequest) []dto.IdxDTO
+}
+
+type IRecomendationService interface {
+	GetRecomendationsTs(ctx context.Context, userId string) []dto.IdxDTO
 }
 
 type IPostsService interface {
@@ -29,14 +38,6 @@ type IPostsService interface {
 	GetTotalPosts() int64
 	CreatePosteo(posteo *dto.Posteo) error
 	GetPosteos(modelo string) []dto.Posteo
-}
-
-type ISearchService interface {
-	GetSearch(searchRequest payload.SearchRequest) []dto.SearchDTO
-}
-
-type IRecomendationService interface {
-	GetRecomendations(ctx context.Context, userId string) []dtoClickhouse.Recommendation
 }
 
 type IAuthCacheService interface {

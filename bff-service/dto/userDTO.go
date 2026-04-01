@@ -25,7 +25,7 @@ func ToUserDTO(user model.User) UserDTO {
 	case model.ProviderInternal:
 		provider = "internal"
 	default:
-		log.Info("provider inválido: %s", user.Provider)
+		log.Infof("provider inválido: %s", user.Provider)
 	}
 	return UserDTO{
 		UserID:     user.UserID,
@@ -47,7 +47,7 @@ func ToUser(userDTO UserDTO) model.User {
 	case "internal":
 		provider = model.ProviderInternal
 	default:
-		log.Info("provider inválido: %s", userDTO.Provider)
+		log.Infof("provider inválido: %s", userDTO.Provider)
 	}
 	return model.User{
 		UserID:     userDTO.UserID,

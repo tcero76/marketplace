@@ -28,14 +28,15 @@ func main() {
 
 	dbRead := postgresConfig.GetPostgresRead(log)
 	dbWrite := postgresConfig.GetPostgresWrite(log)
-	log.Debug("Conectado a la base de datos Postgres")
+	log.Info("Conectado a la base de datos Postgres")
 
 	authCacheService := redisServices.NewAuthCacheService(log)
 	userServices := modelServices.NewUserService(log, dbWrite, dbRead)
 	modeloService := modelServices.NewModeloService(log, dbWrite, dbRead)
+	tsService := modelServices.NewTsService(log, dbWrite, dbRead)
 	postService := modelServices.NewPostsService(log, dbWrite, dbRead)
-	searchService := modelServices.NewSearchService(log, dbRead)
 	jwkService := modelServices.NewJWKService(log, dbWrite, dbRead)
+	recomendationService := modelServices.NewRecomendationService(log, dbWrite, dbRead)
 
 	cfg := hydra.NewConfiguration()
 	cfg.Servers = hydra.ServerConfigurations{{URL: os.Getenv("HYDRA_ADMIN_URL")}}
@@ -46,34 +47,54 @@ func main() {
 	googleAuth := cor.NewGoogleAuth(googleClient, userServices)
 	loginHandler, consentHandler, callbackHandler := oauth2.InitOauth2Handlers(authCacheService, userServices, internalAuth, googleAuth)
 
-	// recomendationService := clickServices.NewRecomendationService()
 	e := echo.New()
 
 	e.Use(config.RedisSessionMiddleware(authCacheService))
 	e.Use(config.LoggerMiddleware(log))
 
-	e.POST("/login", controller.HandleLogin(loginHandler))
-	e.GET("/consent", controller.HandleConsent(consentHandler))
-	e.GET("/callback", controller.HandleCallback(callbackHandler))
-	e.GET("/getAuthentication", controller.AuthHandler)
-	e.POST("/refresh", controller.RefreshTokenHandler(authCacheService))
-	e.GET("/logout", controller.LogoutHandler(authCacheService))
-	e.POST("/signup", controller.SignUpHandler(userServices))
+	authController := controller.NewAuthController(log)
+
+	e.POST("/login", authController.HandleLogin(loginHandler))
+	e.GET("/consent", authController.HandleConsent(consentHandler))
+	e.GET("/callback", authController.HandleCallback(callbackHandler))
+	e.GET("/getAuthentication", authController.AuthHandler())
+	e.POST("/refresh", authController.RefreshTokenHandler(authCacheService))
+	e.GET("/logout", authController.LogoutHandler(authCacheService))
+	e.POST("/signup", authController.SignUpHandler(userServices))
 	e.GET("/health", controller.HealthCheckHandler(log))
 
 	protegido := e.Group("/usuario")
 	protegido.Use(oauth2.JWTMiddleware())
-	// protegido.GET("/getRecommendations", controller.GetRecommendations(recomendationService))
-	protegido.GET("/getModelo", controller.GetModelo(modeloService))
-	protegido.GET("/getModelos", controller.GetModelos(modeloService))
-	protegido.POST("/searchPosts", controller.GetSearch(searchService))
-	protegido.POST("/createPost", controller.CreatePosteo(postService))
-	protegido.GET("/getPosteos", controller.GetPosteos(postService))
-	e.POST("/uploadImage", controller.UploadImage(log))
-	e.GET("/getImage/:name", controller.GetImage(log))
-	e.GET("/.well-known/jwks.json", controller.JwksHandler(jwkService, log))
-	e.POST("/token", controller.TokenHandler(jwkService, log))
-	e.GET("/getPosts", controller.GetPosts(postService))
+
+	modeloController := controller.NewModeloController(log, modeloService)
+	tsController := controller.NewTsController(log, tsService)
+
+	postController := controller.NewPostController(log, postService)
+	fileController := controller.NewFileController(log)
+	jwkController := controller.NewJwksHandler(log, jwkService)
+	recomendationController := controller.NewRecomendationController(log, recomendationService)
+
+	protegido.GET("/getModelo", modeloController.GetModelo())
+	protegido.GET("/getModelos", modeloController.GetModelos())
+	// protegido.POST("/searchPosts", modeloController.GetSearch(log, searchService))
+	protegido.GET("/getTs", tsController.GetTs())
+	protegido.GET("/getTses", tsController.GetTses())
+	protegido.POST("/searchTs", tsController.GetSearchTs())
+
+	protegido.POST("/createPost", postController.CreatePosteo())
+	protegido.GET("/getPosteos", postController.GetPosteos())
+	e.GET("/getPosts", postController.GetPosts())
+
+	protegido.GET("/getRecommendations", recomendationController.GetRecommendations())
+
+	e.POST("/uploadImage", fileController.UploadImage())
+	e.GET("/getImage/:name", fileController.GetImage())
+
+	e.GET("/.well-known/jwks.json", jwkController.JwksHandler())
+	e.POST("/token", jwkController.TokenHandler())
+
+	e.GET("/embeded", controller.GetEmbeded(log))
+
 	log.Info("Servidor iniciado en el puerto: ", os.Getenv("PORT"))
 	e.Start(":" + os.Getenv("PORT"))
 }

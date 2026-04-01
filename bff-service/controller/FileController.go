@@ -10,25 +10,33 @@ import (
 	logConfig "github.com/tcero76/marketplace/config"
 )
 
-func UploadImage(log *logConfig.LoggerLogstash) echo.HandlerFunc {
+type FileController struct {
+	log *logConfig.LoggerLogstash
+}
+
+func NewFileController(log *logConfig.LoggerLogstash) *FileController {
+	return &FileController{log}
+}
+
+func (h *FileController) UploadImage() echo.HandlerFunc {
 	return func(c echo.Context) error {
-		log.Info("Uploading image")
+		h.log.Info("Uploading image")
 		file, err := c.FormFile("image")
 		if err != nil {
-			log.Error("Error retrieving the file: " + err.Error())
+			h.log.Error("Error retrieving the file: " + err.Error())
 			return echo.NewHTTPError(http.StatusBadRequest, "image is required")
 		}
 
 		src, err := file.Open()
 		if err != nil {
-			log.Error("Error opening the file: " + err.Error())
+			h.log.Error("Error opening the file: " + err.Error())
 			return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 		}
 		defer src.Close()
 
 		uploadDir := os.Getenv("UploadImages")
 		if err := os.MkdirAll(uploadDir, 0755); err != nil {
-			log.Error("Error creating upload directory: " + err.Error())
+			h.log.Error("Error creating upload directory: " + err.Error())
 			return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 		}
 
@@ -51,16 +59,16 @@ func UploadImage(log *logConfig.LoggerLogstash) echo.HandlerFunc {
 	}
 }
 
-func GetImage(log *logConfig.LoggerLogstash) echo.HandlerFunc {
+func (h *FileController) GetImage() echo.HandlerFunc {
 	return func(c echo.Context) error {
-		log.Info("Getting image")
+		h.log.Info("Getting image")
 		name := c.Param("name")
-		log.Debug("Image name: " + name)
+		h.log.Debug("Image name: " + name)
 		path := filepath.Join(os.Getenv("UploadImages"), filepath.Clean(name))
-		log.Debug("Image path: " + path)
+		h.log.Debug("Image path: " + path)
 		file, err := os.Open(path)
 		if err != nil {
-			log.Error("Error opening the file: " + err.Error())
+			h.log.Error("Error opening the file: " + err.Error())
 			return echo.NewHTTPError(http.StatusNotFound)
 		}
 		defer file.Close()
@@ -71,7 +79,7 @@ func GetImage(log *logConfig.LoggerLogstash) echo.HandlerFunc {
 		c.Response().Header().Set(echo.HeaderContentType, contentType)
 		c.Response().WriteHeader(http.StatusOK)
 		_, err = io.Copy(c.Response(), file)
-		log.Error("Error copying the file: " + err.Error())
+		h.log.Error("Error copying the file: " + err.Error())
 		return err
 	}
 }

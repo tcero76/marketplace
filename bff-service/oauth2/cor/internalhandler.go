@@ -1,7 +1,9 @@
 package cor
 
 import (
+	"context"
 	"net/http"
+	"time"
 
 	"github.com/labstack/echo/v4"
 	log "github.com/sirupsen/logrus"
@@ -85,6 +87,7 @@ type CallbackInternalHandler struct {
 }
 
 func (h *CallbackInternalHandler) Handle(c echo.Context) error {
+	log.Info("Callback Handle Internal")
 	sessionData := c.Get("session_data").(*model.SessionData)
 	if sessionData.Idp == "internal" {
 		code := c.QueryParam("code")
@@ -104,10 +107,14 @@ func (h *CallbackInternalHandler) Handle(c echo.Context) error {
 		if returnedState != expectedState {
 			return c.String(http.StatusBadRequest, "State mismatch")
 		}
-		token := h.InternalAuth.Callback(code, c.Request().Context())
+		ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+		defer cancel()
+		token := h.InternalAuth.Callback(code, ctx)
 		sessionData.AccessToken = token.AccessToken
 		sessionData.RefreshToken = token.RefreshToken
-		h.AuthCacheService.SaveSession(sessionData.SessionID, *sessionData, c.Request().Context())
+		ctxRedis, cancelRedis := context.WithTimeout(context.Background(), 10*time.Second)
+		defer cancelRedis()
+		h.AuthCacheService.SaveSession(sessionData.SessionID, *sessionData, ctxRedis)
 		log.Debug("Storing tokens in session Data: ", sessionData)
 		return c.Redirect(http.StatusFound, "/home?accessToken="+token.AccessToken)
 	} else {

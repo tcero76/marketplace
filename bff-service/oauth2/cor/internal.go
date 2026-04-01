@@ -102,12 +102,12 @@ func (b *InternalAuth) Callback(code string, ctx context.Context) *oauth2.Token 
 			AuthURL:  os.Getenv("HYDRA_PUBLIC_URL") + "/oauth2/auth",
 			TokenURL: os.Getenv("HYDRA_PUBLIC_URL") + "/oauth2/token",
 		},
-		Scopes: []string{"openid", "offline"},
+		Scopes: []string{"openid", "offline", "mediamtx:stream"},
 	}
 
 	token, err := conf.Exchange(ctx, code)
 	if err != nil {
-		log.Fatalf("Error intercambiando código por token: %v", err)
+		log.Println("Error intercambiando código por token: %v", err)
 	}
 	return token
 }
