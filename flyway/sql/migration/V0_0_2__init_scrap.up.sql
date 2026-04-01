@@ -37,3 +37,32 @@ CREATE TABLE IF NOT EXISTS scrap.posts (
     likes integer,
     primary key (id)
 );
+
+CREATE TYPE marketplace.ciudad_enum AS ENUM ('Santiago','Viña del Mar','Antofagasta','Calama','La Serena','Concepción','Valdivia','Puerto Montt','Rancagua','Iquique','Temuco','Osorno','Copiapó','Arica','Talca','Punta Arenas','Chillán','Valparaíso','Curicó','Los Ángeles','Quilpué','Concon');
+CREATE TYPE marketplace.portal_enum AS ENUM ('escortnorte','laplayaescort','relaxchile','planetaescort','estokada','chimbis','skokka','chaopescao','wenas.cl','sexosur');
+
+CREATE TABLE scrap.ts (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    id_job bigint NOT NULL,
+    portal marketplace.portal_enum NOT NULL,
+    idpagina TEXT NOT NULL,
+    nombre TEXT,
+    edad INT,
+    ciudad TEXT,
+    servicios text[],
+    servicios_adicionales text[],
+    scraped_at TIMESTAMP DEFAULT NOW(),
+    descripcion TEXT,
+    UNIQUE (portal, idpagina)
+);
+
+CREATE TABLE IF NOT EXISTS marketplace.servicios (
+    id INT PRIMARY KEY,
+    nombre TEXT NOT NULL
+);
+
+CREATE TABLE  IF NOT EXISTS scrap.servicios_alias (
+    id SERIAL PRIMARY KEY,
+    alias TEXT NOT NULL,
+    id_servicio INT REFERENCES marketplace.servicios(id) NOT NULL
+);

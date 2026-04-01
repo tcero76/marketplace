@@ -53,5 +53,27 @@ CREATE TABLE IF NOT EXISTS marketplace.posts(
 	PRIMARY KEY (id,id_job)
 );
 
+CREATE TABLE marketplace.ts (
+    id UUID PRIMARY KEY,
+    id_job bigint NOT NULL,
+    portal marketplace.portal_enum NOT NULL,
+    idpagina TEXT NOT NULL,
+    nombre TEXT,
+    edad INT,
+    ciudad TEXT,
+    servicios text[],
+    servicios_adicionales text[],
+    scraped_at TIMESTAMP DEFAULT NOW(),
+    descripcion TEXT,
+	descripcion_tsv tsvector GENERATED ALWAYS AS (
+    to_tsvector('spanish', coalesce(descripcion, ''))
+) STORED,
+    deleted_at TIMESTAMP DEFAULT NULL,
+    created_at TIMESTAMP DEFAULT NOW(),
+    updated_at TIMESTAMP DEFAULT NOW(),
+    UNIQUE (portal, idpagina)
+);
+
+CREATE INDEX idx_ts_descripcion_fts_gin ON marketplace.ts USING GIN (descripcion_tsv);
 CREATE INDEX ON marketplace.modelos (deleted_at);
 CREATE INDEX ON scrap.modelos (id_job, id);
