@@ -50,6 +50,7 @@ func (c *PostsService) CreatePosteo(posteoDTO *dto.Posteo) error {
 	result := c.dbWrite.Save(&posteo)
 	if result.Error != nil {
 		c.log.Error("Error al crear el posteo: ", result.Error)
+		return result.Error
 	}
 	return result.Error
 }
@@ -57,7 +58,7 @@ func (c *PostsService) CreatePosteo(posteoDTO *dto.Posteo) error {
 func (c *PostsService) GetPosteos(modelo string) []dto.Posteo {
 	c.log.Info("GetPosteos Entrando al servicio modelo: ", modelo)
 	posteos := []model.Posteo{}
-	err := c.dbRead.Where("menciones @> ARRAY[?]::text[]", "#"+modelo).
+	err := c.dbRead.Where("menciones @> ARRAY[?]::text[]", modelo).
 		Find(&posteos)
 	if err.Error != nil {
 		c.log.Error("Error al obtener los posteos: ", err.Error)
