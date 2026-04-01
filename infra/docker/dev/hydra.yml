@@ -13,7 +13,7 @@ services:
     environment:
       - DSN=postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:5432/${POSTGRES_DB}?sslmode=disable&options=-c%20search_path%3Dhydra
       - URLS_SELF_ISSUER=${PROTOCOL_EXTERNAL}://${HOST_EXTERNAL}/hydra
-      - URLS_LOGIN=${PROTOCOL_EXTERNAL}://${HOST_EXTERNAL}/login 
+      - URLS_LOGIN=${PROTOCOL_EXTERNAL}://${HOST_EXTERNAL}/home/login 
       - URLS_CONSENT=${PROTOCOL_EXTERNAL}://${HOST_EXTERNAL}/bff/consent
       - URLS_ERROR=${PROTOCOL_EXTERNAL}://${HOST_EXTERNAL}/error
       - SECRETS_SYSTEM=some_secret_key_system
@@ -36,7 +36,7 @@ services:
       # - OAUTH2_MIRROR_TOP_LEVEL_CLAIMS=false
     labels:
       - traefik.enable=true
-      - traefik.http.routers.hydra.rule=Host(`sugarfever.ddns.net`) && PathPrefix(`/hydra`)
+      - traefik.http.routers.hydra.rule=Host(`${HOST_EXTERNAL}`) && PathPrefix(`/hydra`)
       - traefik.http.middlewares.hydra-strip.stripprefix.prefixes=/hydra
       - traefik.http.routers.hydra.middlewares=hydra-strip
       - traefik.http.routers.hydra.entrypoints=websecure

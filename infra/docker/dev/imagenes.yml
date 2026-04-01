@@ -35,7 +35,7 @@ services:
     image: tcero76/frontend:${TAG}
     build:
       dockerfile: deploy/Dockerfile
-      context: ./frontend
+      context: ./front
       target: ${PROFILE}
       args:
         VITE_HOST: "${PROTOCOL_EXTERNAL}://${HOST_EXTERNAL}:${PORT_EXTERNAL}"

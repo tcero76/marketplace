@@ -9,6 +9,7 @@ services:
       - ./clickhouse:/app/clickhouse
       - ./rabbitmq:/app/rabbitmq
       - ./redis:/app/redis
+      - ./infra/volumes/uploads:/app/bff-service/uploads
     profiles:
       - bff
     container_name: bff
@@ -36,9 +37,10 @@ services:
       - REDIS_HOST=${REDIS_HOST}
       - MONITOREO=${MONITOREO}
       - LOG_LEVEL=${LOG_LEVEL}
+      - UploadImages=/app/bff-service/uploads
     labels:
       - traefik.enable=true
-      - traefik.http.routers.bff.rule=Host(`sugarfever.ddns.net`) && PathPrefix(`/bff`)
+      - traefik.http.routers.bff.rule=Host(`${HOST_EXTERNAL}`) && PathPrefix(`/bff`)
       - traefik.http.middlewares.bff-strip.stripprefix.prefixes=/bff
       - traefik.http.routers.bff.middlewares=bff-strip
       - traefik.http.routers.bff.entrypoints=websecure
@@ -144,9 +146,17 @@ services:
       - MIX_ENV=dev
       - CMD_CHAT_MESSAGE_DELIVERY_QUEUE=${CMD_CHAT_MESSAGE_DELIVERY_QUEUE}
       - CMD_CHAT_MESSAGE_SEND_EXCHANGE=${CMD_CHAT_MESSAGE_SEND_EXCHANGE}
-      - RABBITMQ_HOST=broker  
-    ports:
-      - 4000:4000
+      - RABBITMQ_HOST=broker
+      - HYDRA_JWKS_URL=http://hydra:4444/.well-known/jwks.json
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.ws.rule=Host(`${HOST_EXTERNAL}`) && PathPrefix(`/api`)
+      - traefik.http.middlewares.ws-strip.stripprefix.prefixes=/api
+      - traefik.http.routers.ws.middlewares=ws-strip
+      - traefik.http.routers.ws.entrypoints=websecure
+      - traefik.http.routers.ws.tls=true
+      - traefik.http.services.ws.loadbalancer.server.port=4000
+      - traefik.http.routers.ws.priority=100
     volumes:
       - ./ws-service:/ws-service
     depends_on:
@@ -158,31 +168,32 @@ services:
     profiles:
       - front
     working_dir: /app
-    entrypoint: npm run dev
+    command: ["npm", "run", "dev"]
     tty: true
     stdin_open: true
     environment:
-      - VITE_HOST=${PROTOCOL_EXTERNAL}://${HOST_EXTERNAL}
-      - VITE_WS=${PROTOCOL_WS_EXTERNAL}://${HOST_EXTERNAL}
-      - VITE_CLIENT_ID=${CLIENT_ID}
-      - VITE_MOCK=${VITE_MOCK}
+      - NEXT_PUBLIC_HOST=${PROTOCOL_EXTERNAL}://${HOST_EXTERNAL}
+      - NEXT_PUBLIC_WS=${PROTOCOL_WS_EXTERNAL}://${HOST_EXTERNAL}
+      - NEXT_PUBLIC_CLIENT_ID=${CLIENT_ID}
+      - NEXT_PUBLIC_MOCK=${VITE_MOCK}
+      - NEXT_PUBLIC_GOOGLE_CLIENT_ID=${GOOGLE_OAUTH2_CLIENT_ID}
     ports:
-     - 5173:5173
+     - 3000:3000
     volumes:
       - ./front:/app
     networks:
       - ${NETWORK_APPLICATION:-application}
     labels:
       - traefik.enable=true
-      - traefik.http.routers.front.rule=Host(`sugarfever.ddns.net`)
+      - traefik.http.routers.front.rule=Host(`${HOST_EXTERNAL}`)
       - traefik.http.routers.front.entrypoints=websecure
       # - traefik.http.routers.front.tls.certresolver=le
       - traefik.http.routers.front.tls=true
       - traefik.http.middlewares.front-headers.headers.customrequestheaders.X-Forwarded-Proto=https
-      - traefik.http.middlewares.front-headers.headers.customrequestheaders.X-Forwarded-Host=sugarfever.ddns.net
+      - traefik.http.middlewares.front-headers.headers.customrequestheaders.X-Forwarded-Host=`${HOST_EXTERNAL}`
       - traefik.http.routers.front.middlewares=front-headers
 
-      - traefik.http.services.front.loadbalancer.server.port=5173
+      - traefik.http.services.front.loadbalancer.server.port=3000
       - traefik.http.routers.front.priority=10
   solana-service:
     profiles:
@@ -296,12 +307,12 @@ services:
       - PORT=3001
       - REDIS_HOST=${REDIS_HOST}
       - LOG_LEVEL=${LOG_LEVEL}
+      - MONITOREO=${MONITOREO}
     labels:
     - traefik.enable=true
-    - traefik.http.routers.control-plane.rule=Host(`sugarfever.ddns.net`) && PathPrefix(`/control`)
+    - traefik.http.routers.control-plane.rule=Host(`${HOST_EXTERNAL}`) && PathPrefix(`/control`)
     - traefik.http.routers.control-plane.entrypoints=websecure
     - traefik.http.routers.control-plane.tls=true
-    - traefik.http.routers.control-plane.tls.certresolver=le
     - traefik.http.routers.control-plane.priority=100
     - traefik.http.routers.control-plane.middlewares=control-plane-strip
     - traefik.http.middlewares.control-plane-strip.stripprefix.prefixes=/control
