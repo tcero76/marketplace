@@ -38,7 +38,7 @@ export function useAutocomplete(
       setShow(false)
     }
   }
-  const insertSuggestion = (word: String) => {
+  const insertSuggestion = (word: string) => {
     const sel = window.getSelection();
     if (!sel || sel.rangeCount === 0) return;
     const range = sel.getRangeAt(0);
@@ -52,6 +52,8 @@ export function useAutocomplete(
     newRange.collapse(true);
     sel?.removeAllRanges();
     sel?.addRange(newRange);
+    const editor = textNode.parentElement;
+    editor?.dispatchEvent(new Event('input', { bubbles: true }));
     setShow(false);
   }
   const onKey = (e: React.KeyboardEvent<HTMLDivElement>) => {
