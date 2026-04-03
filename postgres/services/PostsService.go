@@ -44,9 +44,10 @@ func (c *PostsService) GetTotalPosts() int64 {
 	return total
 }
 
-func (c *PostsService) CreatePosteo(posteoDTO *dto.Posteo) error {
+func (c *PostsService) CreatePosteo(posteoDTO *dto.Posteo, userId string) error {
 	c.log.Info("CreatePosteo Entrando al servicio")
 	posteo := dto.ToPosteoModel(posteoDTO)
+	posteo.UserId = userId
 	result := c.dbWrite.Save(&posteo)
 	if result.Error != nil {
 		c.log.Error("Error al crear el posteo: ", result.Error)
