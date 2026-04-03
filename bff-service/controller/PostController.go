@@ -72,9 +72,8 @@ func (h *PostController) CreatePosteo() echo.HandlerFunc {
 				"error": "userId inválido",
 			})
 		}
-		posteo.UserId = userId
 		h.log.Debug("Posteo recibido: ", posteo)
-		err = h.postService.CreatePosteo(&posteo)
+		err = h.postService.CreatePosteo(&posteo, userId.String())
 		if err != nil {
 			h.log.Error("Error al crear el posteo: ", err)
 			return c.JSON(http.StatusInternalServerError, map[string]string{

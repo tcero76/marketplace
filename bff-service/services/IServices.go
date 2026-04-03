@@ -36,7 +36,7 @@ type IRecomendationService interface {
 type IPostsService interface {
 	GetPosts(limit int, offset int) []dto.Posts
 	GetTotalPosts() int64
-	CreatePosteo(posteo *dto.Posteo) error
+	CreatePosteo(posteo *dto.Posteo, userId string) error
 	GetPosteos(modelo string) []dto.Posteo
 }
 
