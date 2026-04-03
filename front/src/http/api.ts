@@ -11,6 +11,7 @@ import { baseHydraQuery } from "./baseQuery";
 export const api = createApi({
   reducerPath: "api",
   baseQuery: baseQueryWithRefresh,
+  tagTypes: ['Posteos'],
   endpoints: (builder) => {
     return (
       {
@@ -119,21 +120,23 @@ export const api = createApi({
           url: `/usuario/createPost`,
           method: 'POST',
           body: posteo
-         })
+         }),
+        invalidatesTags: ['Posteos']
         }),
       getPosteos: builder.query<Posteo[], string>({
         query: (nombre?:string) => ({
           url: `/usuario/getPosteos`,
           method: 'GET',
           params: nombre ? { nombre } : undefined
-        })
+        }),
+        providesTags: ['Posteos'],
       }),
       onImagePaste: builder.mutation<ImagePasteRes, File>({
         query: (file: File) => {
           const formData = new FormData()
           formData.append("image", file)
           return {
-            url: "/bff/uploadImage",
+            url: "/uploadImage",
             method: "POST",
             body: formData
           }

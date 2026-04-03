@@ -1,27 +1,19 @@
-import { useImperativeHandle, useRef, useState, forwardRef, ForwardedRef, useEffect } from 'react';
-import { EmbededHandle, EmbededProps, EmbededType } from '@/types';
-import getUserApi from '@/http/HttpFactory';
+import { useRef, useState, useEffect } from 'react';
+import { EmbededProps } from '@/types';
+import { useOnEmbedQuery } from '@/http/api';
 
-const Embeded = forwardRef<EmbededHandle,EmbededProps>(({imageUrl}:EmbededProps, ref:ForwardedRef<EmbededHandle>) => {
+const Embeded = ({imageUrl, urlEmbeded}:EmbededProps) => {
   const [urlImage, setUrlImage] = useState<string>('');
   const refImg = useRef<HTMLImageElement | null>(null)
-  useImperativeHandle(ref, () => ({
-    setUrls: (urls:string[]) => {
-        if(!urls[0]) return 
-        getUserApi().onEmbed(urls[0])
-        .then(res => {
-            const data = res.data as EmbededType
-            setUrlImage(data.thumbnail)
-        })
-        .catch(err => {
-            console.error("Error al obtener el embed:", err);
-        });
-    }
-  }));
-  useEffect(() => {
-    if (!imageUrl) return
-      setUrlImage(imageUrl);
-  }, [imageUrl]);
+  const { data } = useOnEmbedQuery(urlEmbeded ?? "", { skip: !urlEmbeded })
+    useEffect(() => {
+        if (!!imageUrl) {
+            setUrlImage(imageUrl);
+        }   
+    },[imageUrl])
+    useEffect(() => {
+        if (data?.thumbnail) setUrlImage(data.thumbnail);
+    },[data])
     return (
     <div className="image-wrapper">
         {urlImage!='' && <><img src={urlImage} className="preview" ref={refImg}/>
@@ -76,6 +68,6 @@ const Embeded = forwardRef<EmbededHandle,EmbededProps>(({imageUrl}:EmbededProps,
         `}</style>
         </div>
     )
-})
+}
 
 export default Embeded;

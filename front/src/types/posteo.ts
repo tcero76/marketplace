@@ -4,12 +4,11 @@ import { Meta } from './highlight'
 export type Posteo = {
     meta:Meta
     texto:string
-    userId:string
   }
 
 export type TextEditorType = {
   cleanInput:() => void
-  setPosteo:(posteo:Posteo) => void
+  setText:(texto:string) => void
 }
 
 export type TextFormatType = {
@@ -18,16 +17,18 @@ export type TextFormatType = {
   getInput:() => HTMLDivElement | null
 }
 export type TextEditorProps = {
+  text:string
   onChangePosteo:(posteo:Posteo) => void
 } & ComponentPropsWithoutRef<'div'>
 
 export type TextFormatProps = {
+  text:string
   onChangePosteo:(posteo:Posteo) => void
 } & ComponentPropsWithoutRef<'div'>
 
 export type EditorProps = {
+  text:string
   onChangePosteo:(posteo:Posteo) => void
-  editorRef: React.RefObject<HTMLDivElement | null>
   onKeyUp: React.KeyboardEventHandler<HTMLDivElement>
 } & ComponentPropsWithoutRef<'div'>
 
@@ -48,4 +49,8 @@ export type Posts = {
 export type PostProps = {
   index: Posteo
   editar:(posteo:Posteo) => void
+}
+
+export type EditorHandle = {
+  cleanInput: () => void,
 }

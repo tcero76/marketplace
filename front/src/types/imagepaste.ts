@@ -1,9 +1,11 @@
 export type ImagePasteRes = {
-    name:string
+    filename:string
+    path:string
 }
 
 export type EmbededProps = {
-  imageUrl: string | null
+  imageUrl?: string
+  urlEmbeded?:string
 }
 
 export type EmbededHandle = {

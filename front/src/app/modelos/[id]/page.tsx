@@ -94,7 +94,7 @@ const Page = () => {
         </div>
       </div>
         <div className="bg-gray-800/30 rounded-xl p-6 border border-gray-700 shadow-sm">
-          <CreatePost nombre={data?.nombre}/>
+          <CreatePost nombre={data?.nombre ?? ""}/>
         </div>
     </div>
       )

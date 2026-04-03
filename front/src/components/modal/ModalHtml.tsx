@@ -9,7 +9,6 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog"
 
 const ModalHtml= forwardRef<ModalHtmlHandle, ModalHtmlProps>((

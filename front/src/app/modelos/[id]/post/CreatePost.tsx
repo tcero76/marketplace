@@ -1,5 +1,4 @@
 import { useRef, useState } from 'react'
-import { useParams } from 'next/navigation'
 import TextEditor from './textEditor/TextEditor';
 import { ModalHtmlHandle, TextEditorType, TOAST_TYPES, type Posteo } from '../../../../types';
 import ModalHtml from '@/components/modal/ModalHtml';
@@ -13,8 +12,7 @@ type CreatePostProps = {
   nombre: string
 }
 const CreatePost = ({ nombre }:CreatePostProps) => {
-    const [open, setOpen] = useState<boolean>(false);
-    const refTextEditor = useRef<TextEditorType>(null);
+    const [modal, setModal] = useState<{open:boolean, text:string}>(false);
     const refPosteo = useRef<Posteo | null>(null);
     const refModal = useRef<ModalHtmlHandle>(null);
     const { data:posteos } = useGetPosteosQuery(nombre)
@@ -33,22 +31,22 @@ const CreatePost = ({ nombre }:CreatePostProps) => {
         })
     }
     const onClickAbrirPost = () => {
-        refTextEditor.current?.cleanInput()
-        setOpen(true)
+        setModal({open:true, text:""})
     }
     const onEditar = (posteo:Posteo) => {
-        refTextEditor.current?.setPosteo(posteo)
-        setOpen(true)
+        setModal({open:true, text:posteo.texto})
     }
     if(!posteos) return <div>Sin posteos....</div>
     return (
         <>
             <ModalHtml onClickModal={onClickPosteo}
-                open={open}
-                setOpen={setOpen}
+                open={modal.open}
+                setOpen={() => setModal({open:false, text:""})}
                 ref={refModal}
                 iconBtnAccept='send'>
-                <TextEditor onChangePosteo={(p) => refPosteo.current = p} ref={refTextEditor}/>
+                <TextEditor
+                    onChangePosteo={(p) => refPosteo.current = p}
+                    text={modal.text}/>
             </ModalHtml>
             <Button onClick={onClickAbrirPost}>Postear</Button>
             <div className="w-full space-y-4">

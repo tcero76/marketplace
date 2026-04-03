@@ -1,11 +1,12 @@
 import { useEffect, useState } from "react";
-import getUserApi from "../http/HttpFactory";
 import { PasteImageResult } from "../types";
+import { useOnImagePasteMutation } from "@/http/api";
 
 export function usePasteImage(input:HTMLDivElement | null):PasteImageResult {
     const [imageUrl, setImageUrl] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const [ trigger ] = useOnImagePasteMutation()
     useEffect(() => {
         const onPaste = (event: ClipboardEvent) => {
             const items = event.clipboardData?.items
@@ -18,10 +19,9 @@ export function usePasteImage(input:HTMLDivElement | null):PasteImageResult {
                     setIsLoading(true);
                     setError(null);
                     setImageUrl(null);
-                    getUserApi()
-                        .onImagePaste(file)
+                    trigger(file).unwrap()
                         .then(res => {
-                            const imgFile = process.env.NEXT_PUBLIC_MOCK === "true"? '/src/assets/Coltrane.jpg' : `/bff/getImage/${res.data.name}`
+                            const imgFile = process.env.NEXT_PUBLIC_MOCK === "true"? '/src/assets/Coltrane.jpg' : `/bff/getImage/${res.filename}`
                             setImageUrl(imgFile);
                         })
                         .catch(err => {
