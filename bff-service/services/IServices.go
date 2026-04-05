@@ -40,6 +40,10 @@ type IPostsService interface {
 	GetPosteos(modelo string) []dto.Posteo
 }
 
+type ITopicsService interface {
+	GetTopics() ([]dto.Topic, error)
+}
+
 type IAuthCacheService interface {
 	LoadTokenFromRedis(sessionID string, key string, ctx context.Context) (string, error)
 	GetSession(key string, ctx context.Context) (*model.SessionData, error)

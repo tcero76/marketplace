@@ -1,6 +1,6 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { getCaretCoordinates } from "../utils/caret";
-import { AutocompleteConfig, Category } from "../types/highlight";
+import { AutocompleteConfig, Options } from "../types/highlight";
 import { Popover,
   PopoverContent } from '@/components/ui/popover';
 import {
@@ -16,7 +16,7 @@ import {
 
 export function useAutocomplete(
   config:AutocompleteConfig) {
-  const [listado, setListado] = useState<{options:Category[],left:string,top:string}>()
+  const [listado, setListado] = useState<Options>()
   const [selectedIndex, setSelectedIndex] = useState<number>(0)
   const [show, setShow] = useState<boolean>(false)
   const regex = new RegExp(`\\${config.trigger}[\\w]*$`)

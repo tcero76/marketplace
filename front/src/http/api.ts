@@ -7,6 +7,7 @@ import { createApi } from "@reduxjs/toolkit/query/react";
 import { baseQueryWithRefresh } from "./baseQueryWithRefresh"
 import { fetchLoginChallenge, logout } from "@/store/AuthSlice";
 import { baseHydraQuery } from "./baseQuery";
+import { Servicios } from "@/types/servicios";
 
 export const api = createApi({
   reducerPath: "api",
@@ -112,7 +113,7 @@ export const api = createApi({
       getTses: builder.query<Tses[], void>({
         query: () => `/usuario/getTses`
       }),
-      getTopics: builder.query<string[], void>({
+      getTopics: builder.query<Servicios[], void>({
         query: () => `/usuario/getTopics`
       }),
       sendPost: builder.mutation<string, Posteo>({

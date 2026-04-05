@@ -85,6 +85,10 @@ func main() {
 	protegido.GET("/getPosteos", postController.GetPosteos())
 	e.GET("/getPosts", postController.GetPosts())
 
+	topicService := modelServices.NewTopicsService(log, dbRead)
+	topicController := controller.NewTopicsController(log, topicService)
+	protegido.GET("/getTopics", topicController.GetTopics())
+
 	protegido.GET("/getRecommendations", recomendationController.GetRecommendations())
 
 	e.POST("/uploadImage", fileController.UploadImage())

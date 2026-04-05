@@ -15,3 +15,8 @@ export type AutocompleteConfig = {
   maxResults?: number
 }
 
+export type Options = {
+  options:string[]
+  left:string
+  top:string
+}

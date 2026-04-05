@@ -1,28 +1,16 @@
 'use client'
 
-import { useRef } from 'react'
-import {
-  EditorHandle,
-  type TextAndPos,
-  type TextFormatProps,
-  type TextFormatType } from '@/types';
+import { } from 'react'
+import { type TextFormatProps, } from '@/types';
 import { useAutocomplete } from '@/hooks/useAutocomplete';
+import { useGetTsesQuery, useGetTopicsQuery } from '@/http/api';
 import Editor from './Editor';
-import { useGetTsesQuery,
-  useGetTopicsQuery } from '@/http/api';
 
-const TextFormat = ({
-  onChangePosteo, text, ...props}:TextFormatProps) => {
+const TextFormat = ({ onChangePosteo, text, ...props}:TextFormatProps) => {
   const { data:topics } = useGetTopicsQuery()
-  const hashtagAutocomplete = useAutocomplete({
-      trigger: '#',
-      categories: topics ?? []
-    });
+  const hashtagAutocomplete = useAutocomplete({ trigger: '#', categories: topics?.map(t => t.nombre) ?? [] });
   const { data:tses } = useGetTsesQuery()
-  const mentionAutocomplete = useAutocomplete({
-      trigger: '@',
-      categories: tses?.map(t =>  t.nombre ) ?? []
-    });
+  const mentionAutocomplete = useAutocomplete({ trigger: '@', categories: tses?.map(t =>  t.nombre ) ?? [] });
   const onKeyUp = (e: React.KeyboardEvent<HTMLDivElement>) => {
     mentionAutocomplete.onKey(e);
     hashtagAutocomplete.onKey(e);
@@ -36,6 +24,7 @@ const TextFormat = ({
           {...props}
         />
         <mentionAutocomplete.AutocompleteList/>
+        <hashtagAutocomplete.AutocompleteList/>
       </div>
       );
 }

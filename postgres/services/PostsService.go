@@ -1,6 +1,7 @@
 package services
 
 import (
+	"github.com/google/uuid"
 	"github.com/tcero76/marketplace/bff-service/dto"
 	logger "github.com/tcero76/marketplace/config"
 	"github.com/tcero76/marketplace/postgres/model"
@@ -47,7 +48,12 @@ func (c *PostsService) GetTotalPosts() int64 {
 func (c *PostsService) CreatePosteo(posteoDTO *dto.Posteo, userId string) error {
 	c.log.Info("CreatePosteo Entrando al servicio")
 	posteo := dto.ToPosteoModel(posteoDTO)
-	posteo.UserId = userId
+	id, err := uuid.Parse(userId)
+	if err.Error != nil {
+		c.log.Error("Error al parsear el userId: ", err.Error)
+		return err
+	}
+	posteo.UserId = id
 	result := c.dbWrite.Save(&posteo)
 	if result.Error != nil {
 		c.log.Error("Error al crear el posteo: ", result.Error)

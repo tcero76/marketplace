@@ -1,12 +1,12 @@
 import { useRef, useState } from 'react'
-import TextEditor from './textEditor/TextEditor';
-import { ModalHtmlHandle, TextEditorType, TOAST_TYPES, type Posteo } from '../../../../types';
+import { ModalHtmlHandle, TOAST_TYPES, type Posteo } from '../../../../types';
 import ModalHtml from '@/components/modal/ModalHtml';
 import { useUIContext } from '@/context/UIContext';
 import { Button } from '@/components/ui/button';
 import { Item, ItemActions, ItemContent, ItemDescription, ItemMedia, ItemTitle } from '@/components/ui/item';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useGetPosteosQuery, useSendPostMutation } from '@/http/api';
+import TextFormat from './textEditor/TextFormat';
 
 type CreatePostProps = {
   nombre: string
@@ -44,9 +44,7 @@ const CreatePost = ({ nombre }:CreatePostProps) => {
                 setOpen={() => setModal({open:false, text:""})}
                 ref={refModal}
                 iconBtnAccept='send'>
-                <TextEditor
-                    onChangePosteo={(p) => refPosteo.current = p}
-                    text={modal.text}/>
+                <TextFormat onChangePosteo={(p) => refPosteo.current = p} text={modal.text}/>
             </ModalHtml>
             <Button onClick={onClickAbrirPost}>Postear</Button>
             <div className="w-full space-y-4">
