@@ -25,16 +25,15 @@ const useFormatText = ({onChangePosteo, editorRef, imageUrl, posteo}:UseFormatTe
   useEffect(() => {
     const editor = editorRef.current;
     if (!editor || !posteo) return;
-    editor.innerHTML = highlight(posteo.texto);
-  }, [editorRef,posteo]);
-  const highlight =  (texto:string):string => {
+    const { html } = highlight(posteo.texto);
+    editor.innerHTML = html;
+  }, []);
+  const highlight =  (texto:string) => {
     const { html, meta } = composeHighlighters(
         hashtagHighlighter,
         arrobaHighlighter,
         httpsHighlighter)(texto);
-      onChangePosteo({ ...posteo, texto, meta });
-      if (meta.urls) setUrlEmbeded(meta.urls[0]);
-      return html;
+      return { html, meta };
   }
   const onInput = async (ev: React.FormEvent<HTMLDivElement>) => {
     const editor = editorRef.current;
@@ -43,8 +42,11 @@ const useFormatText = ({onChangePosteo, editorRef, imageUrl, posteo}:UseFormatTe
     const inputType = native.inputType;
     if(inputType === 'insertCompositionText' || inputType === 'deleteCompositionText') return
     const pos = storeCaretPosition(editor)
-    editor.innerHTML = highlight(editor.innerText)
+    const {html, meta} = highlight(editor.innerText)
+    editor.innerHTML = html;
     restoreCaretPosition(editor, pos);
+    onChangePosteo({...posteo, texto: editor.innerText, meta})
+    if (meta.urls) setUrlEmbeded(meta.urls[0]);
   }
   const Embeded = <EmbededComponent imageUrl={imageUrl} urlEmbeded={urlEmbeded}/>
     return {

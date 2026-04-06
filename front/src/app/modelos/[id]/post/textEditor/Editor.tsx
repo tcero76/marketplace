@@ -7,7 +7,7 @@ import useFormatText from "@/hooks/useFormatText";
 
 const Editor = memo<EditorProps>(({ onChangePosteo, onKeyUp, posteo, ...props }) => {
   const editorRef = useRef<HTMLDivElement>(null);
-  const { imageUrl, isLoading } = usePasteImage(editorRef.current);
+  const { imageUrl, isLoading } = usePasteImage(editorRef);
   const { onInput, Embeded } =
     useFormatText({
       onChangePosteo,

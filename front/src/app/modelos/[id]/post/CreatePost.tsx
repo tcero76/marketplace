@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react'
+import { useState } from 'react'
 import { TOAST_TYPES, type Posteo } from '../../../../types';
 import ModalHtml from '@/components/modal/ModalHtml';
 import { useUIContext } from '@/context/UIContext';

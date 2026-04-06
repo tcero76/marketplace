@@ -1,13 +1,15 @@
-import { useEffect, useState } from "react";
+import { RefObject, useEffect, useState } from "react";
 import { PasteImageResult } from "../types";
 import { useOnImagePasteMutation } from "@/http/api";
 
-export function usePasteImage(input:HTMLDivElement | null):PasteImageResult {
+export function usePasteImage(editorRef:RefObject<HTMLDivElement | null>):PasteImageResult {
     const [imageUrl, setImageUrl] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [ trigger ] = useOnImagePasteMutation()
     useEffect(() => {
+        const editor = editorRef.current;
+        if (!editor) return;
         const onPaste = (event: ClipboardEvent) => {
             const items = event.clipboardData?.items
             if (!items) return
@@ -35,11 +37,11 @@ export function usePasteImage(input:HTMLDivElement | null):PasteImageResult {
                 }
             }
         }
-        if(!input) return;
-        input.addEventListener("paste", onPaste as EventListener)
+        if(!editorRef) return;
+        editor?.addEventListener("paste", onPaste as EventListener)
         return () => {
-            input.removeEventListener("paste", onPaste as EventListener)
+            editor?.removeEventListener("paste", onPaste as EventListener)
         };
-    }, [input]);
+    }, [editorRef.current]);
     return { imageUrl, isLoading, error };
 }

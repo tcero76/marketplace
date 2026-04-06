@@ -1,5 +1,5 @@
-import { ForwardedRef, forwardRef, useImperativeHandle, useRef } from 'react'
-import { ModalHtmlHandle, ModalHtmlProps } from '../../types';
+import { FC } from 'react'
+import { ModalHtmlProps } from '../../types';
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
@@ -11,17 +11,18 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog"
 
-const ModalHtml= forwardRef<ModalHtmlHandle, ModalHtmlProps>((
-  {isHeader=false,textHeader,textBtnAccept,iconBtnAccept, onClickModal,
-    children, open, setOpen},
-    ref:ForwardedRef<ModalHtmlHandle>) => {
-    const refModal = useRef<HTMLDivElement>(null);
-    useImperativeHandle(ref, () => ({
-      open: () => setOpen(true),
-      close: () => setOpen(false),
-    }), []);
+const ModalHtml:FC<ModalHtmlProps>= ({
+    isHeader=false,textHeader,textBtnAccept,
+    iconBtnAccept, onClickModal,
+    children, open, setOpen
+  }) => {
     return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog open={open}
+      onOpenChange={(nextOpen) => {
+        if (nextOpen !== open) {
+          setOpen(nextOpen);
+        }
+      }}>
       <DialogContent  className="bg-white">
         <DialogHeader>
           <DialogTitle>Sticky Footer</DialogTitle>
@@ -45,6 +46,6 @@ const ModalHtml= forwardRef<ModalHtmlHandle, ModalHtmlProps>((
       </DialogContent>
     </Dialog>
     )
-})
+}
 
 export default ModalHtml
