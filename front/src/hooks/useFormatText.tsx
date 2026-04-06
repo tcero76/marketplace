@@ -12,7 +12,7 @@ type UseFormatTextProps = {
   onChangePosteo:(posteo:Posteo) => void
   editorRef: RefObject<HTMLDivElement | null>
   imageUrl:string | null
-  posteo:Posteo
+  posteo:Posteo | null
 }
 
 type UseFormatTextReturn = {

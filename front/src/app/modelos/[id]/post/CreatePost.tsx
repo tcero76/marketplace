@@ -7,6 +7,7 @@ import { Item, ItemActions, ItemContent, ItemDescription, ItemMedia, ItemTitle }
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useGetPosteosQuery, useSendPostMutation } from '@/http/api';
 import TextFormat from './textEditor/TextFormat';
+import Editor from './textEditor/Editor';
 
 type CreatePostProps = {
   nombre: string
@@ -50,7 +51,7 @@ const CreatePost = ({ nombre }:CreatePostProps) => {
                 open={modal}
                 setOpen={setModal}
                 iconBtnAccept='send'>
-                <TextFormat
+                <Editor
                     onChangePosteo={setPosteo}
                     posteo={posteo}/>
             </ModalHtml>

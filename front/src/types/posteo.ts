@@ -28,9 +28,8 @@ export type TextFormatProps = {
 } & ComponentPropsWithoutRef<'div'>
 
 export type EditorProps = {
-  posteo:Posteo
+  posteo:Posteo | null
   onChangePosteo:(posteo:Posteo) => void
-  onKeyUp: React.KeyboardEventHandler<HTMLDivElement>
 } & ComponentPropsWithoutRef<'div'>
 
 export type TextAndPos = {
