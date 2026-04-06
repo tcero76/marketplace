@@ -12,7 +12,7 @@ type UseFormatTextProps = {
   onChangePosteo:(posteo:Posteo) => void
   editorRef: RefObject<HTMLDivElement | null>
   imageUrl:string | null
-  text:string
+  posteo:Posteo
 }
 
 type UseFormatTextReturn = {
@@ -20,19 +20,19 @@ type UseFormatTextReturn = {
     Embeded: React.JSX.Element | null;
 }
 
-const useFormatText = ({onChangePosteo, editorRef, imageUrl, text}:UseFormatTextProps):UseFormatTextReturn => {
+const useFormatText = ({onChangePosteo, editorRef, imageUrl, posteo}:UseFormatTextProps):UseFormatTextReturn => {
   const [urlEmbeded, setUrlEmbeded] = useState<string>('');
   useEffect(() => {
     const editor = editorRef.current;
-    if (!editor) return;
-    editor.innerHTML = highlight(text);
-  }, [editorRef,text]);
+    if (!editor || !posteo) return;
+    editor.innerHTML = highlight(posteo.texto);
+  }, [editorRef,posteo]);
   const highlight =  (texto:string):string => {
     const { html, meta } = composeHighlighters(
         hashtagHighlighter,
         arrobaHighlighter,
         httpsHighlighter)(texto);
-      onChangePosteo({ meta, texto})
+      onChangePosteo({ ...posteo, texto, meta });
       if (meta.urls) setUrlEmbeded(meta.urls[0]);
       return html;
   }

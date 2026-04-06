@@ -5,6 +5,7 @@ export type Posteo = {
     id:string
     meta:Meta
     texto:string
+    userId:string
   }
 
 export type TextEditorType = {
@@ -22,12 +23,12 @@ export type TextEditorProps = {
 } & ComponentPropsWithoutRef<'div'>
 
 export type TextFormatProps = {
-  text:string
+  posteo:Posteo | null
   onChangePosteo:(posteo:Posteo) => void
 } & ComponentPropsWithoutRef<'div'>
 
 export type EditorProps = {
-  text:string
+  posteo:Posteo
   onChangePosteo:(posteo:Posteo) => void
   onKeyUp: React.KeyboardEventHandler<HTMLDivElement>
 } & ComponentPropsWithoutRef<'div'>

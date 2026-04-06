@@ -5,7 +5,7 @@ import { EditorProps } from "@/types";
 import { usePasteImage } from "@/hooks/usePasteImage";
 import useFormatText from "@/hooks/useFormatText";
 
-const Editor = memo<EditorProps>(({ onChangePosteo, onKeyUp, text, ...props }) => {
+const Editor = memo<EditorProps>(({ onChangePosteo, onKeyUp, posteo, ...props }) => {
   const editorRef = useRef<HTMLDivElement>(null);
   const { imageUrl, isLoading } = usePasteImage(editorRef.current);
   const { onInput, Embeded } =
@@ -13,7 +13,7 @@ const Editor = memo<EditorProps>(({ onChangePosteo, onKeyUp, text, ...props }) =
       onChangePosteo,
       editorRef,
       imageUrl,
-      text
+      posteo
     })
   return (<>
       <div

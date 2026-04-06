@@ -1,5 +1,5 @@
 import { useRef, useState } from 'react'
-import { ModalHtmlHandle, TOAST_TYPES, type Posteo } from '../../../../types';
+import { TOAST_TYPES, type Posteo } from '../../../../types';
 import ModalHtml from '@/components/modal/ModalHtml';
 import { useUIContext } from '@/context/UIContext';
 import { Button } from '@/components/ui/button';
@@ -12,39 +12,47 @@ type CreatePostProps = {
   nombre: string
 }
 const CreatePost = ({ nombre }:CreatePostProps) => {
-    const [modal, setModal] = useState<{open:boolean, text:string}>(false);
-    const refPosteo = useRef<Posteo | null>(null);
-    const refModal = useRef<ModalHtmlHandle>(null);
+    const [modal, setModal] = useState<boolean>(false);
+    const [posteo, setPosteo] = useState<Posteo | null>(null);
     const { data:posteos } = useGetPosteosQuery(nombre)
     const [ trigger ] = useSendPostMutation()
     const uiContext = useUIContext();
     const onClickPosteo = () => {
-        if(!refPosteo.current) return;
-        trigger(refPosteo.current).unwrap()
+        if(!posteo) return;
+        uiContext.showSpinner()
+        trigger(posteo).unwrap()
         .then(() => {
-            uiContext.showSpinner()
             uiContext.showToast({msg:"Enviado", type:TOAST_TYPES.SUCCESS})
-            refModal.current?.close()
+            setModal(false)
         })
         .finally(() => {
             uiContext.hideSpinner()
         })
     }
     const onClickAbrirPost = () => {
-        setModal({open:true, text:""})
+        const emptyPost: Posteo = {
+            texto: '',
+            meta: {},
+            userId: '',
+            id: ''
+            };
+        setPosteo(emptyPost);
+        setModal(true)
     }
     const onEditar = (posteo:Posteo) => {
-        setModal({open:true, text:posteo.texto})
+        setPosteo({ ...posteo });
+        setModal(true)
     }
     if(!posteos) return <div>Sin posteos....</div>
     return (
         <>
             <ModalHtml onClickModal={onClickPosteo}
-                open={modal.open}
-                setOpen={() => setModal({open:false, text:""})}
-                ref={refModal}
+                open={modal}
+                setOpen={setModal}
                 iconBtnAccept='send'>
-                <TextFormat onChangePosteo={(p) => refPosteo.current = p} text={modal.text}/>
+                <TextFormat
+                    onChangePosteo={setPosteo}
+                    posteo={posteo}/>
             </ModalHtml>
             <Button onClick={onClickAbrirPost}>Postear</Button>
             <div className="w-full space-y-4">
@@ -58,7 +66,7 @@ const CreatePost = ({ nombre }:CreatePostProps) => {
                             </Avatar>
                             </ItemMedia>
                             <ItemContent>
-                                <ItemTitle>{p.userId}</ItemTitle>
+                                <ItemTitle>{p.id}</ItemTitle>
                                 <ItemDescription>{p.texto}</ItemDescription>
                             </ItemContent>
                             <ItemActions>

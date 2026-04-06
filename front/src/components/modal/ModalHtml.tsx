@@ -12,7 +12,8 @@ import {
 } from "@/components/ui/dialog"
 
 const ModalHtml= forwardRef<ModalHtmlHandle, ModalHtmlProps>((
-  {isHeader=false,textHeader,textBtnAccept,iconBtnAccept, onClickModal, children, open, setOpen},
+  {isHeader=false,textHeader,textBtnAccept,iconBtnAccept, onClickModal,
+    children, open, setOpen},
     ref:ForwardedRef<ModalHtmlHandle>) => {
     const refModal = useRef<HTMLDivElement>(null);
     useImperativeHandle(ref, () => ({
