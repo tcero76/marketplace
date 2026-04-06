@@ -1,11 +1,11 @@
 'use client'
 
-import { memo, useRef } from "react";
+import { FC, useRef } from "react";
 import { EditorProps } from "@/types";
 import { usePasteImage } from "@/hooks/usePasteImage";
 import useFormatText from "@/hooks/useFormatText";
 
-const Editor = memo<EditorProps>(({ onChangePosteo, onKeyUp, posteo, ...props }) => {
+const Editor:FC<EditorProps> = ({ onChangePosteo, onKeyUp, posteo, ...props }) => {
   const editorRef = useRef<HTMLDivElement>(null);
   const { imageUrl, isLoading } = usePasteImage(editorRef);
   const { onInput, Embeded } =
@@ -29,6 +29,6 @@ const Editor = memo<EditorProps>(({ onChangePosteo, onKeyUp, posteo, ...props })
       />
           {isLoading ? <div>loading</div> : Embeded }
       </>);
-});
+};
 
 export default Editor;
