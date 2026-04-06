@@ -4,7 +4,7 @@ export type ImagePasteRes = {
 }
 
 export type EmbededProps = {
-  imageUrl?: string
+  imageUrl: string | null
   urlEmbeded?:string
 }
 

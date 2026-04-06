@@ -2,6 +2,7 @@ import { ComponentPropsWithoutRef } from 'react'
 import { Meta } from './highlight'
 
 export type Posteo = {
+    id:string
     meta:Meta
     texto:string
   }
@@ -10,7 +11,6 @@ export type TextEditorType = {
   cleanInput:() => void
   setText:(texto:string) => void
 }
-
 export type TextFormatType = {
   cleanInput:() =>  void
   setInput:(text:string) => void

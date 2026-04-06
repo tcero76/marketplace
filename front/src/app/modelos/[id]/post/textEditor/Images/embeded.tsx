@@ -2,7 +2,7 @@ import { useRef, useState, useEffect } from 'react';
 import { EmbededProps } from '@/types';
 import { useOnEmbedQuery } from '@/http/api';
 
-const Embeded = ({imageUrl, urlEmbeded}:EmbededProps) => {
+const EmbededComponent = ({imageUrl, urlEmbeded}:EmbededProps) => {
   const [urlImage, setUrlImage] = useState<string>('');
   const refImg = useRef<HTMLImageElement | null>(null)
   const { data } = useOnEmbedQuery(urlEmbeded ?? "", { skip: !urlEmbeded })
@@ -70,4 +70,4 @@ const Embeded = ({imageUrl, urlEmbeded}:EmbededProps) => {
     )
 }
 
-export default Embeded;
+export default EmbededComponent;
