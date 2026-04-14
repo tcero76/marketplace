@@ -48,9 +48,10 @@ func (c *PostsService) GetTotalPosts() int64 {
 func (c *PostsService) CreatePosteo(posteoDTO *dto.Posteo, userId string) error {
 	c.log.Info("CreatePosteo Entrando al servicio")
 	posteo := dto.ToPosteoModel(posteoDTO)
+	c.log.Debug("Posteo a crear: ", posteo)
 	id, err := uuid.Parse(userId)
-	if err.Error != nil {
-		c.log.Error("Error al parsear el userId: ", err.Error)
+	if err != nil {
+		c.log.Error("Error al parsear el userId: ", err)
 		return err
 	}
 	posteo.UserId = id

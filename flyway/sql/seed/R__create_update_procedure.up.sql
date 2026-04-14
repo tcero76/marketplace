@@ -53,54 +53,81 @@ BEGIN
   SELECT MAX(id_job)
   INTO v_id_job
   FROM scrap.ts;
+
+  IF v_id_job IS NULL THEN
+    RAISE NOTICE 'No se encontraron registros en scrap.ts';
+    RETURN;
+  END IF;
+
   INSERT INTO marketplace.ts (
-    id,
-    id_job,
-    portal,
-    idpagina,
-    nombre,
-    edad,
-    ciudad,
-    servicios,
-    servicios_adicionales,
-    scraped_at,
-    descripcion
+    id, id_job, portal, idpagina, nombre, edad, ciudad, 
+    descripcion, scraped_at
   )
-  SELECT
-    id,
-    id_job,
-    portal,
-    idpagina,
-    nombre,
-    edad,
-    ciudad,
-    servicios,
-    servicios_adicionales,
-    scraped_at,
-    descripcion
+  SELECT 
+    id, id_job, portal, idpagina, nombre, edad, 
+    ciudad::marketplace.ciudad_enum, 
+    descripcion, scraped_at
   FROM scrap.ts
   WHERE id_job = v_id_job
-  ON CONFLICT (id) DO UPDATE
-    SET
-    id_job = EXCLUDED.id_job,
-    portal = EXCLUDED.portal,
-    idpagina = EXCLUDED.idpagina,
-    nombre = EXCLUDED.nombre,
-    edad = EXCLUDED.edad,
-    ciudad = EXCLUDED.ciudad,
-    servicios = EXCLUDED.servicios,
-    servicios_adicionales = EXCLUDED.servicios_adicionales,
-    scraped_at = EXCLUDED.scraped_at,
-    descripcion = EXCLUDED.descripcion,
-    deleted_at  = NULL;
+  ON CONFLICT (id) DO UPDATE 
+    SET 
+      id_job      = EXCLUDED.id_job,
+      portal      = EXCLUDED.portal,
+      idpagina    = EXCLUDED.idpagina,
+      nombre      = EXCLUDED.nombre,
+      edad        = EXCLUDED.edad,
+      ciudad      = EXCLUDED.ciudad,
+      descripcion = EXCLUDED.descripcion,
+      scraped_at  = EXCLUDED.scraped_at,
+      deleted_at  = NULL,
+      updated_at  = NOW();
+
   UPDATE marketplace.ts m
-  SET deleted_at = now()
+  SET deleted_at = NOW(),
+      updated_at = NOW()
   WHERE deleted_at IS NULL
     AND NOT EXISTS (
-      SELECT 1
-      FROM scrap.ts s
-      WHERE s.id_job = v_id_job
+      SELECT 1 
+      FROM scrap.ts s 
+      WHERE s.id_job = v_id_job 
         AND s.id = m.id
     );
+
+  DELETE FROM marketplace.ts_servicios ts
+  WHERE ts.ts_id IN (
+    SELECT id 
+    FROM scrap.ts 
+    WHERE id_job = v_id_job
+  );
+
+  INSERT INTO marketplace.ts_servicios (ts_id, servicio_id, tipo)
+  SELECT 
+    s.id AS ts_id,
+    serv.id AS servicio_id,
+    'principal' AS tipo
+  FROM scrap.ts st
+  JOIN marketplace.ts s ON s.id = st.id
+  JOIN unnest(st.servicios) AS servicio_nombre
+    ON true
+  JOIN marketplace.servicios serv ON serv.nombre = servicio_nombre
+  WHERE st.id_job = v_id_job
+    AND servicio_nombre IS NOT NULL;
+
+  -- Insertamos las nuevas relaciones de servicios adicionales
+  INSERT INTO marketplace.ts_servicios (ts_id, servicio_id, tipo)
+  SELECT 
+    s.id AS ts_id,
+    serv.id AS servicio_id,
+    'adicional' AS tipo
+  FROM scrap.ts st
+  JOIN marketplace.ts s ON s.id = st.id
+  JOIN unnest(st.servicios_adicionales) AS servicio_nombre
+    ON true
+  JOIN marketplace.servicios serv ON serv.nombre = servicio_nombre
+  WHERE st.id_job = v_id_job
+    AND servicio_nombre IS NOT NULL;
+
+  RAISE NOTICE 'Actualización completada. id_job = %', v_id_job;
+
 END;
 $$;

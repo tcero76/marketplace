@@ -1,6 +1,8 @@
 package services
 
 import (
+	"strconv"
+
 	"github.com/tcero76/marketplace/bff-service/dto"
 	"github.com/tcero76/marketplace/bff-service/payload"
 	logger "github.com/tcero76/marketplace/config"
@@ -47,9 +49,19 @@ func (h *TsService) GetTses() ([]dto.Ts, error) {
 func (h *TsService) GetSearchTs(searchRequest payload.SearchRequest) []dto.IdxDTO {
 	h.log.Info("Entrando a search Tses")
 	h.log.Info("GetSearch: searchRequest es: ", searchRequest)
+	var servicioIDs []int
+	if searchRequest.Hashtag != "" {
+		if id, err := strconv.Atoi(searchRequest.Hashtag); err == nil {
+			servicioIDs = []int{id}
+		} else {
+			h.log.Warn("Hashtag inválido (no es número): %s", searchRequest.Hashtag)
+		}
+	}
+	h.log.Debug("GetSearch: servicioIDs es: ", servicioIDs)
 	specs := []searchspecifications.Specification{
 		searchspecifications.MentionSpecTs{Mention: searchRequest.Mention, Log: h.log},
 		searchspecifications.TextSpecTs{Words: searchRequest.Text, Log: h.log},
+		searchspecifications.ServicioSpecTs{ServicioIDs: servicioIDs, Log: h.log},
 		searchspecifications.SelectSpecTs{Words: searchRequest.Text, Log: h.log},
 	}
 	var tses []model.TS

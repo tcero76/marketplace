@@ -1,8 +1,11 @@
 package model
 
+import "time"
+
 type Servicios struct {
-	ID     int32  `gorm:"column:id;primaryKey" json:"id"`
-	Nombre string `gorm:"column:nombre;not null" json:"nombre"`
+	ID        int       `gorm:"primaryKey;autoIncrement"`
+	Nombre    string    `gorm:"type:text;unique;not null"`
+	CreatedAt time.Time `gorm:"default:now()"`
 }
 
 func (Servicios) TableName() string {

@@ -53,16 +53,11 @@ CREATE TABLE scrap.ts (
     servicios_adicionales text[],
     scraped_at TIMESTAMP DEFAULT NOW(),
     descripcion TEXT,
-    UNIQUE (portal, idpagina)
+    UNIQUE (portal, idpagina, id_job)
 );
 
-CREATE TABLE IF NOT EXISTS marketplace.servicios (
-    id INT PRIMARY KEY,
-    nombre TEXT NOT NULL
-);
-
-CREATE TABLE  IF NOT EXISTS scrap.servicios_alias (
+CREATE TABLE IF NOT EXISTS scrap.servicios_alias (
     id SERIAL PRIMARY KEY,
     alias TEXT NOT NULL,
-    id_servicio INT REFERENCES marketplace.servicios(id) NOT NULL
+    id_servicio INT NOT NULL
 );

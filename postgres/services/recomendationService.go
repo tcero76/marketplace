@@ -34,7 +34,7 @@ func (h *RecomendationService) GetRecomendationsTs(ctx context.Context, userId s
 	var tses []model.TS
 	err = h.dbRead.Find(&tses).Error
 	if err != nil {
-		h.log.Error("Error fetching fallback model recommendations", "error", err)
+		h.log.Error("Error fetching fallback model recommendations: ", "error", err)
 		return nil
 	}
 	return dto.FromTsesToIdxDTOs(tses)

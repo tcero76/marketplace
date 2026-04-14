@@ -3,6 +3,7 @@ package searchspecifications
 import (
 	"strings"
 
+	"github.com/lib/pq"
 	logger "github.com/tcero76/marketplace/config"
 	"gorm.io/gorm"
 )
@@ -24,10 +25,10 @@ func cleanWords(words []string) []string {
 
 func (s TextSpecTs) Apply(db *gorm.DB) *gorm.DB {
 	s.Log.Info("Words son: ", s.Words)
-	cleanWords := cleanWords(s.Words)
-	if len(cleanWords) > 0 {
-		tsQuery := strings.Join(cleanWords, " | ")
-		return db.Where("descripcion_tsv @@ plainto_tsquery('spanish', ?)", tsQuery)
+	clean := cleanWords(s.Words)
+	if len(clean) > 0 {
+		text := strings.Join(clean, " ")
+		return db.Where("descripcion_tsv @@ plainto_tsquery('spanish', ?)", text)
 	}
 	return db
 }
@@ -46,6 +47,27 @@ func (s MentionSpecTs) Apply(db *gorm.DB) *gorm.DB {
 	return db
 }
 
+type ServicioSpecTs struct {
+	ServicioIDs []int
+	Log         *logger.LoggerLogstash
+}
+
+func (s ServicioSpecTs) Apply(db *gorm.DB) *gorm.DB {
+	if len(s.ServicioIDs) == 0 {
+		return db
+	}
+	query := `
+	EXISTS (
+		SELECT 1
+		FROM marketplace.ts_servicios tss
+		WHERE tss.ts_id = marketplace.ts.id
+		  AND tss.servicio_id = ANY(?)
+	`
+	args := []interface{}{pq.Array(s.ServicioIDs)}
+	query += ")"
+	return db.Where(query, args...)
+}
+
 type SelectSpecTs struct {
 	Words []string
 	Log   *logger.LoggerLogstash
@@ -54,4 +76,19 @@ type SelectSpecTs struct {
 func (s SelectSpecTs) Apply(db *gorm.DB) *gorm.DB {
 	s.Log.Info("SelectSpecTs Words son: ", s.Words)
 	return db.Select("id")
+}
+
+type CiudadSpecTs struct {
+	Ciudades []string
+	Log      *logger.LoggerLogstash
+}
+
+func (s CiudadSpecTs) Apply(db *gorm.DB) *gorm.DB {
+	if len(s.Ciudades) == 0 {
+		return db
+	}
+
+	s.Log.Info("Filtrando por ciudades: ", s.Ciudades)
+
+	return db.Where("ciudad IN ?", s.Ciudades)
 }
