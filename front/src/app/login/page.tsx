@@ -15,7 +15,7 @@ const Page = () => {
       setState(stateVerification)
     }
 }, [])
-  return (<form style={{maxWidth: '330px', margin: 'auto'}} className="form-signin mt-5"
+  return (<form className="form-signin mt-5 max-w-[330px] mx-auto"
   action={`/bff/login?login_challenge=${loginChallenge}&state=${state}&idp=internal`} method="POST">
             <h1 className="h3 mb-3 fw-normal">Please sign in</h1>
             <div className="form-floating">

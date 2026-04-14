@@ -113,12 +113,7 @@ const AutocompleteList = () => {
     <Popover open={show}>
         <PopoverContent
           onOpenAutoFocus={(e) => e.preventDefault()}
-          style={{
-            position: "fixed",
-            left: listado?.left,
-            top: listado?.top,
-          }}
-          className="w-[--radix-popover-trigger-width] p-0 bg-white"
+          className={`w-[--radix-popover-trigger-width] p-0 bg-white fixed left-[${listado?.left}] top-[${listado?.top}]`}
           align="start">
           <Command>
             <CommandList>

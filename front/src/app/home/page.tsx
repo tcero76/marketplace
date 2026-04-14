@@ -44,7 +44,6 @@ export default function Home() {
   return (
     <div className="h-full w-full">
         <Virtuoso
-          style={{height: '100%',overflowX: 'hidden' }}
           data={rows}
           itemContent={(index, item) => <Row key={item.key} row={item.row}/>}
           computeItemKey={(index) => index}

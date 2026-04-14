@@ -6,7 +6,6 @@ import { Button } from '@/components/ui/button';
 import { Item, ItemActions, ItemContent, ItemDescription, ItemMedia, ItemTitle } from '@/components/ui/item';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useGetPosteosQuery, useSendPostMutation } from '@/http/api';
-import TextFormat from './textEditor/TextFormat';
 import Editor from './textEditor/Editor';
 
 type CreatePostProps = {

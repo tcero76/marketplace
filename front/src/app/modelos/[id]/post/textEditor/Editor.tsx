@@ -45,8 +45,7 @@ const Editor:FC<EditorProps> = ({ onChangePosteo, posteo, ...props }) => {
         contentEditable
         onKeyUp={onKeyUp}
         onInput={onInput}
-        style={{ padding: '10px', minHeight: '100px',
-          border: '1px solid #ccc', borderRadius: '4px' }}
+        className="p-[10px] min-h-[100px] border border-gray-300 rounded"
         suppressContentEditableWarning
         {...props}
       />

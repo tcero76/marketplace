@@ -28,6 +28,12 @@ export const fakeBaseQueryWithRefresh = async (args, api, extraOptions) => {
   if(url === '/usuario/getRecommendations') {
     return { data: recomendations };
   }
+  if(url === '/usuario/getPosteos') {
+    return { data: [] }
+  }
+  if(url === '/usuario/createPost' && args.method === 'POST') {
+    return { data: { message: 'ok' } }
+  }
   if(url === '/usuario/getTs?ts=3e50a4ae-3c18-4603-8e1f-3541ec01a74d') {
     return { data: {"id":"3e50a4ae-3c18-4603-8e1f-3541ec01a74d","id_job":1775751286,"portal":"laplayaescort","nombre":"Alezca ts","edad":27,"ciudad":"Viña del Mar","descripcion":"Única y real ALEZCA vip MORENA EXOTICA 22CM Soy la indicada  mira mi Twitter Aleztransexual1\n\nTengo cuerpo natural y muy estético, hermoso rostro, ojos grandes, cejas pobladas, labios hermosos y unos deliciosos bustos proporcionados a mi cuerpo.\n\nSoy una nena con buen tema de conversación y muy relajada.\n\npodemos hacer videollamada para que confirmes mi belleza.\n\nSoy Muy limpia, higiénica y espero lo mismo de ti, hermosa piel suave y te garantizo tener una excelente experiencia","created_at":"2026-04-09T16:15:01.430721Z"}}
   }
@@ -82,7 +88,6 @@ export const fakeBaseQueryWithRefresh = async (args, api, extraOptions) => {
   if(url === '/usuario/getTs?ts=485be373-eb2b-4072-9f9d-e306e4602b3d') {
     return { data: {"id":"485be373-eb2b-4072-9f9d-e306e4602b3d","id_job":1775751286,"portal":"laplayaescort","nombre":"Gabyta","edad":40,"ciudad":"Viña del Mar","descripcion":"Dulce y cariñosa con ganas de complacer todas tus fantasías, me encanta disfrutar del sexo, besitos ricos de polola, miles de caricias, las poses que mas te gusten, sexo oral profundo exquisito, rusa, puedes venir a lamer mi coño rico y jugoso, soy relajada, atiendo en mi Departamento muy cómodo y Discreto...","created_at":"2026-04-09T16:15:01.430721Z"}}
   }
-  console.log("url: ", url)
   return { data: { message: 'ok' } }
 }
 
