@@ -33,31 +33,17 @@ def start_metrics_server():
         time.sleep(5)
 
 @app.task
-def run_modelos(_=None):
-    print(f"Inicia Run_modelos")
-    subprocess.run(["scrapy", "crawl", "modelos"])
-
-@app.task
-def run_modelo(_=None):
+def run_modelo(id_job):
     print(f"Inicia run_modelo")
-    subprocess.run(["scrapy", "crawl", "modelo"])
+    subprocess.run(["scrapy", "crawl", "modelo", "-a", f"id_job={id_job}"])
 
 @app.task
-def run_modelos(_=None):
+def run_modelos(id_job):
     print(f"Inicia run_modelo")
-    subprocess.run(["scrapy", "crawl", "modelos"])
+    subprocess.run(["scrapy", "crawl", "modelos", "-a", f"id_job={id_job}"])
 
 @app.task
-def run_escorts(_=None):
-    print(f"Inicia run_escorts")
-    # subprocess.run(["scrapy", "crawl", "chimbis"])
-    subprocess.run(["scrapy", "crawl", "escortnorte"])
-    subprocess.run(["scrapy", "crawl", "laplayaescort"])
-    subprocess.run(["scrapy", "crawl", "planetaescort"])
-    subprocess.run(["scrapy", "crawl", "relaxchile"])
-
-@app.task
-def ejecutar_funcion_postgres(_=None):
+def ejecutar_funcion_items_postgres(_=None):
     print(f"Inicia ejecutar_funcion_postgres")
     url = os.getenv("DATABASE_URL")
     conn = psycopg2.connect(url)
@@ -79,16 +65,39 @@ def run_insta(_=None):
     subprocess.run(["scrapy", "crawl", "insta"])
 
 @app.task
+def run_escorts(id_job):
+    print(f"Inicia run_escorts con id_job={id_job}")
+    # subprocess.run(["scrapy", "crawl", "chimbis"])
+    subprocess.run(["scrapy", "crawl", "escortnorte", "-a", f"id_job={id_job}"])
+    subprocess.run(["scrapy", "crawl", "laplayaescort", "-a", f"id_job={id_job}"])
+    subprocess.run(["scrapy", "crawl", "planetaescort", "-a", f"id_job={id_job}"])
+    subprocess.run(["scrapy", "crawl", "relaxchile", "-a", f"id_job={id_job}"])
+
+@app.task
+def ejecutar_funcion_ts_postgres(_=None):
+    print(f"Inicia ejecutar_funcion_postgres")
+    url = os.getenv("DATABASE_URL")
+    conn = psycopg2.connect(url)
+    try:
+        with conn.cursor() as cur:
+            cur.execute("SELECT scrap.actualizar_ts_ultimos();")
+            conn.commit()
+    finally:
+        conn.close()
+
+@app.task
 def run_modelo_spider():
     global metrics_thread_started
     if not metrics_thread_started:
         threading.Thread(target=start_metrics_server, daemon=True).start()
         metrics_thread_started = True
+    id_job = int(time.time())  
     chain(
         # run_insta.s().set(queue=SCRAPY_QUEUE),
-        obtener_cookies.s().set(queue=SCRAPY_QUEUE),
-        run_modelos.s().set(queue=SCRAPY_QUEUE),
-        run_modelo.s().set(queue=SCRAPY_QUEUE),
-        # run_escorts.s().set(queue=SCRAPY_QUEUE),
-        # ejecutar_funcion_postgres.s().set(queue=SCRAPY_QUEUE)
+        # obtener_cookies.s().set(queue=SCRAPY_QUEUE),
+        # run_modelos.s().set(queue=SCRAPY_QUEUE),
+        # run_modelo.s().set(queue=SCRAPY_QUEUE),
+        # ejecutar_funcion_items_postgres.s().set(queue=SCRAPY_QUEUE)
+        run_escorts.s(id_job).set(queue=SCRAPY_QUEUE),
+        ejecutar_funcion_ts_postgres.s().set(queue=SCRAPY_QUEUE)
     ).apply_async()

@@ -9,9 +9,9 @@ class LaplayaescortSpider(scrapy.Spider):
     base_url = "https://laplayaescort.cl/site/bloque{}?version={}&pag={}"
     start_urls = ["https://laplayaescort.cl"]
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, id_job=None, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.id_job = time.time()
+        self.id_job = id_job
 
     def parse(self,response):
         script = response.text

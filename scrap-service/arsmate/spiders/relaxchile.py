@@ -8,9 +8,9 @@ class RelaxchileSpider(scrapy.Spider):
     allowed_domains = ["www.relaxchile.cl"]
     start_urls = ["https://www.relaxchile.cl/"]
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, id_job=None, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.id_job = time.time()
+        self.id_job = id_job
 
     def parse(self, response):
         url="https://www.relaxchile.cl/ficha-escort/ficha-escort.index/{}/{}"
