@@ -1,5 +1,6 @@
 export type SearchType = {
     mention: string;
+    hashtag: string;
     text: string[];
 }
 

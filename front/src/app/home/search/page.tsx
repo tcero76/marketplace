@@ -11,9 +11,10 @@ export default function Page() {
   const searchParams = useSearchParams();
   const uiContext = useUIContext()
   const mention = searchParams.get("mention") ?? "";
+  const hashtag = searchParams.get("hashtag") ?? "";
   const text = searchParams.get("text") ?? "";
-  const { data , isLoading } = useSearchTsQuery({ mention, text:[text]}, 
-    { skip: !text && !mention });
+  const { data , isLoading } = useSearchTsQuery({ mention, hashtag, text:[text]}, 
+    { skip: !text && !mention && !hashtag});
   const rows = useMemo(() => {
     if (!data?.length) return [];
     return Array.from(

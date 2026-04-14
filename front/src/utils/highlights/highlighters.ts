@@ -1,4 +1,4 @@
-import { Highlighter, HighlightResult } from "../../../../frontend/src/types/highlight";
+import { Highlighter, HighlightResult } from "@/types/highlight";
 
 export const hashtagHighlighter: Highlighter = (texto:string):HighlightResult => {
     const regex = /#[\p{L}\p{N}_]+/gu;
@@ -12,9 +12,9 @@ export const hashtagHighlighter: Highlighter = (texto:string):HighlightResult =>
         return `<span class="font-bold text-blue-500" contenteditable="true">${safe}</span>`;
     });
     return {html,
-        meta: {
+        metaRaw: {
             hashtags
-        } };
+        }, cleanText: '' };
 }
 
 export const arrobaHighlighter: Highlighter = (texto:string):HighlightResult => {
@@ -29,9 +29,9 @@ export const arrobaHighlighter: Highlighter = (texto:string):HighlightResult => 
         return `<span class="font-bold text-blue-500" contenteditable="true">${safe}</span>`;
     });
     return {html,
-        meta: {
+        metaRaw: {
             mentions
-        } };
+        }, cleanText: '' };
 }
 
 export const httpsHighlighter: Highlighter = (texto:string):HighlightResult => {
@@ -46,7 +46,7 @@ export const httpsHighlighter: Highlighter = (texto:string):HighlightResult => {
         return `<span class="font-bold text-blue-500" contenteditable="true">${safe}</span>`;
     });
     return {html,
-        meta: {
+        metaRaw: {
             urls
-        } };
+        }, cleanText: '' };
 }

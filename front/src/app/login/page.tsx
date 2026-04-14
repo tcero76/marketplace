@@ -1,7 +1,6 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import {  } from '../../store/hooks'
 
 const Page = () => {
   const [user, setUser ] = useState<string>("")

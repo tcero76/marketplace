@@ -33,7 +33,11 @@ const CreatePost = ({ nombre }:CreatePostProps) => {
     const onClickAbrirPost = () => {
         const emptyPost: Posteo = {
             texto: '',
-            meta: {},
+            meta:  {
+                mentions: [],
+                hashtags: [],
+                urls: []
+                },
             userId: '',
             id: ''
             };

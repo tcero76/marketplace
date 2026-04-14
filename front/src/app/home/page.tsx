@@ -11,7 +11,6 @@ import { useSearchParams } from 'next/navigation';
 import { setToken } from '@/store/AuthSlice';
 import { skipToken } from '@reduxjs/toolkit/query';
 import Row from './search/Row';
-import { RowProps } from '@/types';
 
 export default function Home() {
   const dispatch = useAuthDispatch()

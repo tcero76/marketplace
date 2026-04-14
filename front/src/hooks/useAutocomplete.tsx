@@ -80,28 +80,30 @@ export function useAutocomplete(
     }
     const options = listado?.options ?? [];
     if (!(options.length > 0)) return;
-    switch (e.key) {
-      case "ArrowDown":
-        e.preventDefault();
-        setSelectedIndex((prev) => (prev + 1) % options.length);
-        break;
-      case "ArrowUp":
-        e.preventDefault();
-        setSelectedIndex((prev) => (prev - 1 + options.length) % options.length);
-        break;
-      case "Escape":
-        e.preventDefault();
-        setSelectedIndex(0);
-        setShow(false);
-        break;
-      case "Enter":
-        e.preventDefault();
-        const selected = options[selectedIndex];
-        if (selected) {
-          insertSuggestion(selected);
+      if (show) {
+      switch (e.key) {
+        case "ArrowDown":
+          e.preventDefault();
+          setSelectedIndex((prev) => (prev + 1) % options.length);
+          break;
+        case "ArrowUp":
+          e.preventDefault();
+          setSelectedIndex((prev) => (prev - 1 + options.length) % options.length);
+          break;
+        case "Escape":
+          e.preventDefault();
           setSelectedIndex(0);
-        }
-        break;
+          setShow(false);
+          break;
+        case "Enter":
+          e.preventDefault();
+          const selected = options[selectedIndex];
+          if (selected) {
+            insertSuggestion(selected);
+            setSelectedIndex(0);
+          }
+          break;
+      }
     }
   }
 

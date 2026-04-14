@@ -1,12 +1,40 @@
 import { ComponentPropsWithoutRef } from 'react'
-import { Meta } from './highlight'
+import { Tses } from './ts'
+import { Servicios } from './servicios'
 
-export type Posteo = {
-    id:string
-    meta:Meta
-    texto:string
-    userId:string
+  type PosteoBase = {
+      id:string
+      texto:string
+      userId:string
   }
+
+  export type Posteo = PosteoBase &{
+    meta:Meta
+  }
+  
+  export type PosteoRaw = PosteoBase &{
+    metaRaw: MetaRaw
+  }
+
+export type MetaRaw = {
+  mentions?: string[]
+  hashtags?: string[]
+  urls: string[]
+}
+
+export type Meta = {
+  mentions: Tses[]
+  hashtags: Servicios[]
+  urls: string[]
+}
+
+export type HighlightResult = {
+  html: string
+  metaRaw: MetaRaw
+  cleanText: string
+}
+
+export type Highlighter = (text: string) => HighlightResult
 
 export type TextEditorType = {
   cleanInput:() => void

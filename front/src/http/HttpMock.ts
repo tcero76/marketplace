@@ -30,7 +30,6 @@ export default class HttpMock implements IHttpApi {
         createAsyncThunk(
             '/login',
             async (payload: LoginPayloadType): Promise<AxiosResponse<AuthorizationType>> => {
-                console.log("🚀 ~ HttpMock ~ payload:", payload)
                 return Promise.resolve(mockAxiosResponse<AuthorizationType>({
                     accessToken:'',
                     refreshToken:'',
@@ -58,11 +57,9 @@ export default class HttpMock implements IHttpApi {
         return Promise.resolve(mockAxiosResponse<string[]>(['Viña','Concepción','Valparaíso', 'Santiago'],{}));
     }
     sendPost(posteo: Posteo): Promise<AxiosResponse<string>> {
-        console.log("🚀 ~ HttpMock ~ sendPost ~ posteo:", posteo)
         return Promise.resolve(mockAxiosResponse<string>("Mock post successful",{}));
     }
     getPosteos(modelo?: string): Promise<AxiosResponse<Posteo[]>> {
-        console.log("🚀 ~ HttpMock ~ getPosteos ~ modelo:", modelo)
         return Promise.resolve(mockAxiosResponse<Posteo[]>([{
             id:'0',
             userId: '',

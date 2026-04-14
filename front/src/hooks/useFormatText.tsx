@@ -1,4 +1,4 @@
-import { RefObject, useCallback, useEffect, useState } from 'react';
+import { RefObject, useEffect, useState } from 'react';
 import { restoreCaretPosition, storeCaretPosition } from '@/utils/caret';
 import {
   arrobaHighlighter,
@@ -6,10 +6,10 @@ import {
   httpsHighlighter } from '@/utils/highlights/highlighters';
 import { composeHighlighters } from '@/utils/highlights/composeHighlighters';
 import EmbededComponent from "@/app/modelos/[id]/post/textEditor/Images/embeded";
-import { Posteo } from '@/types';
+import { Posteo, PosteoRaw } from '@/types';
 
 type UseFormatTextProps = {
-  onChangePosteo:(posteo:Posteo) => void
+  onChangePosteo:(posteoRaw:PosteoRaw) => void
   editorRef: RefObject<HTMLDivElement | null>
   imageUrl:string | null
   posteo:Posteo | null
@@ -29,11 +29,11 @@ const useFormatText = ({onChangePosteo, editorRef, imageUrl, posteo}:UseFormatTe
     editor.innerHTML = html;
   }, []);
   const highlight =  (texto:string) => {
-    const { html, meta } = composeHighlighters(
+    const { html, metaRaw } = composeHighlighters(
         hashtagHighlighter,
         arrobaHighlighter,
         httpsHighlighter)(texto);
-      return { html, meta };
+      return { html, metaRaw };
   }
   const onInput = async (ev: React.FormEvent<HTMLDivElement>) => {
     const editor = editorRef.current;
@@ -42,11 +42,18 @@ const useFormatText = ({onChangePosteo, editorRef, imageUrl, posteo}:UseFormatTe
     const inputType = native.inputType;
     if(inputType === 'insertCompositionText' || inputType === 'deleteCompositionText') return
     const pos = storeCaretPosition(editor)
-    const {html, meta} = highlight(editor.innerText)
+    const {html, metaRaw} = highlight(editor.innerText)
     editor.innerHTML = html;
     restoreCaretPosition(editor, pos);
-    onChangePosteo({...posteo, texto: editor.innerText, meta})
-    if (meta.urls) setUrlEmbeded(meta.urls[0]);
+    onChangePosteo({
+      id: posteo?.id,
+      userId: posteo?.userId,
+      texto: editor.innerText ?? "",
+      metaRaw:{
+        urls: metaRaw.urls,
+        mentions: metaRaw.mentions,
+        hashtags: metaRaw.hashtags } } as PosteoRaw)
+    if (metaRaw.urls) setUrlEmbeded(metaRaw.urls[0]);
   }
   const Embeded = <EmbededComponent imageUrl={imageUrl} urlEmbeded={urlEmbeded}/>
     return {

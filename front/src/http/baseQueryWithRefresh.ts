@@ -5,7 +5,7 @@ import type {
   FetchBaseQueryError
 } from "@reduxjs/toolkit/query"
 
-import { baseQuery } from "./baseQuery"
+import { baseQuery, fakeBaseQueryWithRefresh } from "./baseQuery"
 import { logout } from "@/store/AuthSlice"
 
 const mutex = new Mutex()
@@ -13,7 +13,8 @@ const mutex = new Mutex()
 export const baseQueryWithRefresh: BaseQueryFn<string | FetchArgs, unknown, FetchBaseQueryError> =
  async (args, api, extraOptions) => {
   await mutex.waitForUnlock()
-  let result = await baseQuery(args, api, extraOptions)
+  let result = await (process.env.NEXT_PUBLIC_MOCK === 'true'? fakeBaseQueryWithRefresh(args, api, extraOptions) : baseQuery(args, api, extraOptions))
+  console.log("🚀 ~ baseQueryWithRefresh ~ result:", result)
   if (result.error && result.error.status === 401) {
     if (!mutex.isLocked()) {
       const release = await mutex.acquire()

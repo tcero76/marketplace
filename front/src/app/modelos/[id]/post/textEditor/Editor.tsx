@@ -1,20 +1,37 @@
 'use client'
 
 import { FC, useRef } from "react";
-import { EditorProps } from "@/types";
+import { PosteoRaw, type EditorProps, type Posteo } from "@/types";
 import { usePasteImage } from "@/hooks/usePasteImage";
 import useFormatText from "@/hooks/useFormatText";
 import { useAutocomplete } from '@/hooks/useAutocomplete';
 import { useGetTsesQuery, useGetTopicsQuery } from '@/http/api';
+import enrichMeta from "@/lib/meta/enrichMeta";
 
 const Editor:FC<EditorProps> = ({ onChangePosteo, posteo, ...props }) => {
+  const { data:tses } = useGetTsesQuery()
+  const { data:topics } = useGetTopicsQuery()
+  const handleChangePosteo = (posteoRaw: PosteoRaw) => {
+    const meta = enrichMeta(
+      posteoRaw.metaRaw,
+      tses ?? [],
+      topics ?? []
+    );
+    onChangePosteo({
+      ...posteoRaw,
+      meta
+    });
+  };
   const editorRef = useRef<HTMLDivElement>(null);
   const { imageUrl, isLoading } = usePasteImage(editorRef);
-  const { onInput, Embeded } = useFormatText({ onChangePosteo, editorRef, imageUrl, posteo })
-  const { data:topics } = useGetTopicsQuery()
   const hashtagAutocomplete = useAutocomplete({ trigger: '#', categories: topics?.map(t => t.nombre) ?? [] });
-  const { data:tses } = useGetTsesQuery()
   const mentionAutocomplete = useAutocomplete({ trigger: '@', categories: tses?.map(t =>  t.nombre ) ?? [] });
+  const { onInput, Embeded } = useFormatText({
+    onChangePosteo:handleChangePosteo,
+    editorRef,
+    imageUrl,
+    posteo
+  })
   const onKeyUp = (e: React.KeyboardEvent<HTMLDivElement>) => {
     mentionAutocomplete.onKey(e);
     hashtagAutocomplete.onKey(e);
