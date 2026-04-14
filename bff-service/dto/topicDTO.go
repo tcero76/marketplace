@@ -3,11 +3,14 @@ package dto
 import "github.com/tcero76/marketplace/postgres/model"
 
 type Topic struct {
+	Id     int    `json:"id"`
 	Nombre string `json:"nombre"`
 }
 
 func ServicioToTopic(servicio model.Servicios) Topic {
-	return Topic{Nombre: servicio.Nombre}
+	return Topic{
+		Nombre: servicio.Nombre,
+		Id:     servicio.ID}
 }
 
 func ServiciosToTopics(servicios []model.Servicios) []Topic {
