@@ -28,6 +28,7 @@ export function useAutocomplete(
   }
   const showSuggestions = (options: string[], range: Range) => {
     const rect = getCaretCoordinates(range);
+    console.log("🚀 ~ showSuggestions ~ rect:", rect)
     setListado({
       options,
       left: rect.left + "px",
@@ -113,7 +114,8 @@ const AutocompleteList = () => {
     <Popover open={show}>
         <PopoverContent
           onOpenAutoFocus={(e) => e.preventDefault()}
-          className={`w-[--radix-popover-trigger-width] p-0 bg-white fixed left-[${listado?.left}] top-[${listado?.top}]`}
+          style={{ left: listado.left, top: listado.top }}
+          className={`w-[--radix-popover-trigger-width] p-0 bg-white fixed`}
           align="start">
           <Command>
             <CommandList>
