@@ -74,25 +74,6 @@ const Page = () => {
           {data?.descripcion || 'Descripción del modelo...'}
         </p>
       </div>
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-        <div className="bg-gray-900 rounded-xl overflow-hidden shadow-lg border border-gray-800">
-          <div className="aspect-video">
-          {/* { modelo!=undefined && <VideoPlayer src={src} accessToken={accessToken}/>} */}
-            <div className="h-full flex items-center justify-center text-gray-500">
-              Área del reproductor de video
-            </div>
-          </div>
-        </div>
-        <div className="rounded-lg bg-gray-800/50 p-4 border border-gray-700 shadow-sm">
-          <SimpleChat roomName={modelo}/>
-        </div>
-      </div>
-      <div className="mb-8">
-        <div className="bg-yellow-500/20 border border-yellow-500/30 rounded-xl p-6 text-center shadow-sm">
-          {/* <Pago/> */}
-          <p className="text-yellow-800 font-medium">Sección de pago / monetización (componente pendiente)</p>
-        </div>
-      </div>
         <div className="bg-gray-800/30 rounded-xl p-6 border border-gray-700 shadow-sm">
           <CreatePost nombre={data?.nombre ?? ""}/>
         </div>

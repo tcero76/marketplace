@@ -32,28 +32,37 @@ const { data } = useGetTsQuery(
   //     cacheTime: 1000 * 60 * 60,
   //   }]})
   return (
-            <div key={idx} className="w-full">
-              <Card size="sm" className="mx-auto w-full max-w-sm">
-                <CardHeader>
-                  <CardTitle>{data?.nombre}</CardTitle>
-                  <CardDescription>
-                    {data?.ciudad}
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <p className="line-clamp-3">
-                    {data?.descripcion}
-                  </p>
-                </CardContent>
-                <CardFooter>
-                  <Button asChild variant="outline" size="sm" className="w-full">
-                    <Link href={`/modelos/${data?.id}`}>
-                      {data?.portal}
-                    </Link>
-                  </Button>
-                </CardFooter>
-              </Card>
-            </div>
+<Card className="w-full h-full flex flex-col">
+  <div className="flex flex-col h-full space-y-4 p-4">
+    
+    {/* HEADER */}
+    <div className="space-y-1">
+      <CardTitle className="text-base font-semibold leading-tight">
+        {data?.nombre}
+      </CardTitle>
+      <CardDescription className="text-sm text-muted-foreground">
+        {data?.ciudad}
+      </CardDescription>
+    </div>
+
+    {/* CONTENT */}
+    <div className="flex-1">
+      <p className="text-sm text-muted-foreground line-clamp-3">
+        {data?.descripcion}
+      </p>
+    </div>
+
+    {/* FOOTER */}
+    <div className="pt-2">
+      <Button asChild variant="outline" size="sm" className="w-full">
+        <Link href={`/modelos/${data?.id}`}>
+          {data?.portal}
+        </Link>
+      </Button>
+    </div>
+
+  </div>
+</Card>
   )
 }
 

@@ -18,14 +18,14 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="es" className="h-full">
-      <body className="h-full flex flex-col min-h-screen antialiased overflow-hidden">
+      <body className="h-full antialiased">
         <Providers>
-          <div className="flex min-h-screen flex-col">
-            <Header/>
-            <main className="flex-1 bg-white overflow-auto">
-            {children}
+          <div className="flex h-screen flex-col">
+            <Header />
+            <main className="flex-1 min-h-0 flex flex-col">
+                {children}
             </main>
-            <Footer/>
+            <Footer />
           </div>
         </Providers>
       </body>

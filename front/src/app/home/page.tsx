@@ -42,13 +42,12 @@ export default function Home() {
   if (!user) return <div>No estás logeado</div>;
   if (isLoadingRecomendations) return <div>Cargando recomendaciones...</div>;
   return (
-    <div className="h-full w-full">
-        <Virtuoso
-          data={rows}
-          itemContent={(index, item) => <Row key={item.key} row={item.row}/>}
-          computeItemKey={(index) => index}
-        >
-        </Virtuoso>
-    </div>
+    <Virtuoso
+      scrolling='none'
+      data={rows}
+      itemContent={(index, item) => <Row key={item.key} row={item.row}/>}
+      computeItemKey={(index) => index}
+    >
+    </Virtuoso>
   );
 }
