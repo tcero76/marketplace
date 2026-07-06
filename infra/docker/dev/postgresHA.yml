@@ -13,7 +13,7 @@ services:
     depends_on:
       - pg-0
   pg-0:
-    image: bitnami/postgresql-repmgr:14
+    image: soldevelo/postgresql-repmgr:14
     container_name: pg-0
     profiles:
       - base
@@ -34,7 +34,7 @@ services:
     networks:
       - ${NETWORK_APPLICATION}
   pg-1:
-    image: bitnami/postgresql-repmgr:14
+    image: soldevelo/postgresql-repmgr:14
     container_name: pg-1
     profiles:
       - base
@@ -55,7 +55,7 @@ services:
     networks:
       - ${NETWORK_APPLICATION}
   pgpool:
-    image: bitnami/pgpool:4
+    image: soldevelo/pgpool:4
     container_name: pgpool
     hostname: db
     profiles:
